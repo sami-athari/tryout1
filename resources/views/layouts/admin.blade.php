@@ -5,95 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Laravel') }} - Admin</title>
-
-    <link rel="dns-prefetch" href="//fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
+    <title>{{ config('app.name', 'Seilmu') }} - Admin</title>
 
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <style>
-        body {
-            padding-top: 70px;
-            background: linear-gradient(to bottom right, #ffffff);
-
-            color: #e0f2f1;
-            min-height: 100vh;
-        }
-
-        .navbar {
-            background-color: #164ac5 !important;
-        }
-
-        .navbar .nav-link,
-        .navbar .navbar-brand,
-        .navbar .dropdown-toggle {
-            color: #e0f2f1 !important;
-        }
-
-        .navbar-toggler-icon-custom {
-            cursor: pointer;
-            width: 25px;
-            height: 20px;
-            display: inline-block;
-            position: relative;
-        }
-
-        .navbar-toggler-icon-custom span {
-            background: #e0f2f1;
-            position: absolute;
-            height: 3px;
-            width: 100%;
-            left: 0;
-            transition: 0.3s;
-            border-radius: 2px;
-        }
-
-        .navbar-toggler-icon-custom span:nth-child(1) { top: 0; }
-        .navbar-toggler-icon-custom span:nth-child(2) { top: 8px; }
-        .navbar-toggler-icon-custom span:nth-child(3) { top: 16px; }
-
-        .dropdown-menu {
-            background-color:  #1e68fd;
-            border: none;
-        }
-
-        .dropdown-menu .dropdown-item {
-            color: #090909;
-        }
-
-        .dropdown-menu .dropdown-item:hover {
-            background-color:  #1874fd;
-        }
-
-        .nav-center {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-        }
-
-        .nav-center a {
-            margin: 0 15px;
-        }
-
-        .notif-bubble {
-            position: absolute;
-            top: 0px;
-            right: -6px;
-            background-color: red;
-            color: white;
-            font-size: 10px;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
+    {{-- tempat style tambahan dari child --}}
+    @yield('styles')
 </head>
-<body>
+
+<body class="bg-gray-100 text-gray-900">
+
+
+   
+    @yield('scripts')
 @php
     $notifUsers = \App\Models\User::where('role', 'user')->get();
     $adminNotif = false;
@@ -105,60 +30,85 @@
     }
 @endphp
 
-
-<div id="app">
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top shadow-sm">
-        <div class="container d-flex justify-content-between align-items-center">
-            <a class="navbar-brand fw-bold" href="{{ url('/admin/dashboard') }}">
-                {{ Auth::user()->name }} (ReadHaus)
+<div id="app" class="flex flex-col min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-blue-900 text-white shadow-md">
+        <div class="container mx-auto flex justify-between items-center px-6 py-4">
+            <!-- Logo -->
+            <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold tracking-wide hover:text-gray-200">
+                {{ Auth::user()->name }} (Admin)
             </a>
 
-            <div class="nav-center d-none d-md-flex">
-                 <a class="nav-link" href="{{ route('admin.dashboard') }}">beranda</a>
+            <!-- Menu -->
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="{{ route('admin.dashboard') }}" class="hover:text-gray-300">Beranda</a>
+                <a href="{{ route('admin.produk.index') }}" class="hover:text-gray-300">Produk</a>
+                <a href="{{ route('admin.kategori.index') }}" class="hover:text-gray-300">Kategori</a>
+                <a href="{{ route('admin.users.index') }}" class="hover:text-gray-300">Akun</a>
+                <a href="{{ route('admin.transactions.index') }}" class="hover:text-gray-300">History</a>
 
-                <a class="nav-link" href="{{ route('admin.produk.index') }}">Produk</a>
-                <a class="nav-link" href="{{ route('admin.kategori.index') }}">Kategori</a>
-                <a class="nav-link" href="{{ route('admin.users.index') }}">Akun</a>
-                 <a class="nav-link" href="{{ route('admin.transactions.index') }}">histroy</a>
-
-               <div class="position-relative">
-    <a class="nav-link" href="{{ route('chat.index') }}">
-         Pesan
-    </a>
-    @if ($adminNotif)
-        <span class="notif-bubble">•</span>
-    @endif
-</div>
-
+                <!-- Pesan dengan notif -->
+                <div class="relative">
+                    <a href="{{ route('chat.index') }}" class="hover:text-gray-300">Pesan</a>
+                    @if($adminNotif)
+                        <span class="absolute -top-2 -right-3 bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">!</span>
+                    @endif
+                </div>
             </div>
 
-            <div class="dropdown">
-                <a class="nav-link dropdown-toggle navbar-toggler-icon-custom" href="#" id="dropdownMenuButton" role="button"
-                   data-bs-toggle="dropdown" aria-expanded="false">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </a>
-
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                    <li>
-                        <a class="dropdown-item" href="#" onclick="confirmLogout(event)">Logout</a>
-                    </li>
-                </ul>
+            <!-- Dropdown Mobile -->
+            <div class="md:hidden relative">
+                <button onclick="toggleMenu()" class="focus:outline-none">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+                <div id="mobileMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden">
+                    <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Beranda</a>
+                    <a href="{{ route('admin.produk.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Produk</a>
+                    <a href="{{ route('admin.kategori.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Kategori</a>
+                    <a href="{{ route('admin.users.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Akun</a>
+                    <a href="{{ route('admin.transactions.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">History</a>
+                    <a href="{{ route('chat.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        Pesan
+                        @if($adminNotif) <span class="ml-2 text-red-600 font-bold">•</span> @endif
+                    </a>
+                    <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">Logout</button>
+                    </form>
+                </div>
             </div>
 
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+            <!-- Logout Desktop -->
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden md:block">
                 @csrf
+                <button type="submit" onclick="confirmLogout(event)"
+                        class="ml-4 bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm">
+                    Logout
+                </button>
             </form>
         </div>
     </nav>
 
-    <div class="px-4 py-5">
+    <!-- Main -->
+    <main class="flex-1 container mx-auto px-6 py-8">
         @yield('content')
-    </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white text-center py-6">
+        <p>&copy; {{ date('Y') }} {{ config('app.name', 'Seilmu') }}. Admin Panel.</p>
+    </footer>
 </div>
 
 <script>
+    function toggleMenu() {
+        const menu = document.getElementById('mobileMenu');
+        menu.classList.toggle('hidden');
+    }
+
     function confirmLogout(event) {
         event.preventDefault();
         Swal.fire({
@@ -166,15 +116,15 @@
             text: "Kamu akan keluar dari akun admin!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#004d40',
+            confirmButtonColor: '#2563eb',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, keluar!',
+            confirmButtonText: 'Ya, keluar',
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById('logout-form').submit();
             }
-        })
+        });
     }
 </script>
 </body>

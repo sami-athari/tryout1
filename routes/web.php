@@ -16,11 +16,15 @@ use App\Http\Controllers\User\PDFController;
 use App\Http\Controllers\User\TransactionController;
 use App\Http\Controllers\ChatController;
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Controllers\HomeController;
+use App\Models\Produk;
 
 // ⬇️ Landing Page
 Route::get('/', function () {
-    return view('welcome');
-});
+    $produk = Produk::latest()->take(8)->get();
+    return view('welcome', compact('produk'));
+})->name('welcome');
+
 
 // ⬇️ Custom Auth Routes
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');

@@ -1,45 +1,80 @@
 @extends('layouts.app')
 
 @section('content')
-    <h2>Daftar Akun Readhaus</h2>
+<div class="flex items-center justify-center min-h-[85vh]">
+    <div class="bg-white shadow-xl rounded-2xl w-full max-w-md p-8">
+        <!-- Judul -->
+        <h2 class="text-2xl font-bold text-center text-blue-900 mb-6">
+            Daftar Akun {{ config('app.name', 'Seilmu') }}
+        </h2>
 
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+        <!-- Form -->
+        <form method="POST" action="{{ route('register') }}" class="space-y-5">
+            @csrf
 
-        <input type="email" name="email" value="{{ old('email') }}" required autofocus placeholder="Email">
-        @error('email')
-            <p><strong>{{ $message }}</strong></p>
-        @enderror
+            <!-- Email -->
+            <div>
+                <input type="email" name="email" value="{{ old('email') }}" required autofocus
+                       placeholder="Email"
+                       class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                @error('email')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
-        <input type="text" name="name" value="{{ old('name') }}" required placeholder="Nama Lengkap">
-        @error('name')
-            <p><strong>{{ $message }}</strong></p>
-        @enderror
+            <!-- Nama -->
+            <div>
+                <input type="text" name="name" value="{{ old('name') }}" required
+                       placeholder="Nama Lengkap"
+                       class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                @error('name')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
-        <input type="password" name="password" required placeholder="Kata Sandi">
-        @error('password')
-            <p><strong>{{ $message }}</strong></p>
-        @enderror
+            <!-- Password -->
+            <div>
+                <input type="password" name="password" required placeholder="Kata Sandi"
+                       class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                @error('password')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
-        <input type="password" name="password_confirmation" required placeholder="Konfirmasi Kata Sandi">
+            <!-- Konfirmasi Password -->
+            <div>
+                <input type="password" name="password_confirmation" required placeholder="Konfirmasi Kata Sandi"
+                       class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
 
-        <ul>
-            <li>Minimum 8 karakter.</li>
-            <li>Sertakan angka & simbol.</li>
-        </ul>
+            <!-- Tips Password -->
+            <ul class="text-sm text-gray-600 list-disc pl-5 space-y-1">
+                <li>Minimum 8 karakter</li>
+                <li>Sertakan angka & simbol</li>
+            </ul>
 
-        <div>
-            <input type="checkbox" required id="privacy-check">
-            <label for="privacy-check">
-                Dengan mendaftar, kamu menyetujui
-                <a href="#">Kebijakan Privasi Readhaus.com</a>
-            </label>
-        </div>
+            <!-- Checkbox -->
+            <div class="flex items-start space-x-2 text-sm">
+                <input type="checkbox" id="privacy-check" required
+                       class="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <label for="privacy-check" class="text-gray-600">
+                    Dengan mendaftar, kamu menyetujui
+                    <a href="#" class="text-blue-700 hover:underline">Kebijakan Privasi Seilmu.com</a>
+                </label>
+            </div>
 
-        <button type="submit">Daftar</button>
+            <!-- Tombol Daftar -->
+            <button type="submit"
+                    class="w-full bg-blue-900 text-white py-3 rounded-lg font-semibold hover:bg-blue-800 transition">
+                Daftar
+            </button>
 
-        <p>
-            Sudah punya akun? <a href="{{ route('login') }}">Masuk</a>
-        </p>
-    </form>
+            <!-- Link Login -->
+            <p class="text-center text-gray-600 text-sm">
+                Sudah punya akun?
+                <a href="{{ route('login') }}" class="text-blue-700 hover:underline font-medium">Masuk</a>
+            </p>
+        </form>
+    </div>
+</div>
 @endsection

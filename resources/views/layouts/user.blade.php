@@ -43,15 +43,15 @@
                 <div class="hidden md:flex space-x-6 text-lg">
                     @auth
                         @if (Auth::user()->role === 'user')
-                            <a href="{{ route('user.dashboard') }}" class="hover:text-blue-300 transition">Beranda</a>
-                            <a href="{{ route('user.about') }}" class="hover:text-blue-300 transition">Tentang Kami</a>
-                            <a href="{{ route('user.cart') }}" class="hover:text-blue-300 transition">Keranjang</a>
-                            <a href="{{ route('user.transactions') }}" class="hover:text-blue-300 transition">Riwayat</a>
+                            <a href="{{ route('user.dashboard') }}" class="hover:text-blue-300 transition">Home</a>
+                            <a href="{{ route('user.about') }}" class="hover:text-blue-300 transition">About Us</a>
+                            <a href="{{ route('user.cart') }}" class="hover:text-blue-300 transition">Cart</a>
+                            <a href="{{ route('user.transactions') }}" class="hover:text-blue-300 transition">History</a>
                         @endif
                     @endauth
 
                     <a href="{{ route('chat.index') }}" class="hover:text-blue-300 transition relative">
-                        Pesan
+                        Chat
                         @if ($notif)
                             <span class="absolute -top-2 -right-3 bg-red-500 text-xs font-bold rounded-full px-2 py-0.5 animate-pulse">•</span>
                         @endif

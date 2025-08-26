@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request; // ✅ Tambahkan ini
+use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\Kategori;
 
