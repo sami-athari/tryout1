@@ -1,8 +1,8 @@
 @extends('layouts.user')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <h1 class="text-3xl font-extrabold text-white mb-6">🛒 Keranjang Belanja</h1>
+<div class="container mx-auto px-6 py-10">
+    <h1 class="text-3xl font-extrabold text-blue-900 mb-8 text-center">🛒 Keranjang Belanja</h1>
 
     @if (session('success'))
         <script>
@@ -17,70 +17,72 @@
     @endif
 
     @if ($items->count())
-        <div class="bg-white p-6 rounded-xl shadow-2xl overflow-x-auto">
-            <table class="w-full table-auto text-sm">
-                <thead>
-                    <tr class="text-gray-700 border-b border-gray-300 text-left">
-                        <th class="py-3">📚 Produk</th>
-                        <th class="py-3">🖼️ Foto</th>
-                        <th class="py-3">🏷️ Kategori</th>
-                        <th class="py-3">💰 Harga</th>
-                        <th class="py-3 text-center">🔢 Jumlah</th>
-                        <th class="py-3 text-center">📦 Stok Tersisa</th>
-                        <th class="py-3 text-center">🧹 Aksi</th>
+        <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+            <table class="min-w-full border border-gray-200">
+                <thead class="bg-blue-900 text-white">
+                    <tr>
+                        <th class="px-4 py-3 text-left">Produk</th>
+                        <th class="px-4 py-3 text-center">Foto</th>
+                        <th class="px-4 py-3 text-left">Kategori</th>
+                        <th class="px-4 py-3 text-right">Harga</th>
+                        <th class="px-4 py-3 text-center">Jumlah</th>
+                        <th class="px-4 py-3 text-center">Stok Tersisa</th>
+                        <th class="px-4 py-3 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-200">
                     @foreach ($items as $item)
-                        <tr data-item-id="{{ $item->id }}" data-stok="{{ $item->produk->stok }}" data-harga="{{ $item->produk->harga }}" class="border-b border-gray-200 hover:bg-gray-100 transition">
-                            <td class="py-4 font-semibold text-gray-800">{{ $item->produk->nama }}</td>
-                            <td class="py-4">
-                                <img src="{{ asset('storage/' . $item->produk->foto) }}" alt="Foto Produk" class="w-16 h-16 object-cover rounded-lg shadow">
+                        <tr data-item-id="{{ $item->id }}" data-stok="{{ $item->produk->stok }}" data-harga="{{ $item->produk->harga }}">
+                            <td class="px-4 py-3 font-semibold text-gray-800">{{ $item->produk->nama }}</td>
+                            <td class="px-4 py-3 text-center">
+                                <img src="{{ asset('storage/' . $item->produk->foto) }}" alt="Foto Produk" class="w-16 h-16 object-cover rounded-md mx-auto">
                             </td>
-                            <td class="py-4 text-gray-700">{{ $item->produk->kategori->nama ?? '-' }}</td>
-                            <td class="py-4 text-gray-600">Rp {{ number_format($item->produk->harga, 0, ',', '.') }}</td>
-                            <td class="py-4 text-center">
-                                <div class="flex justify-center items-center gap-1">
-                                    {{-- Minus --}}
-                                    <button type="button" class="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-black font-bold rounded minus-btn">−</button>
-
-                                    {{-- Jumlah --}}
-                                    <span class="w-12 text-center font-bold text-black qty-text">{{ $item->jumlah }}</span>
-
-                                    {{-- Plus --}}
-                                    <button type="button" class="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-black font-bold rounded plus-btn">+</button>
+                            <td class="px-4 py-3 text-gray-600">{{ $item->produk->kategori->nama ?? '-' }}</td>
+                            <td class="px-4 py-3 text-right font-medium text-blue-800">Rp {{ number_format($item->produk->harga, 0, ',', '.') }}</td>
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <button type="button" class="minus-btn px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-300">−</button>
+                                    <span class="qty-text px-3 py-1 border rounded-md bg-gray-50">{{ $item->jumlah }}</span>
+                                    <button type="button" class="plus-btn px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-300">+</button>
                                 </div>
                             </td>
-                            <td class="py-4 text-center font-medium stok-text {{ $item->produk->stok - $item->jumlah > 0 ? 'text-green-600' : 'text-red-600' }}">
+                            <td class="px-4 py-3 text-center stok-text">
                                 {{ $item->produk->stok - $item->jumlah }}
                             </td>
-                            <td class="py-4 text-center">
-                                <form method="POST" action="{{ route('user.cart.remove', $item->id) }}" class="inline-block delete-form">
+                            <td class="px-4 py-3 text-center">
+                                <form method="POST" action="{{ route('user.cart.remove', $item->id) }}" class="delete-form">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button" class="text-red-600 hover:text-red-800 font-semibold delete-btn">Hapus 🗑️</button>
+                                    <button type="button" class="delete-btn px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
+                                        Hapus
+                                    </button>
                                 </form>
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+        </div>
 
-            {{-- Total --}}
-            <div id="total" class="mt-6 text-right text-lg font-bold text-gray-800">
-                Total: Rp {{ number_format($items->sum(fn($i) => $i->produk->harga * $i->jumlah),0,',','.') }}
-            </div>
+        {{-- Total --}}
+        <div id="total" class="text-xl font-bold text-right mt-6 text-blue-900">
+            Total: Rp {{ number_format($items->sum(fn($i) => $i->produk->harga * $i->jumlah),0,',','.') }}
+        </div>
 
-            {{-- Tombol Checkout --}}
-            <div class="mt-4 flex justify-end">
-                <a href="{{ route('user.checkout.form') }}" class="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-2 rounded-full font-bold shadow-lg">
-                    ✅ Checkout Sekarang
-                </a>
-            </div>
+        {{-- Tombol Checkout --}}
+        <div class="mt-6 text-right">
+            <a href="{{ route('user.checkout.form') }}"
+               class="inline-block px-6 py-3 bg-blue-900 text-white rounded-lg shadow hover:bg-blue-800 transition">
+                Checkout Sekarang
+            </a>
         </div>
     @else
-        <div class="text-center text-white text-lg font-medium">
-            🧺 Keranjangmu masih kosong, yuk tambahkan produk!
+        <div class="text-center py-12">
+            <p class="text-gray-600 text-lg">Keranjangmu masih kosong, yuk tambahkan produk! 🛍</p>
+            <a href="{{ route('user.dashboard') }}"
+               class="mt-4 inline-block px-5 py-3 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition">
+                Belanja Sekarang
+            </a>
         </div>
     @endif
 </div>
@@ -95,8 +97,6 @@
                 text: "Produk akan dihapus dari keranjang!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Ya, hapus!',
                 cancelButtonText: 'Batal'
             }).then((result) => {
@@ -130,7 +130,6 @@
         qtySpan.textContent = newQty;
         const stokCell = row.querySelector('.stok-text');
         stokCell.textContent = stokAsli - newQty;
-        stokCell.className = 'py-4 text-center font-medium stok-text ' + (stokAsli - newQty > 0 ? 'text-green-600' : 'text-red-600');
 
         // Update total
         updateTotal();
@@ -143,7 +142,7 @@
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
-            body: JSON.stringify({ quantity: newQty }) // tetap pakai "quantity" untuk request
+            body: JSON.stringify({ quantity: newQty })
         })
         .then(res => res.json())
         .then(data => {

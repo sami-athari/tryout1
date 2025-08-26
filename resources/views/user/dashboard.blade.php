@@ -1,132 +1,75 @@
 @extends('layouts.user')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="min-h-screen bg-white">
 
-    {{-- Header --}}
-    <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-blue-400">
-            📚 Selamat Datang di <span class="text-yellow-400">ReadHaus</span>
-        </h1>
-        <p class="text-blue-200 mt-2 text-lg">Temukan buku favoritmu dengan berbagai kategori menarik.</p>
-    </div>
 
-    {{-- Daftar Produk --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        @forelse($produk as $item)
-            <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition overflow-hidden flex flex-col" data-stok="{{ $item->stok }}" data-id="{{ $item->id }}">
-                <img 
-                    src="{{ asset('storage/' . $item->foto) }}" 
-                    alt="{{ $item->nama }}"
-                    class="w-full h-72 object-cover"
-                >
-                <div class="p-4 flex flex-col justify-between flex-grow">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 truncate">{{ $item->nama }}</h3>
-                        <p class="text-sm text-gray-500">
-                            Kategori: 
-                            <span class="text-gray-700 font-medium">{{ $item->kategori ? $item->kategori->nama : '-' }}</span>
-                        </p>
-                        <p class="text-blue-600 font-bold mt-2 mb-1">Rp {{ number_format($item->harga,0,',','.') }}</p>
+    {{-- Hero Section --}}
+    <section class="relative bg-gradient-to-r from-blue-900 via-blue-800 to-black text-white py-64 overflow-hidden">
+        <div class="container mx-auto text-center px-6">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-4 animate-fadeInDown">Selamat Datang di Seilmu</h2>
+            <p class="text-lg md:text-xl mb-6 animate-fadeInUp">Temukan ribuan buku favoritmu dengan berbagai kategori menarik.</p>
+            <a href="#produk" class="bg-white text-blue-900 font-semibold px-6 py-3 rounded-full shadow-lg hover:bg-gray-100 transition animate-bounce">
+                Mulai Belanja
+            </a>
+        </div>
+    </section>
 
-                        {{-- Stok --}}
-                        <p class="text-sm font-medium stok-text {{ $item->stok > 0 ? 'text-green-600' : 'text-red-600' }}">
-                            Stok tersedia: {{ $item->stok }}
-                        </p>
+    {{-- Produk Section --}}
+    <section id="produk" class="container mx-auto px-6 py-12">
+        <h3 class="text-2xl font-bold text-blue-900 mb-8 border-b-2 border-blue-900 inline-block">✨ Produk Terbaru</h3>
+
+        <div class="grid gap-8 md:grid-cols-3 lg:grid-cols-4">
+            @forelse($produk as $item)
+                <div class="bg-white rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
+                    <img src="{{ asset('storage/' . $item->foto) }}" alt="{{ $item->nama }}"
+                         class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h4 class="text-lg font-semibold text-blue-900">{{ $item->nama }}</h4>
+                        <p class="text-gray-500 text-sm">Kategori: {{ $item->kategori ? $item->kategori->nama : '-' }}</p>
+                        <p class="text-xl font-bold text-blue-900 mt-2">Rp {{ number_format($item->harga,0,',','.') }}</p>
+
+                        @if($item->stok > 0)
+                            <form action="{{ route('user.cart.add', $item->id) }}" method="POST" class="mt-4 flex items-center space-x-2">
+                                @csrf
+                                <input type="number" name="jumlah" value="1" min="1" max="{{ $item->stok }}"
+                                       class="w-16 border rounded text-center text-black">
+                                <button type="submit" class="flex-1 bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-800 transition">
+                                    + Keranjang
+                                </button>
+                            </form>
+                        @else
+                            <p class="mt-4 text-red-500 font-semibold">Stok Habis</p>
+                        @endif
                     </div>
-
-                    {{-- Form tambah ke keranjang --}}
-                    @if($item->stok > 0)
-                        <form action="{{ route('user.cart.add', $item->id) }}" method="POST" class="mt-4 add-to-cart-form">
-                            @csrf
-                            <div class="flex items-center gap-2 mb-3">
-                                <label class="text-sm text-gray-700">Jumlah:</label>
-                                <div class="flex items-center border rounded-full overflow-hidden">
-                                    {{-- Minus --}}
-                                    <button type="button" class="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold minus-btn">−</button>
-                                    {{-- Input jumlah --}}
-                                    <input type="number" name="jumlah" value="1" min="1" max="{{ $item->stok }}" class="w-16 px-2 py-2 border-0 text-center focus:ring-0 text-black qty-input" readonly>
-                                    {{-- Plus --}}
-                                    <button type="button" class="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold plus-btn">+</button>
-                                </div>
-                            </div>
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm flex items-center gap-2 w-full justify-center transition">
-                                🛒 Tambahkan ke Keranjang
-                            </button>
-                        </form>
-                    @else
-                        <p class="mt-4 text-red-500 font-semibold text-center">Stok Habis</p>
-                    @endif
                 </div>
-            </div>
-        @empty
-            <p class="text-blue-200 col-span-full text-center">Tidak ada buku ditemukan.</p>
-        @endforelse
-    </div>
+            @empty
+                <p class="text-gray-600">Tidak ada buku ditemukan.</p>
+            @endforelse
+        </div>
+    </section>
+
+    {{-- Footer --}}
+    <footer class="bg-blue-900 text-white text-center py-6 mt-12">
+        <p>&copy; {{ date('Y') }} Seilmu. All rights reserved.</p>
+    </footer>
 </div>
 
-<script>
-    // Plus-Minus
-    document.querySelectorAll('.minus-btn').forEach(btn => {
-        btn.addEventListener('click', function(){
-            const container = this.closest('[data-id]');
-            const input = container.querySelector('.qty-input');
-            let current = parseInt(input.value);
-            if(current > 1){
-                input.value = current - 1;
-
-                // Update stok sementara
-                const stokElem = container.querySelector('.stok-text');
-                const stok = parseInt(container.dataset.stok);
-                stokElem.textContent = 'Stok tersedia: ' + (stok - (current-1));
-                stokElem.className = 'text-sm font-medium stok-text ' + ((stok - (current-1)) > 0 ? 'text-green-600' : 'text-red-600');
-            }
-        });
-    });
-
-    document.querySelectorAll('.plus-btn').forEach(btn => {
-        btn.addEventListener('click', function(){
-            const container = this.closest('[data-id]');
-            const input = container.querySelector('.qty-input');
-            let current = parseInt(input.value);
-            const stok = parseInt(container.dataset.stok);
-
-            if(current < stok){
-                input.value = current + 1;
-
-                // Update stok sementara
-                const stokElem = container.querySelector('.stok-text');
-                stokElem.textContent = 'Stok tersedia: ' + (stok - (current+1));
-                stokElem.className = 'text-sm font-medium stok-text ' + ((stok - (current+1)) > 0 ? 'text-green-600' : 'text-red-600');
-            } else {
-                // Jika melebihi stok, beri notif
-                Swal.fire({
-                    title: 'Stok Tidak Cukup!',
-                    text: 'Jumlah yang kamu pilih melebihi stok yang tersedia.',
-                    icon: 'warning',
-                    confirmButtonColor: '#2563eb'
-                });
-            }
-        });
-    });
-
-    // Validasi sebelum submit
-    document.querySelectorAll('.add-to-cart-form').forEach(form => {
-        form.addEventListener('submit', function(e){
-            const input = this.querySelector('.qty-input');
-            const jumlah = parseInt(input.value);
-            const stok = parseInt(this.closest('[data-id]').dataset.stok);
-
-            if(jumlah < 1 || jumlah > stok){
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Jumlah Tidak Valid!',
-                    text: 'Jumlah yang kamu pilih melebihi stok yang tersedia.',
-                    icon: 'error',
-                    confirmButtonColor: '#d33'
-                });
-            }
-        });
-    });
-</script>
+{{-- Animasi sederhana --}}
+<style>
+@keyframes fadeInDown {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeInDown {
+    animation: fadeInDown 1s ease forwards;
+}
+.animate-fadeInUp {
+    animation: fadeInUp 1s ease forwards;
+}
+</style>
 @endsection

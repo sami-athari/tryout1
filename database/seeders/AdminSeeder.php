@@ -10,12 +10,20 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
+        // Akun Admin
         User::create([
             'name' => 'Admin',
-            'email' => 'admin@admin.com',
-            'password' => Hash::make('admin123'), // password
+            'email' => 'admin@mail.com',
+            'password' => Hash::make('123123'),
             'role' => 'admin',
+        ]);
+
+        // Akun User
+        User::create([
+            'name' => 'User',
+            'email' => 'user@mail.com',
+            'password' => Hash::make('123123'),
+            'role' => 'user',
         ]);
     }
 }
-
