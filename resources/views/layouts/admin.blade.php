@@ -17,7 +17,7 @@
 <body class="bg-gray-100 text-gray-900">
 
 
-   
+
     @yield('scripts')
 @php
     $notifUsers = \App\Models\User::where('role', 'user')->get();
@@ -36,7 +36,7 @@
         <div class="container mx-auto flex justify-between items-center px-6 py-4">
             <!-- Logo -->
             <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold tracking-wide hover:text-gray-200">
-                {{ Auth::user()->name }} (Admin)
+                {{ Auth::user()->name }} (📚 Seilmu)
             </a>
 
             <!-- Menu -->

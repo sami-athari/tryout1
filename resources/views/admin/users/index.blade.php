@@ -1,50 +1,79 @@
 @extends('layouts.admin')
 
+@section('styles')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd, #7dd3fc);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 1rem;
+        }
+    </style>
+@endsection
+
 @section('content')
-<div class="container mt-12 px-6">
-    <h1 class="text-3xl font-bold mb-6 border-b-4 border-blue-500 pb-2 text-black">
+<div class="container mx-auto mt-12 px-6">
+    {{-- Judul --}}
+    <h1 class="text-4xl font-extrabold mb-8 text-center text-gray-900 tracking-wide">
         📋 Daftar Akun User
     </h1>
 
-    <div class="mb-4">
-        <span class="text-md text-black">Total akun terdaftar: 
-            <strong class="text-black">{{ $total }}</strong>
+    {{-- Total Akun --}}
+    <div class="mb-6 text-center">
+        <span class="text-lg text-gray-800">
+            Total akun terdaftar:
+            <strong class="text-blue-700">{{ $total }}</strong>
         </span>
     </div>
 
-    <div class="overflow-x-auto rounded-lg shadow-lg bg-gray-900">
+    {{-- Tabel User --}}
+    <div class="overflow-hidden shadow-2xl glass">
         <table class="min-w-full text-sm">
-            <thead class="bg-gray-800 text-black uppercase text-xs tracking-wider">
+            <thead class="bg-gradient-to-r from-blue-600 to-blue-800 text-white uppercase text-xs tracking-wider">
                 <tr>
-                    <th class="py-3 px-5 text-left">#</th>
-                    <th class="py-3 px-5 text-left">Nama</th>
-                    <th class="py-3 px-5 text-left">Email</th>
-                    <th class="py-3 px-5 text-left">Tanggal Dibuat</th>
+                    <th class="py-4 px-6 text-left">#</th>
+                    <th class="py-4 px-6 text-left">Nama</th>
+                    <th class="py-4 px-6 text-left">Email</th>
+                    <th class="py-4 px-6 text-left">Tanggal Dibuat</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700 text-black">
+            <tbody class="divide-y divide-gray-200 bg-white">
                 @forelse ($users as $user)
-                <tr class="hover:bg-blue transition duration-200">
-                    <td class="py-3 px-5">{{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}</td>
-                    <td class="py-3 px-5">{{ $user->name }}</td>
-                    <td class="py-3 px-5">{{ $user->email }}</td>
-                    <td class="py-3 px-5">{{ $user->created_at->format('d M Y') }}</td>
+                <tr class="hover:bg-blue-50 transition duration-200">
+                    <td class="py-4 px-6 font-semibold text-gray-700">
+                        {{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}
+                    </td>
+                    <td class="py-4 px-6 text-gray-900">{{ $user->name }}</td>
+                    <td class="py-4 px-6 text-gray-700">{{ $user->email }}</td>
+                    <td class="py-4 px-6 text-gray-600">
+                        {{ $user->created_at->format('d M Y') }}
+                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="text-center py-4 text-red-400">Belum ada user terdaftar.</td>
+                    <td colspan="4" class="text-center py-6 text-red-500 font-medium">
+                        Belum ada user terdaftar.
+                    </td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
-    <div class="mt-6">
+    {{-- Pagination --}}
+    <div class="mt-8 flex justify-center">
         {{ $users->links('pagination::tailwind') }}
     </div>
 
-    <div class="mt-10">
-        <a href="{{ route('admin.dashboard') }}" class="btn fw-semibold" style="background-color: #facc15; color: black;">
+    {{-- Tombol Kembali --}}
+    <div class="mt-10 text-center">
+        <a href="{{ route('admin.dashboard') }}"
+           class="inline-block px-6 py-3 rounded-xl font-semibold shadow-md bg-yellow-400 text-gray-900 hover:bg-yellow-500 transition">
             ← Kembali ke Dashboard
         </a>
     </div>

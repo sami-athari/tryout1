@@ -39,7 +39,7 @@ class ProdukController extends Controller
             'harga'       => 'required|numeric|min:0',
             'stok'        => 'required|integer|min:0',
             'deskripsi'   => 'nullable|string',
-            'foto'        => 'nullable|image|max:2048',
+            'foto'        => 'nullable|image|max:6000',
         ]);
 
         $data = $request->only(['nama', 'kategori_id', 'harga', 'stok', 'deskripsi']);

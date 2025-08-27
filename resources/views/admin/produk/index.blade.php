@@ -1,5 +1,17 @@
 @extends('layouts.admin')
-
+@section('styles')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe, #93c5fd);
+            min-height: 100vh;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+@endsection
 @section('content')
 <div class="p-8 max-w-7xl mx-auto">
 

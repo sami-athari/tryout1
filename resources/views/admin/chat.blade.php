@@ -1,9 +1,23 @@
 @extends('layouts.admin')
 
+@section('styles')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe, #93c5fd);
+            min-height: 100vh;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+@endsection
+
 @section('content')
 
-<a href="{{ route('admin.dashboard') }}" 
-   class="px-4 py-2 rounded-lg font-semibold shadow-md transition 
+<a href="{{ route('admin.dashboard') }}"
+   class="px-4 py-2 rounded-lg font-semibold shadow-md transition
           bg-blue-600 hover:bg-blue-700 text-white mb-4 inline-block">
     ← Kembali ke Dashboard
 </a>

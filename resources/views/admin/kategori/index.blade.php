@@ -1,5 +1,19 @@
 @extends('layouts.admin')
 
+@section('styles')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe, #93c5fd);
+            min-height: 100vh;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+@endsection
+
 @section('content')
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -14,8 +28,8 @@
 
     <!-- BUTTONS -->
     <div class="mb-3 d-flex justify-content-between align-items-center">
-        <a href="{{ route('admin.dashboard') }}" 
-           class="btn fw-semibold shadow-sm" 
+        <a href="{{ route('admin.dashboard') }}"
+           class="btn fw-semibold shadow-sm"
            style="background-color: #facc15; color: black; border-radius: 8px;">
             ← Kembali ke Dashboard
         </a>
@@ -24,7 +38,7 @@
             <span class="badge bg-primary me-2 px-3 py-2 shadow-sm" style="font-size: 0.9rem;">
                 Total: {{ $kategoris->count() }} Kategori
             </span>
-            <a href="{{ route('admin.kategori.create') }}" class="btn fw-semibold text-white shadow-sm" 
+            <a href="{{ route('admin.kategori.create') }}" class="btn fw-semibold text-white shadow-sm"
                style="background: linear-gradient(to right, #2563eb, #3b82f6); border-radius: 8px;">
                 + Tambah Kategori
             </a>
@@ -59,17 +73,17 @@
                 </thead>
                 <tbody>
                     @forelse ($kategoris as $index => $kategori)
-                        <tr style="transition: background 0.3s ease;" 
-                            onmouseover="this.style.backgroundColor='#e0f2fe'" 
+                        <tr style="transition: background 0.3s ease;"
+                            onmouseover="this.style.backgroundColor='#e0f2fe'"
                             onmouseout="this.style.backgroundColor='white'">
                             <td class="fw-bold">{{ $index + 1 }}</td>
                             <td class="fw-semibold text-primary">{{ $kategori->nama }}</td>
                             <td>{{ $kategori->deskripsi ?? '—' }}</td>
                             <td>
                                 @if (!empty($kategori->foto))
-                                    <img src="{{ asset('storage/' . $kategori->foto) }}" 
-                                         alt="{{ $kategori->nama }}" 
-                                         class="img-fluid rounded shadow-sm border" 
+                                    <img src="{{ asset('storage/' . $kategori->foto) }}"
+                                         alt="{{ $kategori->nama }}"
+                                         class="img-fluid rounded shadow-sm border"
                                          style="max-width: 100px;">
                                 @else
                                     <span class="text-muted fst-italic">Tidak ada gambar</span>
@@ -77,7 +91,7 @@
                             </td>
                             <td>
                                 <!-- EDIT -->
-                                <a href="{{ route('admin.kategori.edit', $kategori->id) }}" 
+                                <a href="{{ route('admin.kategori.edit', $kategori->id) }}"
                                    class="btn btn-sm fw-semibold text-white shadow-sm me-2"
                                    style="background: linear-gradient(to right, #22c55e, #16a34a); border-radius: 6px;">
                                     ✏️ Edit
@@ -85,12 +99,12 @@
 
                                 <!-- DELETE / LOCK -->
                                 @if ($kategori->bukus_count == 0)
-                                    <form id="delete-form-{{ $kategori->id }}" 
-                                          action="{{ route('admin.kategori.destroy', $kategori->id) }}" 
+                                    <form id="delete-form-{{ $kategori->id }}"
+                                          action="{{ route('admin.kategori.destroy', $kategori->id) }}"
                                           method="POST" class="d-inline-block">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="button" 
+                                        <button type="button"
                                                 class="btn btn-sm fw-semibold text-white shadow-sm"
                                                 style="background: linear-gradient(to right, #ef4444, #dc2626); border-radius: 6px;"
                                                 onclick="confirmDelete({{ $kategori->id }})">
@@ -98,8 +112,8 @@
                                         </button>
                                     </form>
                                 @else
-                                    <button type="button" 
-                                            class="btn btn-sm fw-semibold text-white shadow-sm" 
+                                    <button type="button"
+                                            class="btn btn-sm fw-semibold text-white shadow-sm"
                                             style="background: gray; border-radius: 6px;" disabled>
                                         🔒 Tidak Bisa Dihapus
                                     </button>
