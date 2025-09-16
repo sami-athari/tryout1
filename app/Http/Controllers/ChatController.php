@@ -20,7 +20,7 @@ class ChatController extends Controller
 
             if ($request->has('user_id')) {
                 $selectedUser = User::findOrFail($request->user_id);
-
+                    
                 // Hapus notif ketika admin buka chat dari user
                 session()->forget('has_new_message_from_user_' . $selectedUser->id);
 

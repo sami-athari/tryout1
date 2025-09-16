@@ -20,25 +20,36 @@ class CartController extends Controller
     }
 
     // Tambah produk ke keranjang
-    public function add($produk_id)
-    {
-        $cartItem = Cart::where('user_id', Auth::id())
-                        ->where('produk_id', $produk_id)
-                        ->first();
+   public function add($produk_id, Request $request)
+{
+    $cartItem = Cart::where('user_id', Auth::id())
+                    ->where('produk_id', $produk_id)
+                    ->first();
 
-        if ($cartItem) {
-            $cartItem->jumlah += 1; // <-- disesuaikan dengan nama kolom
+    // Ambil stok produk
+    $produk = \App\Models\Produk::findOrFail($produk_id);
+
+    // Kalau produk sudah ada di cart
+    if ($cartItem) {
+        // Jangan melebihi stok
+        if ($cartItem->jumlah < $produk->stok) {
+            $cartItem->jumlah += 1; // default tambah 1
             $cartItem->save();
         } else {
-            Cart::create([
-                'user_id' => Auth::id(),
-                'produk_id' => $produk_id,
-                'jumlah' => 1 // <-- disesuaikan
-            ]);
+            return redirect()->back()->with('error', 'Jumlah melebihi stok!');
         }
-
-        return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
+    } else {
+        // Tambah baru dengan default 1
+        Cart::create([
+            'user_id' => Auth::id(),
+            'produk_id' => $produk_id,
+            'jumlah' => 1
+        ]);
     }
+
+    return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
+}
+
 
     // Hapus produk dari keranjang
     public function remove($id)

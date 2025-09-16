@@ -1,8 +1,6 @@
-@extends('layouts.admin')
-
-@section('styles')
+<?php $__env->startSection('styles'); ?>
     <script src="https://cdn.tailwindcss.com"></script>
-    {{-- SweetAlert2 --}}
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
@@ -14,17 +12,17 @@
             backdrop-filter: blur(10px);
         }
     </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="container d-flex justify-content-center mt-5">
     <div class="card shadow-lg" style="width: 550px; border-radius: 16px; background: linear-gradient(135deg, #1d4ed8, #2563eb); color: white;">
         <div class="card-header text-white text-center" style="border-radius: 16px 16px 0 0; background: linear-gradient(135deg, #1e40af, #1d4ed8);">
             <h5 class="mb-0 fw-bold">Tambah Produk</h5>
         </div>
         <div class="card-body p-4" style="background-color: #fafafb; border-radius: 0 0 16px 16px; color: #f7f7f8;">
-            <form action="{{ route('admin.produk.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+            <form action="<?php echo e(route('admin.produk.store')); ?>" method="POST" enctype="multipart/form-data">
+                <?php echo csrf_field(); ?>
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold text-dark">Nama Produk</label>
@@ -43,7 +41,7 @@
 
                 <div class="mb-3">
                     <label for="stok" class="form-label fw-semibold text-dark">Stok</label>
-                    <input type="number" name="stok" id="stok" class="form-control border border-gray-300 shadow-sm" value="{{ old('stok') }}" required>
+                    <input type="number" name="stok" id="stok" class="form-control border border-gray-300 shadow-sm" value="<?php echo e(old('stok')); ?>" required>
                 </div>
 
                 <div class="mb-3">
@@ -52,7 +50,7 @@
                 </div>
 
                 <div class="d-flex justify-content-between mt-4">
-                    <a href="{{ route('admin.produk.index') }}" class="btn btn-outline-primary btn-sm px-4 py-2">Kembali</a>
+                    <a href="<?php echo e(route('admin.produk.index')); ?>" class="btn btn-outline-primary btn-sm px-4 py-2">Kembali</a>
                     <button type="submit" class="btn btn-primary btn-sm px-4 py-2" style="background: linear-gradient(135deg, #1e40af, #2563eb); border: none;">Simpan</button>
                 </div>
             </form>
@@ -60,33 +58,35 @@
     </div>
 </div>
 
-{{-- SweetAlert2 Notifikasi --}}
+
 <script>
-    @if ($errors->any())
+    <?php if($errors->any()): ?>
         Swal.fire({
             icon: 'error',
             title: 'Terjadi Kesalahan',
-            html: `{!! implode('<br>', $errors->all()) !!}`,
+            html: `<?php echo implode('<br>', $errors->all()); ?>`,
             confirmButtonColor: '#1d4ed8'
         })
-    @endif
+    <?php endif; ?>
 
-    @if(session('success'))
+    <?php if(session('success')): ?>
         Swal.fire({
             icon: 'success',
             title: 'Berhasil',
-            text: "{{ session('success') }}",
+            text: "<?php echo e(session('success')); ?>",
             confirmButtonColor: '#1d4ed8'
         })
-    @endif
+    <?php endif; ?>
 
-    @if(session('error'))
+    <?php if(session('error')): ?>
         Swal.fire({
             icon: 'error',
             title: 'Gagal',
-            text: "{{ session('error') }}",
+            text: "<?php echo e(session('error')); ?>",
             confirmButtonColor: '#1d4ed8'
         })
-    @endif
+    <?php endif; ?>
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/admin/produk/create.blade.php ENDPATH**/ ?>

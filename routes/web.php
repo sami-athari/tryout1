@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Admin\KategoriController;
+
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminTransactionController;
@@ -18,6 +18,8 @@ use App\Http\Controllers\ChatController;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Controllers\HomeController;
 use App\Models\Produk;
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\Admin\AboutControllerAdmin;
 
 // ⬇️ Landing Page
 Route::get('/', function () {
@@ -26,6 +28,8 @@ Route::get('/', function () {
 })->name('welcome');
 
 
+// routes/web.php
+Route::get('/admin/about', [App\Http\Controllers\Admin\AboutControllerAdmin::class, 'index'])->name('admin.about');
 // ⬇️ Custom Auth Routes
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
@@ -52,8 +56,14 @@ Route::prefix('admin')->middleware(['auth', RoleMiddleware::class . ':admin'])->
         return view('admin.dashboard');
     })->name('dashboard');
 
+
+// Group route admin
+
+
+
+
     Route::resource('produk', ProdukController::class);
-    Route::resource('kategori', KategoriController::class);
+
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
 
     Route::get('/transactions', function () {
@@ -67,6 +77,7 @@ Route::prefix('admin')->middleware(['auth', RoleMiddleware::class . ':admin'])->
         return redirect()->back()->with('success', 'Transaksi dikonfirmasi!');
     })->name('transactions.konfirmasi');
 });
+
 
 // ⬇️ User Routes - Only accessible for role 'user'
 Route::prefix('user')->middleware(['auth', RoleMiddleware::class . ':user'])->name('user.')->group(function () {
@@ -83,6 +94,7 @@ Route::prefix('user')->middleware(['auth', RoleMiddleware::class . ':user'])->na
     Route::get('/checkout', [TransactionController::class, 'checkoutForm'])->name('checkout.form');
     Route::post('/checkout', [TransactionController::class, 'processCheckout'])->name('checkout.process');
 
+
     // Transactions
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions');
     Route::post('/transactions/selesai/{id}', [TransactionController::class, 'terimaPesanan'])->name('transactions.selesai');
@@ -91,10 +103,9 @@ Route::prefix('user')->middleware(['auth', RoleMiddleware::class . ':user'])->na
     Route::get('/struk/{id}', [PDFController::class, 'cetakStruk'])->name('struk');
 });
 
-// ⬇️ About Page (umum)
-Route::get('/about', function () {
-    return view('user.about');
-})->name('user.about');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/user/about', [AboutController::class, 'index'])->name('user.about');
+});
 
 // ⬇️ Chat Routes (auth common)
 Route::middleware('auth')->group(function () {

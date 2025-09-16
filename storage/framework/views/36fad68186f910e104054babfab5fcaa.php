@@ -1,7 +1,5 @@
-@extends('layouts.user')
-
-@section('content')
-    {{-- SweetAlert Welcome --}}
+<?php $__env->startSection('content'); ?>
+    
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             Swal.fire({
@@ -25,38 +23,38 @@
             Bukan sekadar toko buku online, tapi ruang baru buat kamu yang ingin terus belajar, berkembang, dan menikmati cerita.
         </p>
 
-        {{-- Buku Laris --}}
+        
         <div class="mb-14">
             <h2 class="text-3xl font-semibold text-blue-800 mb-6 text-center">🔥 Buku Paling Laris</h2>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                @forelse($produk as $item)
+                <?php $__empty_1 = true; $__currentLoopData = $produk; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:scale-105 transition transform">
-                        <img src="{{ asset('storage/' . $item->foto) }}"
-                             alt="{{ $item->nama }}"
+                        <img src="<?php echo e(asset('storage/' . $item->foto)); ?>"
+                             alt="<?php echo e($item->nama); ?>"
                              class="w-full h-56 object-cover">
                         <div class="p-4">
-                            <h3 class="text-lg font-bold text-blue-900">{{ $item->nama }}</h3>
-                            <p class="text-sm text-gray-600">Rp {{ number_format($item->harga,0,',','.') }}</p>
+                            <h3 class="text-lg font-bold text-blue-900"><?php echo e($item->nama); ?></h3>
+                            <p class="text-sm text-gray-600">Rp <?php echo e(number_format($item->harga,0,',','.')); ?></p>
                         </div>
                     </div>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <p class="text-gray-600 text-center col-span-3">Belum ada produk terlaris.</p>
-                @endforelse
+                <?php endif; ?>
             </div>
         </div>
 
-        {{-- Statistik --}}
+        
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-14 text-center">
             <div class="bg-gradient-to-r from-blue-500 to-blue-700 p-6 rounded-2xl shadow-lg text-white">
-                <h3 class="text-4xl font-bold mb-1">{{ $totalProduk }}</h3>
+                <h3 class="text-4xl font-bold mb-1"><?php echo e($totalProduk); ?></h3>
                 <p class="opacity-90">Total Produk</p>
             </div>
             <div class="bg-gradient-to-r from-green-400 to-green-600 p-6 rounded-2xl shadow-lg text-white">
-                <h3 class="text-4xl font-bold mb-1">{{ $userCount }}</h3>
+                <h3 class="text-4xl font-bold mb-1"><?php echo e($userCount); ?></h3>
                 <p class="opacity-90">Pengguna Aktif</p>
             </div>
             <div class="bg-gradient-to-r from-yellow-400 to-orange-500 p-6 rounded-2xl shadow-lg text-white">
-                <h3 class="text-4xl font-bold mb-1">{{ $transactionCount }}</h3>
+                <h3 class="text-4xl font-bold mb-1"><?php echo e($transactionCount); ?></h3>
                 <p class="opacity-90">Buku Terjual</p>
             </div>
         </div>
@@ -95,10 +93,12 @@
 
         <!-- Tombol Kembali -->
         <div class="text-center">
-            <a href="{{ route('user.dashboard') }}"
+            <a href="<?php echo e(route('user.dashboard')); ?>"
                class="inline-block px-8 py-4 bg-blue-900 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-800 transition">
                 ⬅ Kembali ke Beranda
             </a>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.user', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/user/about.blade.php ENDPATH**/ ?>

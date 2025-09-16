@@ -1,14 +1,14 @@
 <!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
-    <title>{{ config('app.name', 'Seilmu') }}</title>
+    <title><?php echo e(config('app.name', 'Seilmu')); ?></title>
 
     <!-- Vite -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/sass/app.scss', 'resources/js/app.js']); ?>
 
     <!-- Tailwind (kalau sudah di Vite, ini bisa dihapus) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,13 +16,13 @@
 </head>
 <body class="bg-white text-gray-800">
 
-@php
+<?php
     $notif = false;
     if (Auth::check() && Auth::user()->role === 'user') {
         $key = 'has_new_message_for_user_' . Auth::id();
         $notif = session()->has($key);
     }
-@endphp
+?>
 
 <div id="app">
     <!-- Navbar -->
@@ -31,37 +31,37 @@
             <!-- Kiri: Branding -->
             <div class="flex items-center space-x-3">
                 <span class="text-2xl font-bold tracking-wide">
-                    <a href="{{ url('/') }}">📚 Seilmu</a>
+                    <a href="<?php echo e(url('/')); ?>">📚 Seilmu</a>
                 </span>
-                @auth
-                    <span class="text-sm text-gray-300 italic">Halo, {{ Auth::user()->name }}</span>
-                @endauth
+                <?php if(auth()->guard()->check()): ?>
+                    <span class="text-sm text-gray-300 italic">Halo, <?php echo e(Auth::user()->name); ?></span>
+                <?php endif; ?>
             </div>
 
             <!-- Tengah: Navigasi -->
             <div class="hidden md:flex space-x-6 text-lg">
-                @auth
-                    @if(Auth::user()->role === 'user')
-                        <a href="{{ route('user.dashboard') }}" class="hover:text-blue-300 transition">Home</a>
-                        <a href="{{ route('user.about') }}" class="hover:text-blue-300 transition">About Us</a>
-                        <a href="{{ route('user.cart') }}" class="hover:text-blue-300 transition">Cart</a>
-                        <a href="{{ route('user.transactions') }}" class="hover:text-blue-300 transition">History</a>
-                    @endif
-                @endauth
+                <?php if(auth()->guard()->check()): ?>
+                    <?php if(Auth::user()->role === 'user'): ?>
+                        <a href="<?php echo e(route('user.dashboard')); ?>" class="hover:text-blue-300 transition">Home</a>
+                        <a href="<?php echo e(route('user.about')); ?>" class="hover:text-blue-300 transition">About Us</a>
+                        <a href="<?php echo e(route('user.cart')); ?>" class="hover:text-blue-300 transition">Cart</a>
+                        <a href="<?php echo e(route('user.transactions')); ?>" class="hover:text-blue-300 transition">History</a>
+                    <?php endif; ?>
+                <?php endif; ?>
 
-                <a href="{{ route('chat.index') }}" class="hover:text-blue-300 transition relative">
+                <a href="<?php echo e(route('chat.index')); ?>" class="hover:text-blue-300 transition relative">
                     Chat
-                    @if ($notif)
+                    <?php if($notif): ?>
                         <span class="absolute -top-2 -right-3 bg-red-500 text-xs font-bold rounded-full px-2 py-0.5 animate-pulse">•</span>
-                    @endif
+                    <?php endif; ?>
                 </a>
             </div>
 
             <!-- Search Produk -->
-            <form action="{{ route('user.dashboard') }}" method="GET" class="flex items-center space-x-2">
+            <form action="<?php echo e(route('user.dashboard')); ?>" method="GET" class="flex items-center space-x-2">
                 <input type="text"
                        name="search"
-                       value="{{ request('search') }}"
+                       value="<?php echo e(request('search')); ?>"
                        placeholder="Cari produk..."
                        class="border rounded-lg px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none text-black">
                 <button type="submit"
@@ -72,36 +72,36 @@
 
             <!-- Kanan: Auth -->
             <div class="relative">
-                @guest
+                <?php if(auth()->guard()->guest()): ?>
                     <div class="space-x-3">
-                        @if(Route::has('login'))
-                            <a href="{{ route('login') }}" class="px-3 py-2 rounded-lg bg-white text-blue-900 font-semibold hover:bg-gray-100 transition">Login</a>
-                        @endif
-                        @if(Route::has('register'))
-                            <a href="{{ route('register') }}" class="px-3 py-2 rounded-lg border border-white hover:bg-white hover:text-blue-900 transition">Register</a>
-                        @endif
+                        <?php if(Route::has('login')): ?>
+                            <a href="<?php echo e(route('login')); ?>" class="px-3 py-2 rounded-lg bg-white text-blue-900 font-semibold hover:bg-gray-100 transition">Login</a>
+                        <?php endif; ?>
+                        <?php if(Route::has('register')): ?>
+                            <a href="<?php echo e(route('register')); ?>" class="px-3 py-2 rounded-lg border border-white hover:bg-white hover:text-blue-900 transition">Register</a>
+                        <?php endif; ?>
                     </div>
-                @else
+                <?php else: ?>
                     <!-- Dropdown Menu -->
                     <button onclick="toggleDropdown()" class="px-3 py-2 bg-white text-blue-900 rounded-lg hover:bg-gray-200 transition">
                         Menu ⬇
                     </button>
                     <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-40 bg-white text-blue-900 rounded-lg shadow-lg overflow-hidden">
-                        <form id="logout-form" method="POST" action="{{ route('logout') }}">
-                            @csrf
+                        <form id="logout-form" method="POST" action="<?php echo e(route('logout')); ?>">
+                            <?php echo csrf_field(); ?>
                             <button type="button" onclick="confirmLogout(event)" class="w-full text-left px-4 py-2 hover:bg-blue-100 transition">
                                 Logout
                             </button>
                         </form>
                     </div>
-                @endguest
+                <?php endif; ?>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
     <main class="w-full">
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
 </div>
 
@@ -154,4 +154,4 @@
 </script>
 </body>
 </html>
-    
+    <?php /**PATH C:\Users\SamiUSK\resources\views/layouts/user.blade.php ENDPATH**/ ?>

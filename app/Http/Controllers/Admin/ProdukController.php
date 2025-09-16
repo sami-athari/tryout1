@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Produk;
-use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,10 +12,28 @@ class ProdukController extends Controller
     /**
      * Menampilkan semua produk
      */
-    public function index()
+    public function index(Request $request)
+{
+    $query = Produk::query();
+
+    // Jika ada pencarian
+    if ($request->has('search')) {
+        $query->where('nama', 'like', '%' . $request->search . '%');
+    }
+
+    // Ambil semua produk sesuai hasil filter
+    $produk = $query->get();
+
+    return view('admin.produk.index', compact('produk'));
+}
+
+
+    /**
+     * Form about
+     */
+    public function about()
     {
-        $produks = Produk::with('kategori')->get();
-        return view('admin.produk.index', compact('produks'));
+        return view('admin.about');
     }
 
     /**
@@ -24,8 +41,7 @@ class ProdukController extends Controller
      */
     public function create()
     {
-        $kategoris = Kategori::all();
-        return view('admin.produk.create', compact('kategoris'));
+        return view('admin.produk.create');
     }
 
     /**
@@ -34,18 +50,21 @@ class ProdukController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama'        => 'required|string|max:255',
-            'kategori_id' => 'required|exists:kategoris,id',
-            'harga'       => 'required|numeric|min:0',
-            'stok'        => 'required|integer|min:0',
-            'deskripsi'   => 'nullable|string',
-            'foto'        => 'nullable|image|max:6000',
+            'nama'      => 'required|string|max:255',
+            'harga'     => 'required|numeric|min:10000',
+            'stok'      => 'required|integer|min:1',
+            'deskripsi' => 'nullable|string',
+            'foto'      => 'nullable|image|max:6000',
+        ], [
+            'harga.min' => '⚠️ Harga minimal adalah Rp 10.000',
+            'stok.min'  => '⚠️ Stok minimal adalah 1',
         ]);
 
-        $data = $request->only(['nama', 'kategori_id', 'harga', 'stok', 'deskripsi']);
+        $data = $request->only(['nama', 'harga', 'stok', 'deskripsi']);
 
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('produk', 'public');
+
         }
 
         Produk::create($data);
@@ -60,8 +79,7 @@ class ProdukController extends Controller
     public function edit($id)
     {
         $produk = Produk::findOrFail($id);
-        $kategoris = Kategori::all();
-        return view('admin.produk.edit', compact('produk', 'kategoris'));
+        return view('admin.produk.edit', compact('produk'));
     }
 
     /**
@@ -72,15 +90,17 @@ class ProdukController extends Controller
         $produk = Produk::findOrFail($id);
 
         $request->validate([
-            'nama'        => 'required|string|max:255',
-            'kategori_id' => 'required|exists:kategoris,id',
-            'harga'       => 'required|numeric|min:0',
-            'stok'        => 'required|integer|min:0',
-            'deskripsi'   => 'nullable|string',
-            'foto'        => 'nullable|image|max:2048',
+            'nama'      => 'required|string|max:255',
+            'harga'     => 'required|numeric|min:10000',
+            'stok'      => 'required|integer|min:1',
+            'deskripsi' => 'nullable|string',
+            'foto'      => 'nullable|image|max:2048',
+        ], [
+            'harga.min' => '⚠️ Harga minimal adalah Rp 10.000',
+            'stok.min'  => '⚠️ Stok minimal adalah 1',
         ]);
 
-        $data = $request->only(['nama', 'kategori_id', 'harga', 'stok', 'deskripsi']);
+        $data = $request->only(['nama', 'harga', 'stok', 'deskripsi']);
 
         if ($request->hasFile('foto')) {
             // Hapus foto lama

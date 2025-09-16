@@ -1,6 +1,4 @@
-@extends('layouts.admin')
-
-@section('styles')
+<?php $__env->startSection('styles'); ?>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -12,9 +10,9 @@
             backdrop-filter: blur(10px);
         }
     </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="container d-flex justify-content-center mt-5">
     <div class="card shadow" style="width: 550px; border-radius: 12px; background-color: #1c43a8; color: white;">
         <div class="card-header text-white text-center rounded-top"
@@ -22,48 +20,48 @@
             <h5 class="mb-0">Edit Produk</h5>
         </div>
         <div class="card-body p-4">
-            <form action="{{ route('admin.produk.update', $produk->id) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
+            <form action="<?php echo e(route('admin.produk.update', $produk->id)); ?>" method="POST" enctype="multipart/form-data">
+                <?php echo csrf_field(); ?>
+                <?php echo method_field('PUT'); ?>
 
                 <div class="mb-3">
                     <label for="nama" class="form-label">Nama Produk</label>
                     <input type="text" name="nama" id="nama" class="form-control bg-white text-dark"
-                           value="{{ $produk->nama }}" required>
+                           value="<?php echo e($produk->nama); ?>" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="deskripsi" class="form-label">Deskripsi</label>
                     <textarea name="deskripsi" id="deskripsi" rows="4"
-                              class="form-control bg-white text-dark" required>{{ $produk->deskripsi }}</textarea>
+                              class="form-control bg-white text-dark" required><?php echo e($produk->deskripsi); ?></textarea>
                 </div>
 
                 <div class="mb-3">
                     <label for="harga" class="form-label">Harga</label>
                     <input type="number" name="harga" id="harga" class="form-control bg-white text-dark"
-                           value="{{ $produk->harga }}" required>
+                           value="<?php echo e($produk->harga); ?>" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="stok" class="form-label">Stok</label>
                     <input type="number" name="stok" id="stok" class="form-control bg-white text-dark"
-                           value="{{ old('stok', $produk->stok) }}" required>
+                           value="<?php echo e(old('stok', $produk->stok)); ?>" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="foto" class="form-label">Gambar Produk (opsional)</label>
                     <input type="file" name="foto" id="foto" class="form-control bg-white text-dark">
-                    @if ($produk->foto)
+                    <?php if($produk->foto): ?>
                         <div class="mt-2">
-                            <img src="{{ asset('storage/' . $produk->foto) }}"
+                            <img src="<?php echo e(asset('storage/' . $produk->foto)); ?>"
                                  alt="Foto Produk" width="150"
                                  style="border-radius: 8px; border: 2px solid #fff;">
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
 
                 <div class="d-flex justify-content-between mt-4">
-                    <a href="{{ route('admin.produk.index') }}" class="btn btn-outline-light btn-sm">Batal</a>
+                    <a href="<?php echo e(route('admin.produk.index')); ?>" class="btn btn-outline-light btn-sm">Batal</a>
                     <button type="submit" class="btn btn-primary btn-sm"
                             style="background: linear-gradient(135deg, #2d5fd0, #1a3c87); border: none;">
                         Perbarui
@@ -74,33 +72,35 @@
     </div>
 </div>
 
-{{-- SweetAlert2 Notifikasi --}}
+
 <script>
-    @if ($errors->any())
+    <?php if($errors->any()): ?>
         Swal.fire({
             icon: 'error',
             title: 'Terjadi Kesalahan',
-            html: `{!! implode('<br>', $errors->all()) !!}`,
+            html: `<?php echo implode('<br>', $errors->all()); ?>`,
             confirmButtonColor: '#1d4ed8'
         })
-    @endif
+    <?php endif; ?>
 
-    @if(session('success'))
+    <?php if(session('success')): ?>
         Swal.fire({
             icon: 'success',
             title: 'Berhasil',
-            text: "{{ session('success') }}",
+            text: "<?php echo e(session('success')); ?>",
             confirmButtonColor: '#1d4ed8'
         })
-    @endif
+    <?php endif; ?>
 
-    @if(session('error'))
+    <?php if(session('error')): ?>
         Swal.fire({
             icon: 'error',
             title: 'Gagal',
-            text: "{{ session('error') }}",
+            text: "<?php echo e(session('error')); ?>",
             confirmButtonColor: '#1d4ed8'
         })
-    @endif
+    <?php endif; ?>
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/admin/produk/edit.blade.php ENDPATH**/ ?>

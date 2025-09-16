@@ -1,5 +1,4 @@
-@extends('layouts.admin')
-@section('styles')
+<?php $__env->startSection('styles'); ?>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -11,11 +10,11 @@
             backdrop-filter: blur(10px);
         }
     </style>
-@endsection
-@section('content')
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
 <div class="p-8 max-w-7xl mx-auto">
 
-    {{-- Header --}}
+    
     <div class="mb-8 rounded-2xl shadow-xl p-6 bg-gradient-to-r from-blue-900 to-blue-600 text-white">
         <h2 class="text-3xl font-extrabold mb-2">📚 Daftar Produk Bookstore</h2>
         <p class="text-blue-100">
@@ -23,44 +22,44 @@
         </p>
     </div>
 
-    {{-- Tombol Aksi --}}
+    
     <div class="flex justify-between items-center mb-6">
-        <a href="{{ route('admin.dashboard') }}"
+        <a href="<?php echo e(route('admin.dashboard')); ?>"
            class="px-5 py-2 rounded-xl font-semibold shadow-md bg-yellow-400 text-blue-900 hover:bg-yellow-500 transition">
             ← Kembali ke Dashboard
         </a>
 
-        <a href="{{ route('admin.produk.create') }}"
+        <a href="<?php echo e(route('admin.produk.create')); ?>"
            class="px-5 py-2 rounded-xl font-semibold shadow-md bg-blue-600 text-white hover:bg-blue-700 transition">
             + Tambah Produk
         </a>
     </div>
 
-    {{-- Notifikasi SweetAlert --}}
-    @if (session('success'))
+    
+    <?php if(session('success')): ?>
         <script>
             Swal.fire({
                 icon: 'success',
                 title: 'Sukses!',
-                text: "{{ session('success') }}",
+                text: "<?php echo e(session('success')); ?>",
                 showConfirmButton: false,
                 timer: 2000
             });
         </script>
-    @endif
+    <?php endif; ?>
 
-    @if (session('error'))
+    <?php if(session('error')): ?>
         <script>
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal!',
-                text: '{{ session("error") }}',
+                text: '<?php echo e(session("error")); ?>',
                 confirmButtonColor: '#2563eb'
             });
         </script>
-    @endif
+    <?php endif; ?>
 
-    {{-- Tabel Produk --}}
+    
     <div class="overflow-hidden rounded-2xl shadow-xl bg-white">
         <table class="min-w-full table-auto text-sm">
             <thead class="bg-gradient-to-r from-blue-800 to-blue-600 text-white">
@@ -74,54 +73,55 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($produk as $index => $item)
+                <?php $__empty_1 = true; $__currentLoopData = $produk; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr class="border-b hover:bg-blue-50 transition">
-                        <td class="px-4 py-3 font-bold text-gray-700">{{ $index + 1 }}</td>
-                        <td class="px-4 py-3 font-semibold text-blue-800">{{ $item->nama }}</td>
+                        <td class="px-4 py-3 font-bold text-gray-700"><?php echo e($index + 1); ?></td>
+                        <td class="px-4 py-3 font-semibold text-blue-800"><?php echo e($item->nama); ?></td>
                         <td class="px-4 py-3 font-bold text-green-600">
-                            Rp {{ number_format($item->harga, 0, ',', '.') }}
+                            Rp <?php echo e(number_format($item->harga, 0, ',', '.')); ?>
+
                         </td>
-                        <td class="px-4 py-3">{{ $item->stok }}</td>
+                        <td class="px-4 py-3"><?php echo e($item->stok); ?></td>
                         <td class="px-4 py-3 text-center">
-                            @if ($item->foto)
-                                <img src="{{ asset('storage/' . $item->foto) }}"
-                                     alt="{{ $item->nama }}"
+                            <?php if($item->foto): ?>
+                                <img src="<?php echo e(asset('storage/' . $item->foto)); ?>"
+                                     alt="<?php echo e($item->nama); ?>"
                                      class="h-20 w-20 object-cover rounded-lg shadow-md mx-auto border">
-                            @else
+                            <?php else: ?>
                                 <span class="italic text-gray-400">Tidak ada gambar</span>
-                            @endif
+                            <?php endif; ?>
                         </td>
                         <td class="px-4 py-3 text-center space-x-2">
-                            <a href="{{ route('admin.produk.edit', $item->id) }}"
+                            <a href="<?php echo e(route('admin.produk.edit', $item->id)); ?>"
                                class="px-3 py-1 rounded-lg text-white bg-blue-600 hover:bg-blue-700 shadow-sm text-sm">
                                 ✏️ Edit
                             </a>
-                            <form id="delete-form-{{ $item->id }}"
-                                  action="{{ route('admin.produk.destroy', $item->id) }}"
+                            <form id="delete-form-<?php echo e($item->id); ?>"
+                                  action="<?php echo e(route('admin.produk.destroy', $item->id)); ?>"
                                   method="POST" class="inline-block">
-                                @csrf
-                                @method('DELETE')
+                                <?php echo csrf_field(); ?>
+                                <?php echo method_field('DELETE'); ?>
                                 <button type="button"
-                                        onclick="confirmDelete('{{ $item->id }}', '{{ $item->stok }}')"
+                                        onclick="confirmDelete('<?php echo e($item->id); ?>', '<?php echo e($item->stok); ?>')"
                                         class="px-3 py-1 rounded-lg text-white bg-red-600 hover:bg-red-700 shadow-sm text-sm">
                                     🗑️ Hapus
                                 </button>
                             </form>
                         </td>
                     </tr>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="6" class="text-center py-6 text-gray-500 italic">
                             Belum ada produk ditambahkan.
                         </td>
                     </tr>
-                @endforelse
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
 </div>
 
-{{-- Konfirmasi Hapus --}}
+
 <script>
     function confirmDelete(id, stok) {
         if (stok > 0) {
@@ -150,4 +150,6 @@
         })
     }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/admin/produk/index.blade.php ENDPATH**/ ?>

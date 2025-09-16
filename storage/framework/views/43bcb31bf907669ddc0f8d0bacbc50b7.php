@@ -1,6 +1,4 @@
-@extends('layouts.admin')
-
-@section('styles')
+<?php $__env->startSection('styles'); ?>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -26,20 +24,20 @@
             @apply bg-green-500 text-white;
         }
     </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="container mx-auto mt-12 px-6">
-    {{-- Judul --}}
+    
     <h2 class="text-3xl font-extrabold text-center mb-8 text-gray-900">
         📋 Daftar Transaksi Pengguna
     </h2>
 
-    @if ($transactions->isEmpty())
+    <?php if($transactions->isEmpty()): ?>
         <div class="p-6 text-center rounded-xl bg-yellow-100 text-yellow-800 font-medium shadow-md">
             🚫 Belum ada transaksi masuk saat ini.
         </div>
-    @else
+    <?php else: ?>
         <div class="overflow-x-auto shadow-2xl glass">
             <table class="min-w-full text-sm">
                 <thead class="bg-gradient-to-r from-blue-600 to-blue-800 text-white uppercase text-xs tracking-wider">
@@ -56,68 +54,76 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
-                    @foreach ($transactions as $trx)
-                        @php $total = 0; @endphp
+                    <?php $__currentLoopData = $transactions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trx): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php $total = 0; ?>
                         <tr class="hover:bg-blue-50 transition duration-200">
                             <td class="py-4 px-6 font-bold text-center text-gray-700">
-                                #{{ $trx->id }}
+                                #<?php echo e($trx->id); ?>
+
                             </td>
-                            <td class="py-4 px-6 text-gray-900">{{ $trx->user->name }}</td>
-                            <td class="py-4 px-6 text-center text-gray-700">{{ $trx->telepon }}</td>
-                            <td class="py-4 px-6 text-gray-600">{{ $trx->alamat }}</td>
+                            <td class="py-4 px-6 text-gray-900"><?php echo e($trx->user->name); ?></td>
+                            <td class="py-4 px-6 text-center text-gray-700"><?php echo e($trx->telepon); ?></td>
+                            <td class="py-4 px-6 text-gray-600"><?php echo e($trx->alamat); ?></td>
                             <td class="py-4 px-6">
                                 <ul class="space-y-2">
-                                    @foreach ($trx->items as $item)
-                                        @php
+                                    <?php $__currentLoopData = $trx->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php
                                             $subtotal = $item->harga * $item->jumlah;
                                             $total += $subtotal;
-                                        @endphp
+                                        ?>
                                         <li class="bg-gray-100 rounded-md px-3 py-2">
-                                            🛒 <span class="font-semibold">{{ $item->produk->nama }}</span>
-                                            x {{ $item->jumlah }}
+                                            🛒 <span class="font-semibold"><?php echo e($item->produk->nama); ?></span>
+                                            x <?php echo e($item->jumlah); ?>
+
                                             <div class="text-sm text-gray-500">
-                                                Rp {{ number_format($subtotal, 0, ',', '.') }}
+                                                Rp <?php echo e(number_format($subtotal, 0, ',', '.')); ?>
+
                                             </div>
                                         </li>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </ul>
                             </td>
                             <td class="py-4 px-6 text-center capitalize text-gray-800">
-                                {{ $trx->metode_pembayaran }}
+                                <?php echo e($trx->metode_pembayaran); ?>
+
                             </td>
                             <td class="py-4 px-6 font-bold text-green-600 text-center">
-                                Rp {{ number_format($total, 0, ',', '.') }}
+                                Rp <?php echo e(number_format($total, 0, ',', '.')); ?>
+
                             </td>
                             <td class="py-4 px-6 text-center">
     <span class="
         px-3 py-1 rounded-full text-sm font-semibold
-        @if($trx->status === 'pending') bg-yellow-100 text-yellow-800
-        @elseif($trx->status === 'dikirim') bg-blue-100 text-blue-800
-        @elseif($trx->status === 'selesai') bg-green-100 text-green-800
-        @endif
+        <?php if($trx->status === 'pending'): ?> bg-yellow-100 text-yellow-800
+        <?php elseif($trx->status === 'dikirim'): ?> bg-blue-100 text-blue-800
+        <?php elseif($trx->status === 'selesai'): ?> bg-green-100 text-green-800
+        <?php endif; ?>
     ">
-        {{ ucfirst($trx->status) }}
+        <?php echo e(ucfirst($trx->status)); ?>
+
     </span>
 </td>
 
                             <td class="py-4 px-6 text-center">
-                                @if ($trx->status === 'pending')
-                                    <form method="POST" action="{{ route('admin.transactions.konfirmasi', $trx->id) }}">
-                                        @csrf
+                                <?php if($trx->status === 'pending'): ?>
+                                    <form method="POST" action="<?php echo e(route('admin.transactions.konfirmasi', $trx->id)); ?>">
+                                        <?php echo csrf_field(); ?>
                                         <button type="submit"
                                                 class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm shadow-md transition">
                                             ✅ Konfirmasi
                                         </button>
                                     </form>
-                                @else
+                                <?php else: ?>
                                     <span class="text-gray-400 italic">-</span>
-                                @endif
+                                <?php endif; ?>
                             </td>
                         </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
         </div>
-    @endif
+    <?php endif; ?>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/admin/transactions/index.blade.php ENDPATH**/ ?>

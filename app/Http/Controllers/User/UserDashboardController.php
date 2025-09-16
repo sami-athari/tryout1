@@ -5,7 +5,6 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Produk;
-use App\Models\Kategori;
 
 class UserDashboardController extends Controller
 {
@@ -13,30 +12,14 @@ class UserDashboardController extends Controller
     {
         $query = Produk::query();
 
+        // Filter pencarian
         if ($request->has('search') && $request->search != '') {
             $query->where('nama', 'like', '%' . $request->search . '%');
         }
 
-        if ($request->has('kategori') && $request->kategori != '') {
-            $query->where('kategori_id', $request->kategori);
-        }
-
+        // Ambil data produk terbaru
         $produk = $query->latest()->get();
-        $kategori = Kategori::all();
 
-        $produk = Produk::query();
-
-if (request('kategori')) {
-    $produk->where('kategori_id', request('kategori'));
-}
-
-if (request('search')) {
-    $produk->where('nama', 'like', '%' . request('search') . '%');
-}
-
-$produk = $produk->with('kategori')->get();
-
-
-        return view('user.dashboard', compact('produk', 'kategori'));
+        return view('user.dashboard', compact('produk'));
     }
 }
