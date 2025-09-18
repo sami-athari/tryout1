@@ -67,6 +67,7 @@
                 <tr>
                     <th class="px-4 py-3 text-left">No</th>
                     <th class="px-4 py-3 text-left">Nama Produk</th>
+                    <th class="px-4 py-3 text-left">Kategori</th>
                     <th class="px-4 py-3 text-left">Harga</th>
                     <th class="px-4 py-3 text-left">Stok</th>
                     <th class="px-4 py-3 text-center">Gambar</th>
@@ -74,35 +75,40 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($produk as $index => $item)
+                @forelse ($produk as $index => $produk)
                     <tr class="border-b hover:bg-blue-50 transition">
                         <td class="px-4 py-3 font-bold text-gray-700">{{ $index + 1 }}</td>
-                        <td class="px-4 py-3 font-semibold text-blue-800">{{ $item->nama }}</td>
-                        <td class="px-4 py-3 font-bold text-green-600">
-                            Rp {{ number_format($item->harga, 0, ',', '.') }}
+                        <td class="px-4 py-3 font-semibold text-blue-800">{{ $produk->nama }}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-3 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
+                                {{ $produk->kategori->nama ?? '-' }}
+                            </span>
                         </td>
-                        <td class="px-4 py-3">{{ $item->stok }}</td>
+                        <td class="px-4 py-3 font-bold text-green-600">
+                            Rp {{ number_format($produk->harga, 0, ',', '.') }}
+                        </td>
+                        <td class="px-4 py-3">{{ $produk->stok }}</td>
                         <td class="px-4 py-3 text-center">
-                            @if ($item->foto)
-                                <img src="{{ asset('storage/' . $item->foto) }}"
-                                     alt="{{ $item->nama }}"
+                            @if ($produk->foto)
+                                <img src="{{ asset('storage/' . $produk->foto) }}"
+                                     alt="{{ $produk->nama }}"
                                      class="h-20 w-20 object-cover rounded-lg shadow-md mx-auto border">
                             @else
                                 <span class="italic text-gray-400">Tidak ada gambar</span>
                             @endif
                         </td>
                         <td class="px-4 py-3 text-center space-x-2">
-                            <a href="{{ route('admin.produk.edit', $item->id) }}"
+                            <a href="{{ route('admin.produk.edit', $produk->id) }}"
                                class="px-3 py-1 rounded-lg text-white bg-blue-600 hover:bg-blue-700 shadow-sm text-sm">
                                 ✏️ Edit
                             </a>
-                            <form id="delete-form-{{ $item->id }}"
-                                  action="{{ route('admin.produk.destroy', $item->id) }}"
+                            <form id="delete-form-{{ $produk->id }}"
+                                  action="{{ route('admin.produk.destroy', $produk->id) }}"
                                   method="POST" class="inline-block">
                                 @csrf
                                 @method('DELETE')
                                 <button type="button"
-                                        onclick="confirmDelete('{{ $item->id }}', '{{ $item->stok }}')"
+                                        onclick="confirmDelete('{{ $produk->id }}', '{{ $produk->stok }}', '{{ $produk->orders_count }}')"
                                         class="px-3 py-1 rounded-lg text-white bg-red-600 hover:bg-red-700 shadow-sm text-sm">
                                     🗑️ Hapus
                                 </button>
@@ -111,7 +117,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center py-6 text-gray-500 italic">
+                        <td colspan="7" class="text-center py-6 text-gray-500 italic">
                             Belum ada produk ditambahkan.
                         </td>
                     </tr>
@@ -123,12 +129,22 @@
 
 {{-- Konfirmasi Hapus --}}
 <script>
-    function confirmDelete(id, stok) {
+    function confirmDelete(id, stok, ordersCount) {
         if (stok > 0) {
             Swal.fire({
                 icon: 'error',
                 title: 'Tidak Bisa Dihapus!',
                 text: 'Produk masih memiliki stok. Harap habiskan stok terlebih dahulu.',
+                confirmButtonColor: '#2563eb'
+            });
+            return;
+        }
+
+        if (ordersCount > 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Tidak Bisa Dihapus!',
+                text: 'Produk ini masih ada dalam pesanan. Tidak bisa dihapus.',
                 confirmButtonColor: '#2563eb'
             });
             return;

@@ -6,12 +6,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Message;
+use App\Models\Kategori;
 
 class ChatController extends Controller
 {
     public function index(Request $request)
     {
+        $kategori = Kategori::all();
         $user = Auth::user();
+
 
         if ($user->role === 'admin') {
             $users = User::where('role', 'user')->get();
@@ -20,7 +23,7 @@ class ChatController extends Controller
 
             if ($request->has('user_id')) {
                 $selectedUser = User::findOrFail($request->user_id);
-                    
+
                 // Hapus notif ketika admin buka chat dari user
                 session()->forget('has_new_message_from_user_' . $selectedUser->id);
 

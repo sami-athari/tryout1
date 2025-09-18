@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use App\Models\About;
 use App\Models\Produk;
+use App\Models\Kategori;
 use App\Models\User;
 use App\Models\Transaction;
 
@@ -10,11 +13,13 @@ class AboutController extends Controller
 {
     public function index()
     {
-        $produk = Produk::latest()->take(3)->get();
+        $about = About::first(); // ambil data pertama dari tabel abouts
+        $kategori = Kategori::all();
+        // contoh statistik (hiasan)
         $totalProduk = Produk::count();
-        $userCount = User::where('role', 'user')->count();
+        $userCount = User::count();
         $transactionCount = Transaction::count();
 
-        return view('user.about', compact('produk', 'totalProduk', 'userCount', 'transactionCount'));
+        return view('user.about', compact('about', 'totalProduk', 'userCount', 'transactionCount','kategori'));
     }
 }

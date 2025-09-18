@@ -25,6 +25,16 @@
                 <?php echo csrf_field(); ?>
 
                 <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark">Kategori</label>
+                    <select name="kategori_id" class="form-select border border-gray-300 shadow-sm" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        <?php $__currentLoopData = $kategoris; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($item->id); ?>"><?php echo e($item->nama); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </select>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label fw-semibold text-dark">Nama Produk</label>
                     <input type="text" name="nama" class="form-control border border-gray-300 shadow-sm" required>
                 </div>

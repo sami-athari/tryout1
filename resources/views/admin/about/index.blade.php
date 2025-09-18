@@ -1,4 +1,4 @@
-@extends('layouts.user') {{-- ganti pakai layout user, bukan admin --}}
+@extends('layouts.admin')
 
 @section('styles')
     <script src="https://cdn.tailwindcss.com"></script>
@@ -70,12 +70,14 @@
         </p>
     </div>
 
-    <!-- Tombol Back -->
+    <!-- Tombol Edit (hanya admin) -->
+    @auth
     <div class="text-center">
-        <a href="{{ route('user.dashboard') }}"
-           class="px-6 py-3 bg-blue-600 text-white text-lg rounded-xl shadow hover:bg-blue-700 transition">
-           ⬅️ Kembali ke Dashboard
+        <a href="{{ route('admin.about.edit', $about->id) }}"
+           class="px-6 py-3 bg-yellow-500 text-white text-lg rounded-xl shadow hover:bg-yellow-600 transition">
+           ✏️ Edit
         </a>
     </div>
+    @endauth
 </div>
 @endsection

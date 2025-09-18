@@ -40,7 +40,9 @@
                 <div class="hidden md:flex items-center space-x-6">
                     <a href="<?php echo e(route('admin.dashboard')); ?>" class="hover:text-gray-300">Home</a>
                     <a href="<?php echo e(route('admin.produk.index')); ?>" class="hover:text-gray-300">Product</a>
-                    <a href="<?php echo e(route('admin.about')); ?>" class="hover:text-gray-300">About</a>
+                    <a href="<?php echo e(route('admin.kategori.index')); ?>" class="hover:text-gray-300">Category</a>
+
+<a href="<?php echo e(route('admin.about.index')); ?>" class="hover:text-gray-300">About</a>
                     <a href="<?php echo e(route('admin.users.index')); ?>" class="hover:text-gray-300">Accounts</a>
                     <a href="<?php echo e(route('admin.transactions.index')); ?>" class="hover:text-gray-300">History</a>
 
@@ -53,18 +55,33 @@
                     </div>
                 </div>
 
-                <!-- 🔍 Search Produk Admin -->
-                <form action="<?php echo e(route('admin.produk.index')); ?>" method="GET" class="flex items-center space-x-2 ml-4">
-                    <input type="text"
-                           name="search"
-                           value="<?php echo e(request('search')); ?>"
-                           placeholder="Cari produk..."
-                           class="border rounded-lg px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none text-black">
+                 <!-- Search Produk + Kategori -->
+                <form action="<?php echo e(route('admin.produk.index')); ?>" method="GET" class="flex items-center space-x-2">
+                    <?php $kategori = \App\Models\Kategori::all(); ?>
+                    <!-- Dropdown Kategori -->
+                    <select name="kategori"
+                        class="border rounded-lg px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none text-black">
+                        <option value="">Semua Kategori</option>
+                        <?php $__currentLoopData = $kategori; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($k->id); ?>" <?php echo e((int) request()->input('kategori') === $k->id ? 'selected' : ''); ?>>
+    <?php echo e($k->nama); ?>
+
+</option>
+
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </select>
+
+                    <!-- Input Search -->
+                    <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Cari produk..."
+                        class="border rounded-lg px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none text-black">
+
+                    <!-- Tombol -->
                     <button type="submit"
-                            class="bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition">
+                        class="bg-blue-800 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
                         Cari
                     </button>
                 </form>
+
 
                 <!-- Logout Desktop -->
                 <form id="logout-form" action="<?php echo e(route('logout')); ?>" method="POST" class="hidden md:block">

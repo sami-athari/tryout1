@@ -33,13 +33,23 @@ class AdminTransactionController extends Controller
         }
 
         // Kurangi stok produk sesuai item transaksi
-        foreach ($transaction->items as $item) {
-            $produk = $item->produk;
-            if ($produk) {
-                $produk->stok = max(0, $produk->stok - $item->jumlah); // biar stok gak minus
-                $produk->save();
-            }
-        }
+        // Simpan ke transaction_items
+foreach ($items as $item) {
+    TransactionItem::create([
+        'transaction_id' => $transaction->id,
+        'produk_id'      => $item->produk_id,
+        'jumlah'         => $item->jumlah,
+        'harga'          => $item->produk->harga,
+    ]);
+
+    // Kurangi stok produk langsung setelah transaksi dibuat
+    $produk = $item->produk;
+    if ($produk) {
+        $produk->stok = max(0, $produk->stok - $item->jumlah); // supaya stok tidak minus
+        $produk->save();
+    }
+}
+
 
         // Update status transaksi
         $transaction->update(['status' => 'dikirim']);

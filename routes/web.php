@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-
+use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminTransactionController;
@@ -27,9 +27,6 @@ Route::get('/', function () {
     return view('welcome', compact('produk'));
 })->name('welcome');
 
-
-// routes/web.php
-Route::get('/admin/about', [App\Http\Controllers\Admin\AboutControllerAdmin::class, 'index'])->name('admin.about');
 // ⬇️ Custom Auth Routes
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
@@ -50,19 +47,22 @@ Route::get('/redirect', function () {
     return redirect('/login'); // fallback
 });
 
+// About untuk Admin (✅ FIXED)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/about', [AboutControllerAdmin::class, 'index'])->name('admin.about.index');
+    Route::get('/admin/about/{id}/edit', [AboutControllerAdmin::class, 'edit'])->name('admin.about.edit');
+    Route::put('/admin/about/{id}', [AboutControllerAdmin::class, 'update'])->name('admin.about.update');
+});
+
 // ⬇️ Admin Routes - Only accessible for role 'admin'
 Route::prefix('admin')->middleware(['auth', RoleMiddleware::class . ':admin'])->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
 
-
-// Group route admin
-
-
-
-
+    // Group route admin
     Route::resource('produk', ProdukController::class);
+    Route::resource('kategori', KategoriController::class);
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
 
@@ -78,12 +78,11 @@ Route::prefix('admin')->middleware(['auth', RoleMiddleware::class . ':admin'])->
     })->name('transactions.konfirmasi');
 });
 
-
 // ⬇️ User Routes - Only accessible for role 'user'
 Route::prefix('user')->middleware(['auth', RoleMiddleware::class . ':user'])->name('user.')->group(function () {
 
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
-
+    Route::get('/produk/{id}', [UserDashboardController::class, 'show'])->name('deskripsi');
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
@@ -93,7 +92,6 @@ Route::prefix('user')->middleware(['auth', RoleMiddleware::class . ':user'])->na
     // Checkout
     Route::get('/checkout', [TransactionController::class, 'checkoutForm'])->name('checkout.form');
     Route::post('/checkout', [TransactionController::class, 'processCheckout'])->name('checkout.process');
-
 
     // Transactions
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions');
@@ -106,6 +104,7 @@ Route::prefix('user')->middleware(['auth', RoleMiddleware::class . ':user'])->na
 Route::middleware(['auth'])->group(function () {
     Route::get('/user/about', [AboutController::class, 'index'])->name('user.about');
 });
+
 
 // ⬇️ Chat Routes (auth common)
 Route::middleware('auth')->group(function () {

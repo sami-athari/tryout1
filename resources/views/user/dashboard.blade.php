@@ -24,8 +24,6 @@
             <h3 class="text-2xl font-bold text-blue-900 border-b-2 border-blue-900 inline-block">
                 ✨ Produk Terbaru
             </h3>
-
-            \
         </div>
 
         {{-- Jika ada hasil pencarian --}}
@@ -39,14 +37,22 @@
         <div class="grid gap-8 md:grid-cols-3 lg:grid-cols-4">
             @forelse($produk as $item)
                 <div class="bg-white rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
-                    <img src="{{ asset('storage/' . $item->foto) }}"
-                         alt="{{ $item->nama }}"
-                         class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h4 class="text-lg font-semibold text-blue-900">{{ $item->nama }}</h4>
+
+                    {{-- Klik produk menuju halaman detail --}}
+                    <a href="{{ route('user.deskripsi', $item->id) }}">
+                        <img src="{{ asset('storage/' . $item->foto) }}"
+                             alt="{{ $item->nama }}"
+                             class="w-full h-48 object-cover rounded-t">
+                        <div class="p-4">
+                            <h4 class="text-lg font-semibold">{{ $item->nama }}</h4>
+                        </div>
+                    </a>
+
+                    <div class="px-4 pb-4">
                         <p class="text-xl font-bold text-blue-900 mt-2">
                             Rp {{ number_format($item->harga,0,',','.') }}
                         </p>
+                        <p class="text-gray-500 text-sm">Kategori: {{ $item->kategori ? $item->kategori->nama : '-' }}</p>
 
                         @if($item->stok > 0)
                             <form action="{{ route('user.cart.add', $item->id) }}" method="POST" class="mt-4 flex items-center space-x-2">

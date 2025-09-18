@@ -22,8 +22,6 @@
             <h3 class="text-2xl font-bold text-blue-900 border-b-2 border-blue-900 inline-block">
                 ✨ Produk Terbaru
             </h3>
-
-            \
         </div>
 
         
@@ -37,15 +35,23 @@
         <div class="grid gap-8 md:grid-cols-3 lg:grid-cols-4">
             <?php $__empty_1 = true; $__currentLoopData = $produk; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <div class="bg-white rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
-                    <img src="<?php echo e(asset('storage/' . $item->foto)); ?>"
-                         alt="<?php echo e($item->nama); ?>"
-                         class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h4 class="text-lg font-semibold text-blue-900"><?php echo e($item->nama); ?></h4>
+
+                    
+                    <a href="<?php echo e(route('user.deskripsi', $item->id)); ?>">
+                        <img src="<?php echo e(asset('storage/' . $item->foto)); ?>"
+                             alt="<?php echo e($item->nama); ?>"
+                             class="w-full h-48 object-cover rounded-t">
+                        <div class="p-4">
+                            <h4 class="text-lg font-semibold"><?php echo e($item->nama); ?></h4>
+                        </div>
+                    </a>
+
+                    <div class="px-4 pb-4">
                         <p class="text-xl font-bold text-blue-900 mt-2">
                             Rp <?php echo e(number_format($item->harga,0,',','.')); ?>
 
                         </p>
+                        <p class="text-gray-500 text-sm">Kategori: <?php echo e($item->kategori ? $item->kategori->nama : '-'); ?></p>
 
                         <?php if($item->stok > 0): ?>
                             <form action="<?php echo e(route('user.cart.add', $item->id)); ?>" method="POST" class="mt-4 flex items-center space-x-2">

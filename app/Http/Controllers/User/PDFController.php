@@ -7,11 +7,14 @@ use Illuminate\Http\Request;
 use App\Models\Transaction;
 use PDF;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Kategori;
+
 
 class PDFController extends Controller
 {
     public function cetakStruk($id)
     {
+        $kategori = Kategori::all();
         $transaksi = Transaction::with('items.produk', 'user')->findOrFail($id);
 
         if ($transaksi->user_id !== Auth::id()) {

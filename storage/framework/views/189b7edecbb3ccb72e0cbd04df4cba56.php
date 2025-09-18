@@ -66,6 +66,7 @@
                 <tr>
                     <th class="px-4 py-3 text-left">No</th>
                     <th class="px-4 py-3 text-left">Nama Produk</th>
+                    <th class="px-4 py-3 text-left">Kategori</th>
                     <th class="px-4 py-3 text-left">Harga</th>
                     <th class="px-4 py-3 text-left">Stok</th>
                     <th class="px-4 py-3 text-center">Gambar</th>
@@ -73,36 +74,42 @@
                 </tr>
             </thead>
             <tbody>
-                <?php $__empty_1 = true; $__currentLoopData = $produk; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <?php $__empty_1 = true; $__currentLoopData = $produk; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $produk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr class="border-b hover:bg-blue-50 transition">
                         <td class="px-4 py-3 font-bold text-gray-700"><?php echo e($index + 1); ?></td>
-                        <td class="px-4 py-3 font-semibold text-blue-800"><?php echo e($item->nama); ?></td>
+                        <td class="px-4 py-3 font-semibold text-blue-800"><?php echo e($produk->nama); ?></td>
+                        <td class="px-4 py-3">
+                            <span class="px-3 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
+                                <?php echo e($produk->kategori->nama ?? '-'); ?>
+
+                            </span>
+                        </td>
                         <td class="px-4 py-3 font-bold text-green-600">
-                            Rp <?php echo e(number_format($item->harga, 0, ',', '.')); ?>
+                            Rp <?php echo e(number_format($produk->harga, 0, ',', '.')); ?>
 
                         </td>
-                        <td class="px-4 py-3"><?php echo e($item->stok); ?></td>
+                        <td class="px-4 py-3"><?php echo e($produk->stok); ?></td>
                         <td class="px-4 py-3 text-center">
-                            <?php if($item->foto): ?>
-                                <img src="<?php echo e(asset('storage/' . $item->foto)); ?>"
-                                     alt="<?php echo e($item->nama); ?>"
+                            <?php if($produk->foto): ?>
+                                <img src="<?php echo e(asset('storage/' . $produk->foto)); ?>"
+                                     alt="<?php echo e($produk->nama); ?>"
                                      class="h-20 w-20 object-cover rounded-lg shadow-md mx-auto border">
                             <?php else: ?>
                                 <span class="italic text-gray-400">Tidak ada gambar</span>
                             <?php endif; ?>
                         </td>
                         <td class="px-4 py-3 text-center space-x-2">
-                            <a href="<?php echo e(route('admin.produk.edit', $item->id)); ?>"
+                            <a href="<?php echo e(route('admin.produk.edit', $produk->id)); ?>"
                                class="px-3 py-1 rounded-lg text-white bg-blue-600 hover:bg-blue-700 shadow-sm text-sm">
                                 ✏️ Edit
                             </a>
-                            <form id="delete-form-<?php echo e($item->id); ?>"
-                                  action="<?php echo e(route('admin.produk.destroy', $item->id)); ?>"
+                            <form id="delete-form-<?php echo e($produk->id); ?>"
+                                  action="<?php echo e(route('admin.produk.destroy', $produk->id)); ?>"
                                   method="POST" class="inline-block">
                                 <?php echo csrf_field(); ?>
                                 <?php echo method_field('DELETE'); ?>
                                 <button type="button"
-                                        onclick="confirmDelete('<?php echo e($item->id); ?>', '<?php echo e($item->stok); ?>')"
+                                        onclick="confirmDelete('<?php echo e($produk->id); ?>', '<?php echo e($produk->stok); ?>', '<?php echo e($produk->orders_count); ?>')"
                                         class="px-3 py-1 rounded-lg text-white bg-red-600 hover:bg-red-700 shadow-sm text-sm">
                                     🗑️ Hapus
                                 </button>
@@ -111,7 +118,7 @@
                     </tr>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
-                        <td colspan="6" class="text-center py-6 text-gray-500 italic">
+                        <td colspan="7" class="text-center py-6 text-gray-500 italic">
                             Belum ada produk ditambahkan.
                         </td>
                     </tr>
@@ -123,12 +130,22 @@
 
 
 <script>
-    function confirmDelete(id, stok) {
+    function confirmDelete(id, stok, ordersCount) {
         if (stok > 0) {
             Swal.fire({
                 icon: 'error',
                 title: 'Tidak Bisa Dihapus!',
                 text: 'Produk masih memiliki stok. Harap habiskan stok terlebih dahulu.',
+                confirmButtonColor: '#2563eb'
+            });
+            return;
+        }
+
+        if (ordersCount > 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Tidak Bisa Dihapus!',
+                text: 'Produk ini masih ada dalam pesanan. Tidak bisa dihapus.',
                 confirmButtonColor: '#2563eb'
             });
             return;

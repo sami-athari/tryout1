@@ -27,6 +27,16 @@
                 @csrf
 
                 <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark">Kategori</label>
+                    <select name="kategori_id" class="form-select border border-gray-300 shadow-sm" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        @foreach($kategoris as $item)
+                            <option value="{{ $item->id }}">{{ $item->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label fw-semibold text-dark">Nama Produk</label>
                     <input type="text" name="nama" class="form-control border border-gray-300 shadow-sm" required>
                 </div>

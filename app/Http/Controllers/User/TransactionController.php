@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller
 {
+
     public function checkoutForm()
 {
     $items = Cart::with('produk')->where('user_id', Auth::id())->get();
@@ -20,13 +21,11 @@ class TransactionController extends Controller
 }
 
 
-   
-
 public function processCheckout(Request $request)
 {
     $request->validate([
         'alamat' => 'required|string',
-       'telepon' => 'required|digits_between:10,13|numeric',
+        'telepon' => 'required|digits_between:10,13|numeric',
         'metode_pembayaran' => 'required|string',
     ]);
 
@@ -51,14 +50,21 @@ public function processCheckout(Request $request)
         'status' => 'pending',
     ]);
 
-    // Simpan ke transaction_items
+    // Simpan ke transaction_items & langsung kurangi stok produk
     foreach ($items as $item) {
         TransactionItem::create([
             'transaction_id' => $transaction->id,
-            'produk_id' => $item->produk_id,
-            'jumlah' => $item->jumlah,
-            'harga' => $item->produk->harga,
+            'produk_id'      => $item->produk_id,
+            'jumlah'         => $item->jumlah,
+            'harga'          => $item->produk->harga,
         ]);
+
+        // 🔻 Kurangi stok produk
+        $produk = $item->produk;
+        if ($produk) {
+            $produk->stok = max(0, $produk->stok - $item->jumlah);
+            $produk->save();
+        }
     }
 
     // Hapus cart
@@ -68,7 +74,9 @@ public function processCheckout(Request $request)
 }
 
 
+
     public function index() {
+
         $transactions = Transaction::where('user_id', Auth::id())->with('items.produk')->get();
       return view('user.transactions', ['transaksi' => $transactions]);
 
@@ -80,7 +88,7 @@ public function processCheckout(Request $request)
         return back()->with('success', 'Pesanan selesai.');
     }
 
-    
+
 public function show($id)
 {
     $transaction = Transaction::with(['items.produk', 'user'])->findOrFail($id);

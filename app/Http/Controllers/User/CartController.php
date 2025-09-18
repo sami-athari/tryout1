@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Cart;
+use App\Models\Kategori;
 
 class CartController extends Controller
 {
@@ -16,7 +17,8 @@ class CartController extends Controller
                      ->where('user_id', Auth::id())
                      ->get();
 
-        return view('user.cart', compact('items'));
+        $kategori = Kategori::all();
+        return view('user.cart', compact('items','kategori'));
     }
 
     // Tambah produk ke keranjang

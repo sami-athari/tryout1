@@ -6,41 +6,52 @@
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #f9fafb;
+            background: #f3f4f6;
             margin: 0;
             padding: 20px;
             color: #1e293b;
         }
         .receipt {
-            max-width: 700px;
+            max-width: 750px;
             margin: auto;
             background: #ffffff;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 2px solid #e2e8f0;
         }
         .header {
             text-align: center;
-            border-bottom: 2px solid #3b82f6;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 18px;
+            margin-bottom: 25px;
         }
         .header h2 {
             margin: 0;
             color: #1e40af;
+            font-size: 28px;
         }
         .header small {
             color: #64748b;
+            font-size: 14px;
+        }
+        .info {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            border-radius: 6px;
         }
         .info p {
-            margin: 3px 0;
+            margin: 5px 0;
             font-size: 14px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 20px;
             margin-bottom: 15px;
+            font-size: 14px;
         }
         table thead {
             background: #1e40af;
@@ -50,19 +61,30 @@
             padding: 10px;
             border: 1px solid #e2e8f0;
             text-align: center;
+            vertical-align: middle;
         }
         table tbody tr:nth-child(even) {
-            background: #f1f5f9;
+            background: #f9fafb;
+        }
+        .product-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #cbd5e1;
         }
         .total-row td {
             font-weight: bold;
             color: #1e40af;
+            background: #e0f2fe;
         }
         .footer {
             text-align: center;
             font-size: 13px;
             color: #475569;
-            margin-top: 20px;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px dashed #94a3b8;
         }
     </style>
 </head>
@@ -85,7 +107,9 @@
         <table>
             <thead>
                 <tr>
+                    <th>Gambar</th>
                     <th>Produk</th>
+                    <th>Kategori</th>
                     <th>Harga</th>
                     <th>Jumlah</th>
                     <th>Subtotal</th>
@@ -94,14 +118,20 @@
             <tbody>
                 @foreach ($transaksi->items as $item)
                     <tr>
+                        <td>
+                            <img src="{{ asset('storage/' . $item->produk->gambar) }}"
+                                 alt="{{ $item->produk->nama }}"
+                                 class="product-img">
+                        </td>
                         <td>{{ $item->produk->nama }}</td>
+                        <td>{{ $item->produk->kategori->nama ?? '-' }}</td>
                         <td>Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
                         <td>{{ $item->jumlah }}</td>
                         <td>Rp {{ number_format($item->harga * $item->jumlah, 0, ',', '.') }}</td>
                     </tr>
                 @endforeach
                 <tr class="total-row">
-                    <td colspan="3" align="right">Total</td>
+                    <td colspan="5" align="right">Total</td>
                     <td>Rp {{ number_format($transaksi->total, 0, ',', '.') }}</td>
                 </tr>
             </tbody>

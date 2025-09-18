@@ -25,8 +25,9 @@
                 <p class="text-sm text-gray-600 mt-1">Hari ini: <?php echo e(now()->translatedFormat('l, d F Y')); ?></p>
             </div>
             <div class="mt-6 md:mt-0">
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="h-28 w-28 rounded-full border-4 border-white shadow-lg" />
-            </div>
+    <img src="<?php echo e(asset('/avatar/sami.jpg')); ?>" class="h-28 w-28 rounded-full border-4 border-white shadow-lg" />
+</div>
+
         </div>
 
         
@@ -36,7 +37,10 @@
                 <p class="text-4xl font-extrabold text-blue-700 mt-2"><?php echo e(\App\Models\Produk::count()); ?></p>
             </div>
 
-
+            <div class="glass rounded-2xl p-6 shadow-md text-center hover:scale-105 transition">
+                <h2 class="text-lg font-semibold text-gray-700">🗂 Kategori</h2>
+                <p class="text-4xl font-extrabold text-blue-700 mt-2"><?php echo e(\App\Models\Kategori::count()); ?></p>
+            </div>
 
             <div class="glass rounded-2xl p-6 shadow-md text-center hover:scale-105 transition">
                 <h2 class="text-lg font-semibold text-gray-700">👥 User</h2>
@@ -56,7 +60,9 @@
                 <a href="<?php echo e(route('admin.produk.index')); ?>" class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-2xl shadow-xl text-white font-semibold text-xl flex flex-col items-center hover:from-blue-600 hover:to-blue-700 transition transform hover:-translate-y-1">
                     📖 Kelola Produk
                 </a>
-
+                <a href="<?php echo e(route('admin.kategori.index')); ?>" class="bg-gradient-to-r from-indigo-500 to-indigo-600 p-6 rounded-2xl shadow-xl text-white font-semibold text-xl flex flex-col items-center hover:from-indigo-600 hover:to-indigo-700 transition transform hover:-translate-y-1">
+                    🗂 Kelola Kategori
+                </a>
                 <a href="<?php echo e(route('chat.index')); ?>" class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-2xl shadow-xl text-white font-semibold text-xl flex flex-col items-center hover:from-green-600 hover:to-green-700 transition transform hover:-translate-y-1">
                     💬 Lihat Pesan
                 </a>

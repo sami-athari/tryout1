@@ -40,7 +40,9 @@
                 <div class="hidden md:flex items-center space-x-6">
                     <a href="{{ route('admin.dashboard') }}" class="hover:text-gray-300">Home</a>
                     <a href="{{ route('admin.produk.index') }}" class="hover:text-gray-300">Product</a>
-                    <a href="{{ route('admin.about') }}" class="hover:text-gray-300">About</a>
+                    <a href="{{ route('admin.kategori.index') }}" class="hover:text-gray-300">Category</a>
+
+<a href="{{ route('admin.about.index') }}" class="hover:text-gray-300">About</a>
                     <a href="{{ route('admin.users.index') }}" class="hover:text-gray-300">Accounts</a>
                     <a href="{{ route('admin.transactions.index') }}" class="hover:text-gray-300">History</a>
 
@@ -53,18 +55,32 @@
                     </div>
                 </div>
 
-                <!-- 🔍 Search Produk Admin -->
-                <form action="{{ route('admin.produk.index') }}" method="GET" class="flex items-center space-x-2 ml-4">
-                    <input type="text"
-                           name="search"
-                           value="{{ request('search') }}"
-                           placeholder="Cari produk..."
-                           class="border rounded-lg px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none text-black">
+                 <!-- Search Produk + Kategori -->
+                <form action="{{ route('admin.produk.index') }}" method="GET" class="flex items-center space-x-2">
+                    <?php $kategori = \App\Models\Kategori::all(); ?>
+                    <!-- Dropdown Kategori -->
+                    <select name="kategori"
+                        class="border rounded-lg px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none text-black">
+                        <option value="">Semua Kategori</option>
+                        @foreach ($kategori as $k)
+                            <option value="{{ $k->id }}" {{ (int) request()->input('kategori') === $k->id ? 'selected' : '' }}>
+    {{ $k->nama }}
+</option>
+
+                        @endforeach
+                    </select>
+
+                    <!-- Input Search -->
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
+                        class="border rounded-lg px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none text-black">
+
+                    <!-- Tombol -->
                     <button type="submit"
-                            class="bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition">
+                        class="bg-blue-800 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
                         Cari
                     </button>
                 </form>
+
 
                 <!-- Logout Desktop -->
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden md:block">
