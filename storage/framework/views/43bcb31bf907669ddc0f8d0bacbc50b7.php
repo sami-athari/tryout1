@@ -1,129 +1,129 @@
 <?php $__env->startSection('styles'); ?>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #e0f2fe, #bae6fd, #7dd3fc);
-            min-height: 100vh;
-            font-family: 'Inter', sans-serif;
-        }
-        .glass {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            border-radius: 1rem;
-        }
-        .badge {
-            @apply px-3 py-1 rounded-full text-xs font-semibold;
-        }
-        .badge-pending {
-            @apply bg-yellow-400 text-black;
-        }
-        .badge-dikirim {
-            @apply bg-blue-400 text-white;
-        }
-        .badge-selesai {
-            @apply bg-green-500 text-white;
-        }
-    </style>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #bfdbfe, #93c5fd);
+        min-height: 100vh;
+    }
+    .glass {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+</style>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="container mx-auto mt-12 px-6">
-    
-    <h2 class="text-3xl font-extrabold text-center mb-8 text-gray-900">
-        📋 Daftar Transaksi Pengguna
-    </h2>
+<div class="flex flex-col md:flex-row gap-6">
 
-    <?php if($transactions->isEmpty()): ?>
-        <div class="p-6 text-center rounded-xl bg-yellow-100 text-yellow-800 font-medium shadow-md">
-            🚫 Belum ada transaksi masuk saat ini.
+    <!-- 🧍 Kolom Kiri: Daftar Pengguna -->
+    <div class="w-full md:w-1/3 glass rounded-2xl p-5">
+        <h2 class="text-lg font-semibold text-blue-900 mb-4">Daftar Pengguna</h2>
+
+        <input type="text" id="searchUser" placeholder="Cari pengguna..."
+               class="w-full mb-3 px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+
+        <?php
+            $users = $transactions->pluck('user')->unique('id');
+        ?>
+
+        <ul id="userList" class="divide-y divide-blue-100 max-h-[500px] overflow-y-auto">
+            <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <li class="py-2 px-3 cursor-pointer hover:bg-blue-100 rounded-md transition"
+                    onclick="showTransactions(<?php echo e($user->id); ?>)"
+                    data-name="<?php echo e(strtolower($user->name)); ?>"
+                    data-id="<?php echo e($user->id); ?>">
+                    <div class="flex items-center justify-between">
+                        <span class="font-medium text-blue-900"><?php echo e($user->name); ?></span>
+                        <i class="ri-arrow-right-s-line text-blue-800"></i>
+                    </div>
+                </li>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </ul>
+    </div>
+
+    <!-- 📦 Kolom Kanan: Daftar Transaksi -->
+    <div class="w-full md:w-2/3 glass rounded-2xl p-5">
+        <h2 class="text-lg font-semibold text-blue-900 mb-4">Transaksi Pengguna</h2>
+
+        <input type="text" id="searchTransaction" placeholder="Cari transaksi..."
+               class="w-full mb-3 px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+
+        <div id="transactionList" class="space-y-3">
+            <p class="text-gray-600 text-sm">Klik salah satu pengguna untuk melihat transaksinya.</p>
         </div>
-    <?php else: ?>
-        <div class="overflow-x-auto shadow-2xl glass">
-            <table class="min-w-full text-sm">
-                <thead class="bg-gradient-to-r from-blue-600 to-blue-800 text-white uppercase text-xs tracking-wider">
-                    <tr class="text-center">
-                        <th class="py-4 px-6">#Invoice</th>
-                        <th class="py-4 px-6 text-left">Pengguna</th>
-                        <th class="py-4 px-6">Telepon</th>
-                        <th class="py-4 px-6">Alamat</th>
-                        <th class="py-4 px-6 text-left">Produk</th>
-                        <th class="py-4 px-6">Metode Bayar</th>
-                        <th class="py-4 px-6">Total</th>
-                        <th class="py-4 px-6">Status</th>
-                        <th class="py-4 px-6">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 bg-white">
-                    <?php $__currentLoopData = $transactions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trx): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <?php $total = 0; ?>
-                        <tr class="hover:bg-blue-50 transition duration-200">
-                            <td class="py-4 px-6 font-bold text-center text-gray-700">
-                                #<?php echo e($trx->id); ?>
+    </div>
 
-                            </td>
-                            <td class="py-4 px-6 text-gray-900"><?php echo e($trx->user->name); ?></td>
-                            <td class="py-4 px-6 text-center text-gray-700"><?php echo e($trx->telepon); ?></td>
-                            <td class="py-4 px-6 text-gray-600"><?php echo e($trx->alamat); ?></td>
-                            <td class="py-4 px-6">
-                                <ul class="space-y-2">
-                                    <?php $__currentLoopData = $trx->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php
-                                            $subtotal = $item->harga * $item->jumlah;
-                                            $total += $subtotal;
-                                        ?>
-                                        <li class="bg-gray-100 rounded-md px-3 py-2">
-                                            🛒 <span class="font-semibold"><?php echo e($item->produk->nama); ?></span>
-                                            x <?php echo e($item->jumlah); ?>
-
-                                            <div class="text-sm text-gray-500">
-                                                Rp <?php echo e(number_format($subtotal, 0, ',', '.')); ?>
-
-                                            </div>
-                                        </li>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </ul>
-                            </td>
-                            <td class="py-4 px-6 text-center capitalize text-gray-800">
-                                <?php echo e($trx->metode_pembayaran); ?>
-
-                            </td>
-                            <td class="py-4 px-6 font-bold text-green-600 text-center">
-                                Rp <?php echo e(number_format($total, 0, ',', '.')); ?>
-
-                            </td>
-                            <td class="py-4 px-6 text-center">
-    <span class="
-        px-3 py-1 rounded-full text-sm font-semibold
-        <?php if($trx->status === 'pending'): ?> bg-yellow-100 text-yellow-800
-        <?php elseif($trx->status === 'dikirim'): ?> bg-blue-100 text-blue-800
-        <?php elseif($trx->status === 'selesai'): ?> bg-green-100 text-green-800
-        <?php endif; ?>
-    ">
-        <?php echo e(ucfirst($trx->status)); ?>
-
-    </span>
-</td>
-
-                            <td class="py-4 px-6 text-center">
-                                <?php if($trx->status === 'pending'): ?>
-                                    <form method="POST" action="<?php echo e(route('admin.transactions.konfirmasi', $trx->id)); ?>">
-                                        <?php echo csrf_field(); ?>
-                                        <button type="submit"
-                                                class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm shadow-md transition">
-                                            ✅ Konfirmasi
-                                        </button>
-                                    </form>
-                                <?php else: ?>
-                                    <span class="text-gray-400 italic">-</span>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </tbody>
-            </table>
-        </div>
-    <?php endif; ?>
 </div>
+
+<script>
+    // 🔍 Filter User saat mengetik
+    document.getElementById('searchUser').addEventListener('input', function() {
+        const search = this.value.toLowerCase();
+        document.querySelectorAll('#userList li').forEach(li => {
+            li.style.display = li.dataset.name.includes(search) ? 'block' : 'none';
+        });
+    });
+
+    // 🚀 Tekan ENTER untuk langsung buka user yang cocok
+    document.getElementById('searchUser').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const search = this.value.toLowerCase();
+            const match = Array.from(document.querySelectorAll('#userList li'))
+                .find(li => li.dataset.name.includes(search));
+            if (match) {
+                const userId = match.dataset.id;
+                showTransactions(parseInt(userId));
+                match.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                match.classList.add('bg-blue-200');
+                setTimeout(() => match.classList.remove('bg-blue-200'), 1500);
+            } else {
+                document.getElementById('transactionList').innerHTML =
+                    `<p class='text-gray-600'>Pengguna tidak ditemukan.</p>`;
+            }
+        }
+    });
+
+    // 🔍 Filter Transaksi
+    document.getElementById('searchTransaction').addEventListener('input', function() {
+        const search = this.value.toLowerCase();
+        document.querySelectorAll('#transactionList .transaction-card').forEach(card => {
+            card.style.display = card.dataset.search.includes(search) ? 'block' : 'none';
+        });
+    });
+
+    // 📦 Tampilkan transaksi sesuai user
+    const allTransactions = <?php echo json_encode($transactions, 15, 512) ?>;
+
+    function showTransactions(userId) {
+        const list = document.getElementById('transactionList');
+        list.innerHTML = '';
+
+        const userTransactions = allTransactions.filter(t => t.user_id === userId);
+
+        if (userTransactions.length === 0) {
+            list.innerHTML = `<p class="text-gray-600">Tidak ada transaksi untuk pengguna ini.</p>`;
+            return;
+        }
+
+        userTransactions.forEach(t => {
+            const items = t.items.map(i => `<li>${i.produk.nama} <span class='text-sm text-gray-500'>x${i.quantity}</span></li>`).join('');
+            const card = `
+                <div class="transaction-card bg-white rounded-xl p-4 border border-blue-200 shadow-sm hover:shadow-md transition"
+                     data-search="${t.id} ${t.status} ${t.user.name}">
+                    <div class="flex justify-between">
+                        <span class="font-semibold text-blue-900">#${t.id}</span>
+                        <span class="text-sm text-gray-600">${t.status}</span>
+                    </div>
+                    <ul class="list-disc ml-5 mt-2 text-gray-700">${items}</ul>
+                    <p class="mt-2 text-sm text-gray-600">Total: Rp${t.total.toLocaleString()}</p>
+                </div>
+            `;
+            list.innerHTML += card;
+        });
+    }
+</script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/admin/transactions/index.blade.php ENDPATH**/ ?>

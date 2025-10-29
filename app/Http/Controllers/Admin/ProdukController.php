@@ -28,7 +28,8 @@ class ProdukController extends Controller
         }
 
         // Ambil semua produk sesuai hasil filter beserta relasi kategori
-        $produk = $query->with('kategori')->get();
+        $produk = $query->with('kategori')->paginate(2);
+
 
         // Ambil semua kategori untuk filter di view
         $kategoris = Kategori::all();
@@ -56,6 +57,8 @@ class ProdukController extends Controller
     /**
      * Simpan produk baru
      */
+
+
     public function store(Request $request)
     {
         $request->validate([
@@ -95,6 +98,8 @@ class ProdukController extends Controller
     /**
      * Update produk
      */
+
+    //kamu bisa ubah fungsi minimum stok dan harga
     public function update(Request $request, $id)
     {
         $produk = Produk::findOrFail($id);
@@ -103,12 +108,12 @@ class ProdukController extends Controller
             'nama'        => 'required|string|max:255',
             'kategori_id' => 'required|exists:kategoris,id',
             'harga'       => 'required|numeric|min:10000',
-            'stok'        => 'required|integer|min:1',
+            'stok'        => 'required|integer|min:0',
             'deskripsi'   => 'nullable|string',
-            'foto'        => 'nullable|image|max:2048',
+            'foto'        => 'nullable|image|max:5000',
         ], [
             'harga.min' => '⚠️ Harga minimal adalah Rp 10.000',
-            'stok.min'  => '⚠️ Stok minimal adalah 1',
+            'stok.min'  => '⚠️ Stok minimal adalah 0',
         ]);
 
         $data = $request->only(['nama', 'kategori_id', 'harga', 'stok', 'deskripsi']);

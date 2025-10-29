@@ -41,6 +41,21 @@
                     <input type="number" name="harga" id="harga" class="form-control bg-white text-dark"
                            value="<?php echo e($produk->harga); ?>" required>
                 </div>
+                 
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark">Kategori</label>
+                    <select name="kategori_id" class="form-select border border-gray-300 shadow-sm" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        <?php $__currentLoopData = $kategoris; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($item->id); ?>"
+                                <?php echo e($produk->kategori_id == $item->id ? 'selected' : ''); ?>>
+                                <?php echo e($item->nama); ?>
+
+                            </option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </select>
+                </div>
+
 
                 <div class="mb-3">
                     <label for="stok" class="form-label">Stok</label>

@@ -13,15 +13,17 @@ class Transaction extends Model
     'total',
     'status',];
 
+ 
+
     public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+{
+    return $this->belongsTo(\App\Models\User::class, 'user_id');
+}
 
     public function items()
-    {
-        return $this->hasMany(TransactionItem::class);
-    }
+{
+    return $this->hasMany(\App\Models\TransactionItem::class, 'transaction_id');
+}
 
     // TransactionItem.php
 public function produk() {
@@ -29,5 +31,5 @@ public function produk() {
 }
 
 
-    
+
 }

@@ -17,11 +17,21 @@ class KategoriController extends Controller
     }
 
     // Index kategori dengan menghitung jumlah buku
-    public function index()
-    {
-        $kategoris = Kategori::withCount('bukus')->get();
-        return view('admin.kategori.index', compact('kategoris'));
-    }
+    public function index(Request $request)
+{
+    $search = $request->get('search');
+
+    $kategoris = \App\Models\Kategori::withCount('bukus')
+        ->when($search, function ($query, $search) {
+            $query->where('nama', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+        })
+        ->orderBy('nama', 'asc')
+        ->paginate(1);
+
+    return view('admin.kategori.index', compact('kategoris'));
+}
+
 
     public function create()
     {

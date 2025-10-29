@@ -112,4 +112,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/chat/send', [ChatController::class, 'store'])->name('chat.send');
     Route::post('/chatbot', [ChatController::class, 'chatbot'])->name('chat.chatbot');
     Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
+
+Route::get('/chat/{id}', [ChatController::class, 'show'])->name('chat.show');
 });

@@ -1,16 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
-use App\Models\Produk;
 
 class AdminTransactionController extends Controller
 {
     public function index()
     {
+
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Akses hanya untuk admin.');
         }
@@ -32,28 +31,12 @@ class AdminTransactionController extends Controller
             return back()->with('error', 'Transaksi sudah diproses.');
         }
 
-        // Kurangi stok produk sesuai item transaksi
-        // Simpan ke transaction_items
-foreach ($items as $item) {
-    TransactionItem::create([
-        'transaction_id' => $transaction->id,
-        'produk_id'      => $item->produk_id,
-        'jumlah'         => $item->jumlah,
-        'harga'          => $item->produk->harga,
-    ]);
+        // Tidak perlu create TransactionItem lagi karena sudah dibuat saat checkout
+        // Tidak perlu kurangi stok lagi, stok juga sudah dikurangi saat checkout
 
-    // Kurangi stok produk langsung setelah transaksi dibuat
-    $produk = $item->produk;
-    if ($produk) {
-        $produk->stok = max(0, $produk->stok - $item->jumlah); // supaya stok tidak minus
-        $produk->save();
-    }
-}
-
-
-        // Update status transaksi
+        // Update status transaksi jadi dikirim
         $transaction->update(['status' => 'dikirim']);
 
-        return back()->with('success', 'Transaksi telah dikonfirmasi dan stok berhasil dikurangi.');
+        return back()->with('success', 'Transaksi telah dikonfirmasi. Status diperbarui menjadi dikirim.');
     }
 }

@@ -37,10 +37,10 @@ public function processCheckout(Request $request)
     }
 
     $total = $items->sum(function ($item) {
-        return $item->produk->harga * $item->jumlah;
+        return $item->produk ? $item->produk->harga * $item->jumlah : 0;
     });
 
-    // Simpan ke transactions
+    // Buat transaksi
     $transaction = Transaction::create([
         'user_id' => $user->id,
         'alamat' => $request->alamat,
@@ -50,8 +50,12 @@ public function processCheckout(Request $request)
         'status' => 'pending',
     ]);
 
-    // Simpan ke transaction_items & langsung kurangi stok produk
+    // Simpan items
     foreach ($items as $item) {
+        if (!$item->produk) {
+            continue; // skip kalau produk sudah dihapus
+        }
+
         TransactionItem::create([
             'transaction_id' => $transaction->id,
             'produk_id'      => $item->produk_id,
@@ -59,18 +63,17 @@ public function processCheckout(Request $request)
             'harga'          => $item->produk->harga,
         ]);
 
-        // 🔻 Kurangi stok produk
+        // Kurangi stok
         $produk = $item->produk;
-        if ($produk) {
-            $produk->stok = max(0, $produk->stok - $item->jumlah);
-            $produk->save();
-        }
+        $produk->stok = max(0, $produk->stok - $item->jumlah);
+        $produk->save();
     }
 
-    // Hapus cart
+    // Hapus keranjang user
     $user->cart()->delete();
 
-    return redirect()->route('user.transactions')->with('success', 'Checkout berhasil! Pesanan sedang diproses.');
+    return redirect()->route('user.transactions')
+        ->with('success', 'Checkout berhasil! Pesanan sedang diproses.');
 }
 
 
@@ -89,10 +92,6 @@ public function processCheckout(Request $request)
     }
 
 
-public function show($id)
-{
-    $transaction = Transaction::with(['items.produk', 'user'])->findOrFail($id);
-    return view('admin.transaksi.show', compact('transaction'));
-}
+
 
 }

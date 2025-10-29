@@ -10,83 +10,114 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    {{-- tempat style tambahan dari child --}}
     @yield('styles')
 </head>
 
 <body class="bg-gray-100 text-gray-900">
-    @yield('scripts')
     @php
-        $notifUsers = \App\Models\User::where('role', 'user')->get();
-        $adminNotif = false;
-        foreach ($notifUsers as $u) {
-            if (session()->has('has_new_message_from_user_' . $u->id)) {
-                $adminNotif = true;
-                break;
-            }
-        }
+        use App\Models\User;
+        use App\Models\Notification;
+
+        $kategori = \App\Models\Kategori::all();
+        $unreadNotifications = Notification::where('receiver_id', Auth::id())
+            ->where('is_read', false)
+            ->with('sender')
+            ->latest()
+            ->take(5)
+            ->get();
+        $unreadCount = $unreadNotifications->count();
     @endphp
+
 
     <div id="app" class="flex flex-col min-h-screen">
         <!-- Navbar -->
         <nav class="bg-blue-900 text-white shadow-md">
-            <div class="container mx-auto flex justify-between items-center px-6 py-4">
+            <div class="container mx-auto flex justify-between items-center px-6 py-4 relative">
                 <!-- Logo -->
                 <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold tracking-wide hover:text-gray-200">
                     {{ Auth::user()->name }} (📚 Seilmu)
                 </a>
 
-                <!-- Menu -->
+                <!-- Tombol Hamburger (mobile) -->
+                <button class="md:hidden text-white text-2xl focus:outline-none" onclick="toggleMenu()">
+                    ☰
+                </button>
+
+                <!-- Menu Desktop -->
                 <div class="hidden md:flex items-center space-x-6">
                     <a href="{{ route('admin.dashboard') }}" class="hover:text-gray-300">Home</a>
+                     <a href="{{ route('admin.about.index') }}" class="block hover:text-blue-300">About Us</a>
                     <a href="{{ route('admin.produk.index') }}" class="hover:text-gray-300">Product</a>
                     <a href="{{ route('admin.kategori.index') }}" class="hover:text-gray-300">Category</a>
-
-<a href="{{ route('admin.about.index') }}" class="hover:text-gray-300">About</a>
                     <a href="{{ route('admin.users.index') }}" class="hover:text-gray-300">Accounts</a>
                     <a href="{{ route('admin.transactions.index') }}" class="hover:text-gray-300">History</a>
 
-                    <!-- Pesan dengan notif -->
-                    <div class="relative">
-                        <a href="{{ route('chat.index') }}" class="hover:text-gray-300">Chat</a>
-                        @if($adminNotif)
-                            <span class="absolute -top-2 -right-3 bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">!</span>
-                        @endif
+                    <!-- 🔔 Chat dengan teks dan notifikasi -->
+                    <div class="relative group">
+                        <a href="{{ route('chat.index') }}" class="relative hover:text-gray-300 flex items-center ">
+                            Chat
+                            @if($unreadCount > 0)
+                                <span class="absolute -top-2 -right-3 bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                                    {{ $unreadCount }}
+                                </span>
+                            @endif
+                        </a>
+
+                        <!-- Dropdown Pesan -->
+                        <div class="hidden group-hover:block absolute right-0 mt-2 w-64 bg-white text-gray-800 rounded-lg shadow-lg z-50">
+                            <div class="p-3 border-b bg-blue-900 text-white font-semibold rounded-t-lg">
+                                Pesan Baru
+                            </div>
+                            <ul class="max-h-60 overflow-y-auto">
+                                @forelse($unreadNotifications as $notif)
+                                    <li>
+                                        <a href="{{ route('chat.index', $notif->sender_id) }}"
+                                           class="flex items-center px-3 py-2 hover:bg-gray-100 transition">
+                                            <span class="font-medium text-blue-800">{{ $notif->sender->name }}</span>
+                                        </a>
+                                    </li>
+                                @empty
+                                    <li class="px-3 py-2 text-sm text-gray-500 text-center">Tidak ada pesan baru</li>
+                                @endforelse
+                            </ul>
+                        </div>
                     </div>
+
+
+
+                    <!-- Logout -->
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" onclick="confirmLogout(event)"
+                                class="ml-2 bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm">
+                            Logout
+                        </button>
+                    </form>
                 </div>
+            </div>
 
-                 <!-- Search Produk + Kategori -->
-                <form action="{{ route('admin.produk.index') }}" method="GET" class="flex items-center space-x-2">
-                    <?php $kategori = \App\Models\Kategori::all(); ?>
-                    <!-- Dropdown Kategori -->
-                    <select name="kategori"
-                        class="border rounded-lg px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none text-black">
-                        <option value="">Semua Kategori</option>
-                        @foreach ($kategori as $k)
-                            <option value="{{ $k->id }}" {{ (int) request()->input('kategori') === $k->id ? 'selected' : '' }}>
-    {{ $k->nama }}
-</option>
+            <!-- Menu Mobile -->
+            <div id="mobileMenu" class="hidden md:hidden flex flex-col space-y-2 px-6 pb-4 bg-blue-800">
+                <a href="{{ route('admin.dashboard') }}" class="hover:text-gray-300">Home</a>
+                <a href="{{ route('admin.produk.index') }}" class="hover:text-gray-300">Product</a>
+                <a href="{{ route('admin.kategori.index') }}" class="hover:text-gray-300">Category</a>
+                <a href="{{ route('admin.users.index') }}" class="hover:text-gray-300">Accounts</a>
+                <a href="{{ route('admin.transactions.index') }}" class="hover:text-gray-300">History</a>
 
-                        @endforeach
-                    </select>
+                <!-- Chat + Notif di Mobile -->
+                <a href="{{ route('chat.index') }}" class="relative hover:text-gray-300 flex items-center">
+                    Chat
+                    @if($unreadCount > 0)
+                        <span class="absolute -top-1 -right-4 bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                            {{ $unreadCount }}
+                        </span>
+                    @endif
+                </a>
 
-                    <!-- Input Search -->
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
-                        class="border rounded-lg px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none text-black">
-
-                    <!-- Tombol -->
-                    <button type="submit"
-                        class="bg-blue-800 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-                        Cari
-                    </button>
-                </form>
-
-
-                <!-- Logout Desktop -->
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden md:block">
+                <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" class="mt-3">
                     @csrf
                     <button type="submit" onclick="confirmLogout(event)"
-                            class="ml-4 bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm">
+                            class="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm w-full text-left">
                         Logout
                     </button>
                 </form>
@@ -123,21 +154,14 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
+                    if (event.target.closest('form').id === 'logout-form-mobile') {
+                        document.getElementById('logout-form-mobile').submit();
+                    } else {
+                        document.getElementById('logout-form').submit();
+                    }
                 }
             });
         }
-
-        // Auto scroll ke produk kalau ada parameter search
-        document.addEventListener("DOMContentLoaded", function () {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has("search") && params.get("search").trim() !== "") {
-                const produkSection = document.getElementById("produk");
-                if (produkSection) {
-                    produkSection.scrollIntoView({ behavior: "smooth" });
-                }
-            }
-        });
     </script>
 </body>
 </html>

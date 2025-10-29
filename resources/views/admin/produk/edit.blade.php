@@ -43,6 +43,20 @@
                     <input type="number" name="harga" id="harga" class="form-control bg-white text-dark"
                            value="{{ $produk->harga }}" required>
                 </div>
+                 {{-- Bagian kategori diperbaiki --}}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark">Kategori</label>
+                    <select name="kategori_id" class="form-select border border-gray-300 shadow-sm" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        @foreach($kategoris as $item)
+                            <option value="{{ $item->id }}"
+                                {{ $produk->kategori_id == $item->id ? 'selected' : '' }}>
+                                {{ $item->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
 
                 <div class="mb-3">
                     <label for="stok" class="form-label">Stok</label>

@@ -14,9 +14,10 @@ class TransactionItem extends Model
     }
 
     public function produk()
-    {
-        return $this->belongsTo(Produk::class);
-    }
+{
+    return $this->belongsTo(\App\Models\Produk::class, 'produk_id');
+}
+
 
      public function items()
     {
