@@ -20,7 +20,7 @@ class AboutController extends Controller
         $userCount = User::count();
         $transactionCount = Transaction::count();
         // Ambil data produk terbaru beserta relasi kategori
-        $produk = Produk::paginate(2);
+        $produk = Produk::paginate(4);
 
 
         return view('user.about', compact('about', 'totalProduk', 'produk', 'userCount', 'transactionCount','kategori',));

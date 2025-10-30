@@ -74,7 +74,6 @@
                             <span>Chat</span>
 
                             @if ($userNotifCount > 0)
-                                <!-- Badge merah bulat dengan angka -->
                                 <span
                                     class="absolute -top-2 -right-3 bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center animate-pulse">
                                     {{ $userNotifCount }}
@@ -82,7 +81,6 @@
                             @endif
                         </a>
 
-                        <!-- Dropdown notifikasi (desktop, muncul saat hover pada container .group) -->
                         @if ($isUser)
                             <div
                                 class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute right-0 mt-2 w-80 bg-white text-gray-800 rounded-lg shadow-lg z-50 pointer-events-auto">
@@ -130,21 +128,73 @@
                     </div>
                 </div>
 
-                <!-- Search Desktop -->
-                <form action="{{ route('user.dashboard') }}" method="GET" class="hidden md:flex items-center space-x-2">
-                    <select name="kategori"
-                        class="border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
-                        <option value="">Semua Kategori</option>
-                        @foreach ($kategori as $k)
-                            <option value="{{ $k->id }}" {{ request('kategori') == $k->id ? 'selected' : '' }}>
-                                {{ $k->nama }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
-                        class="border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
-                    <button type="submit"
-                        class="bg-blue-800 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Cari</button>
+                <!-- Search + Kategori + Sortir Harga (Desktop) -->
+                <form action="{{ route('user.dashboard') }}" method="GET" class="hidden md:flex md:flex-col items-start space-y-2">
+                    <div class="flex items-center space-x-2">
+                        <select name="kategori"
+                            class="border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
+                            <option value="">Semua Kategori</option>
+                            @foreach ($kategori as $k)
+                                <option value="{{ $k->id }}" {{ request('kategori') == $k->id ? 'selected' : '' }}>
+                                    {{ $k->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
+                            class="border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
+
+                        <!-- Replaced: sort select -> interactive dropdown with price inputs -->
+                        <div class="relative">
+                            <button type="button" id="priceSortBtn"
+                                    class="flex items-center space-x-2 border rounded-lg px-3 py-2 bg-white text-black hover:shadow"
+                                    aria-expanded="false">
+                                <span>Urutkan Harga</span>
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+
+                           <div id="priceSortPanel"
+        class="hidden absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-50">
+        <div class="mb-2 text-sm text-gray-700 font-semibold">Urutkan:</div>
+
+        <div class="flex items-center gap-3 mb-3 text-gray-800">
+            <label class="inline-flex items-center">
+                <input type="radio" name="sort_harga" value="asc" class="form-radio text-blue-600"
+                    {{ request('sort_harga') == 'asc' ? 'checked' : '' }}>
+                <span class="ml-2">Termurah</span>
+            </label>
+            <label class="inline-flex items-center">
+                <input type="radio" name="sort_harga" value="desc" class="form-radio text-blue-600"
+                    {{ request('sort_harga') == 'desc' ? 'checked' : '' }}>
+                <span class="ml-2">Termahal</span>
+            </label>
+        </div>
+                                <div class="mb-3 text-sm text-gray-600">Rentang Harga (Rp)</div>
+                                <div class="flex items-center space-x-2 mb-3">
+                                    <input type="number" name="price_min" value="{{ request('price_min') }}" min="0" step="1000"
+                                           inputmode="numeric" placeholder="Min"
+                                           class="w-1/2 border rounded-lg px-2 py-1 text-black focus:ring focus:ring-blue-200">
+                                    <input type="number" name="price_max" value="{{ request('price_max') }}" min="0" step="1000"
+                                           inputmode="numeric" placeholder="Max"
+                                           class="w-1/2 border rounded-lg px-2 py-1 text-black focus:ring focus:ring-blue-200">
+                                </div>
+
+                                <div class="flex justify-between">
+                                    <button type="button" id="priceReset" class="text-sm text-gray-600 hover:underline">Reset</button>
+
+                                </div>
+                            </div>
+                        </div>
+<div class="flex justify-between">
+
+                                    <button type="submit" class="bg-blue-800 text-white px-3 py-1 rounded text-sm">Terapkan</button>
+                                </div>
+                        <button type="submit"
+                            class="hidden">Cari</button> <!-- keep form structure; actual submit in panel -->
+                    </div>
                 </form>
 
                 <!-- Auth Desktop -->
@@ -193,45 +243,7 @@
                     <a href="{{ route('user.transactions') }}" class="block hover:text-blue-300">History</a>
                 @endauth
 
-                <!-- Chat mobile (toggle list of notifs) -->
-                <div class="relative">
-                    <button onclick="toggleMobileChat()" class="w-full text-left hover:text-blue-300 flex items-center justify-between">
-                        <span class="flex items-center space-x-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 10h.01M12 10h.01M16 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <span>Chat</span>
-                        </span>
-
-                        @if ($userNotifCount > 0)
-                            <span class="inline-flex items-center justify-center bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full">
-                                {{ $userNotifCount }}
-                            </span>
-                        @endif
-                    </button>
-
-                    <div id="mobileChatList" class="hidden mt-2 bg-blue-700 rounded p-2">
-                        @if ($userNotifications->isEmpty())
-                            <div class="text-sm text-white px-2 py-1">Tidak ada notifikasi baru.</div>
-                        @else
-                            @foreach ($userNotifications as $notif)
-                                <a href="{{ route('chat.show', $notif->sender_id) }}"
-                                    class="block px-2 py-2 rounded hover:bg-blue-600 text-white">
-                                    <div class="flex justify-between">
-                                        <div>
-                                            <div class="font-semibold">{{ $notif->sender->name ?? 'User' }}</div>
-                                            <div class="text-xs truncate">{{ \Illuminate\Support\Str::limit($notif->message ?? '-', 60) }}</div>
-                                        </div>
-                                        <div class="text-xs">{{ $notif->created_at->diffForHumans() }}</div>
-                                    </div>
-                                </a>
-                            @endforeach
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Search Mobile -->
+                <!-- Search Mobile + Sortir Harga -->
                 <form action="{{ route('user.dashboard') }}" method="GET" class="space-y-2">
                     <select name="kategori"
                         class="w-full border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
@@ -242,35 +254,42 @@
                             </option>
                         @endforeach
                     </select>
+
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
                         class="w-full border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
+
+                    <!-- Mobile: collapse-able panel for sort + price -->
+                    <details class="bg-white text-black rounded-lg p-2">
+                        <summary class="cursor-pointer px-2 py-1">Urutkan Harga & Filter</summary>
+
+                        <div class="mt-2 space-y-2">
+                            <div class="flex items-center gap-3">
+                                <label><input type="radio" name="sort_harga" value="asc" {{ request('sort_harga') == 'asc' ? 'checked' : '' }}> <span class="ml-1">Termurah</span></label>
+                                <label><input type="radio" name="sort_harga" value="desc" {{ request('sort_harga') == 'desc' ? 'checked' : '' }}> <span class="ml-1">Termahal</span></label>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <input type="number" name="price_min" value="{{ request('price_min') }}" min="0" step="1000"
+                                       inputmode="numeric" placeholder="Min Rp"
+                                       class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
+                                <input type="number" name="price_max" value="{{ request('price_max') }}" min="0" step="1000"
+                                       inputmode="numeric" placeholder="Max Rp"
+                                       class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
+                            </div>
+
+                            <div class="flex justify-between">
+                                <button type="reset" class="text-sm text-gray-700">Reset</button>
+                                <button type="submit" class="bg-blue-700 text-white px-4 py-2 rounded-lg">Terapkan</button>
+                            </div>
+                        </div>
+                    </details>
+
                     <button type="submit"
                         class="w-full bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Cari</button>
                 </form>
-
-                <!-- Auth Mobile -->
-                @guest
-                    <div class="space-y-2">
-                        @if (Route::has('login'))
-                            <a href="{{ route('login') }}"
-                                class="block px-3 py-2 bg-white text-blue-900 font-semibold rounded-lg hover:bg-gray-100">Login</a>
-                        @endif
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}"
-                                class="block px-3 py-2 border border-white rounded-lg hover:bg-white hover:text-blue-900">Register</a>
-                        @endif
-                    </div>
-                @else
-                    <form id="logout-form-mobile" method="POST" action="{{ route('logout') }}" class="pt-2">
-                        @csrf
-                        <button type="button" onclick="confirmLogout(event)"
-                            class="w-full bg-red-600 hover:bg-red-500 px-3 py-2 rounded-md">Logout</button>
-                    </form>
-                @endguest
             </div>
         </nav>
 
-        <!-- Main Content -->
         <main class="w-full">
             @yield('content')
         </main>
@@ -283,12 +302,6 @@
 
         function toggleMobileMenu() {
             document.getElementById('mobileMenu').classList.toggle('hidden');
-        }
-
-        function toggleMobileChat() {
-            const el = document.getElementById('mobileChatList');
-            if (!el) return;
-            el.classList.toggle('hidden');
         }
 
         function confirmLogout(event) {
@@ -310,17 +323,37 @@
             });
         }
 
-        // Optional: close dropdown when click outside
-        document.addEventListener('click', function (e) {
-            const group = document.querySelector('.group');
-            if (!group) return;
-            if (!group.contains(e.target)) {
-                const dropdown = group.querySelector('[class*="group-hover"]');
-                if (dropdown) {
-                    dropdown.classList.remove('visible');
+        // Toggle desktop price sort panel
+        (function(){
+            const btn = document.getElementById('priceSortBtn');
+            const panel = document.getElementById('priceSortPanel');
+            const reset = document.getElementById('priceReset');
+
+            if (btn && panel) {
+                btn.addEventListener('click', () => {
+                    const open = panel.classList.toggle('hidden') === false;
+                    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                });
+
+                // Reset inputs inside the panel
+                if (reset) {
+                    reset.addEventListener('click', () => {
+                        panel.querySelectorAll('input').forEach(i => {
+                            if (i.type === 'radio') i.checked = false;
+                            else i.value = '';
+                        });
+                    });
                 }
+
+                // Close panel when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!panel.contains(e.target) && !btn.contains(e.target)) {
+                        panel.classList.add('hidden');
+                        btn.setAttribute('aria-expanded', 'false');
+                    }
+                });
             }
-        });
+        })();
     </script>
 </body>
 

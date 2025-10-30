@@ -28,7 +28,7 @@ class ProdukController extends Controller
         }
 
         // Ambil semua produk sesuai hasil filter beserta relasi kategori
-        $produk = $query->with('kategori')->paginate(2);
+        $produk = $query->with('kategori')->paginate(5);
 
 
         // Ambil semua kategori untuk filter di view

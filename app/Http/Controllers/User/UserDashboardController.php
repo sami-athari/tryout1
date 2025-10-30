@@ -13,27 +13,47 @@ class UserDashboardController extends Controller
      * Halaman dashboard / daftar produk (dengan search + filter kategori)
      */
     public function index(Request $request)
-    {
-        $query = Produk::query();
+{
+    $query = Produk::query()->with('kategori');
 
-        // Filter pencarian
-        if ($request->has('search') && $request->search != '') {
-            $query->where('nama', 'like', '%' . $request->search . '%');
-        }
-
-        // Filter kategori
-        if ($request->has('kategori') && $request->kategori != '') {
-            $query->where('kategori_id', $request->kategori);
-        }
-
-        // Ambil data produk terbaru beserta relasi kategori
-        $produk = $query->with('kategori')->latest()->get();
-
-        // Ambil semua kategori untuk filter di view (mencegah undefined variable di layout)
-        $kategori = Kategori::all();
-
-        return view('user.dashboard', compact('produk', 'kategori'));
+    // 🔍 Filter pencarian nama produk
+    if ($request->filled('search')) {
+        $query->where('nama', 'like', '%' . $request->search . '%');
     }
+
+    // 🔽 Filter kategori
+    if ($request->filled('kategori')) {
+        $query->where('kategori_id', $request->kategori);
+    }
+
+    // 💰 Filter harga minimum & maksimum
+    if ($request->filled('min_harga')) {
+        $query->where('harga', '>=', $request->min_harga);
+    }
+    if ($request->filled('max_harga')) {
+        $query->where('harga', '<=', $request->max_harga);
+    }
+
+    // ↕️ Sortir harga (termurah / termahal)
+    if ($request->filled('sort')) {
+        if ($request->sort == 'low_high') {
+            $query->orderBy('harga', 'asc');
+        } elseif ($request->sort == 'high_low') {
+            $query->orderBy('harga', 'desc');
+        }
+    } else {
+        $query->latest('id'); // default: produk terbaru
+    }
+
+    // 🔹 Ambil hasil dengan pagination
+    $produk = $query->paginate(8)->appends($request->query());
+
+    // 🔹 Ambil semua kategori untuk filter dropdown
+    $kategori = Kategori::all();
+
+    return view('user.dashboard', compact('produk', 'kategori'));
+}
+
 
     /**
      * Halaman detail produk

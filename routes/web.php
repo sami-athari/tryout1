@@ -82,12 +82,14 @@ Route::prefix('admin')->middleware(['auth', RoleMiddleware::class . ':admin'])->
 Route::prefix('user')->middleware(['auth', RoleMiddleware::class . ':user'])->name('user.')->group(function () {
 
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/produk/{id}', [UserDashboardController::class, 'show'])->name('deskripsi');
+    Route::get('/produk/{id}', [UserDashboardController::class, 'show'])->name('user.deskripsi');
+    Route::get('/produk/{id}', [UserDashboardController::class, 'show'])->name('user.produk.show');
+
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
-    Route::put('/cart/{id}', [CartController::class, 'updateQuantity'])->name('cart.update'); // ✅ update quantity
+    Route::put('/cart/{id}', [CartController::class, 'updateQuantity'])->name('cart.update');
 
     // Checkout
     Route::get('/checkout', [TransactionController::class, 'checkoutForm'])->name('checkout.form');
@@ -100,6 +102,7 @@ Route::prefix('user')->middleware(['auth', RoleMiddleware::class . ':user'])->na
     // PDF Struk
     Route::get('/struk/{id}', [PDFController::class, 'cetakStruk'])->name('struk');
 });
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/user/about', [AboutController::class, 'index'])->name('user.about');

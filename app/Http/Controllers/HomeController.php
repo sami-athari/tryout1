@@ -26,7 +26,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $produk = Produk::with('kategori')->latest('id')->paginate(12);
+        $produk = Produk::with('kategori')->latest('id')->paginate(8);
         return view('welcome', compact('produk'));
     }
 }

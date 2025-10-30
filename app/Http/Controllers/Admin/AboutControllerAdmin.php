@@ -12,7 +12,7 @@ class AboutControllerAdmin extends \App\Http\Controllers\Controller
 {
     public function index()
     {
-         $produk = Produk::paginate(2);
+         $produk = Produk::paginate(4);
         $totalProduk = Produk::count();
         $userCount = User::where('role', 'user')->count();
         $transactionCount = Transaction::count();

@@ -15,6 +15,11 @@
 @endsection
 
 @section('content')
+@php
+    // prevent "Undefined variable $query"
+    $query = request('search') ?? '';
+@endphp
+
 <div class="container mx-auto px-6 py-16 text-gray-800">
     <!-- Judul -->
     <h1 class="text-6xl font-extrabold text-blue-900 mb-10 text-center drop-shadow-lg">
@@ -76,15 +81,24 @@
 
         <div class="grid gap-8 md:grid-cols-3 lg:grid-cols-4">
             @forelse($produk as $item)
+                @php
+                    // use named route if available, otherwise fall back to a safe URL
+                    $deskripsiRoute = \Illuminate\Support\Facades\Route::has('user.deskripsi')
+                        ? route('user.deskripsi', $item->id)
+                        : url('/deskripsi/' . $item->id);
+                @endphp
+
                 <div class="bg-white rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
-                    <a href="{{ route('user.deskripsi', $item->id) }}">
-                        <img src="{{ asset('storage/' . $item->foto) }}"
+                    {{-- Klik produk menuju halaman detail --}}
+                    <a href="{{ $deskripsiRoute }}">
+                        <img src="{{ $item->foto ? asset('storage/' . $item->foto) : asset('images/placeholder.png') }}"
                              alt="{{ $item->nama }}"
                              class="w-full h-48 object-cover rounded-t">
                         <div class="p-4">
                             <h4 class="text-lg font-semibold">{{ $item->nama }}</h4>
                         </div>
                     </a>
+
                     <div class="px-4 pb-4">
                         <p class="text-xl font-bold text-blue-900 mt-2">
                             Rp {{ number_format($item->harga,0,',','.') }}

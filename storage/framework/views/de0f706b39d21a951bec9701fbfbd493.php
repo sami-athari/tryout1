@@ -168,6 +168,7 @@
             <h3 class="text-5xl font-bold mb-2"><?php echo e($transactionCount ?? '1000+'); ?></h3>
             <p class="opacity-90 text-lg">Buku Terjual</p>
         </div>
+
     </div>
 
     <!-- Misi -->
