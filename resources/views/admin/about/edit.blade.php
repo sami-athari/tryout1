@@ -18,8 +18,8 @@
 <div class="container mx-auto px-6 py-12">
     <h1 class="text-2xl font-bold mb-6">Edit About Us</h1>
 
-    {{-- ✅ form action harus ke route update + id --}}
-    <form action="{{ route('admin.about.update', $about->id) }}" method="POST" enctype="multipart/form-data">
+    {{-- form action uses the parameterless update route because the controller updates About::first() --}}
+    <form action="{{ route('admin.about.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT') {{-- ✅ Wajib biar sesuai dengan route update --}}
 

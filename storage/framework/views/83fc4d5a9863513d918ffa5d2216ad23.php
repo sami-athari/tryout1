@@ -167,4 +167,4 @@
     </script>
 </body>
 </html>
-<?php /**PATH C:\Users\SamiUSK\resources\views/layouts/admin.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\samia\OneDrive\Documents\Github\tryout1\resources\views/layouts/admin.blade.php ENDPATH**/ ?>

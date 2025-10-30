@@ -47,11 +47,14 @@ Route::get('/redirect', function () {
     return redirect('/login'); // fallback
 });
 
-// About untuk Admin (✅ FIXED)
+// About untuk Admin (single record, no id required)
 Route::middleware(['auth'])->group(function () {
+    // index shows the single About record (About::first())
     Route::get('/admin/about', [AboutControllerAdmin::class, 'index'])->name('admin.about.index');
-    Route::get('/admin/about/{id}/edit', [AboutControllerAdmin::class, 'edit'])->name('admin.about.edit');
-    Route::put('/admin/about/{id}', [AboutControllerAdmin::class, 'update'])->name('admin.about.update');
+    // edit page does not need an ID because controller uses About::first()
+    Route::get('/admin/about/edit', [AboutControllerAdmin::class, 'edit'])->name('admin.about.edit');
+    // update uses PUT on the resource URL (no id param)
+    Route::put('/admin/about', [AboutControllerAdmin::class, 'update'])->name('admin.about.update');
 });
 
 // ⬇️ Admin Routes - Only accessible for role 'admin'
@@ -82,8 +85,8 @@ Route::prefix('admin')->middleware(['auth', RoleMiddleware::class . ':admin'])->
 Route::prefix('user')->middleware(['auth', RoleMiddleware::class . ':user'])->name('user.')->group(function () {
 
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/produk/{id}', [UserDashboardController::class, 'show'])->name('user.deskripsi');
-    Route::get('/produk/{id}', [UserDashboardController::class, 'show'])->name('user.produk.show');
+    Route::get('/produk/{id}', [UserDashboardController::class, 'show'])->name('deskripsi');
+    
 
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart');

@@ -36,7 +36,12 @@
 
                 <div class="flex items-center gap-3">
                     
-                    
+                    <?php if($trx->status !== 'pending'): ?>
+                        <a href="<?php echo e(route('user.struk', $trx->id)); ?>"
+                           class="px-4 py-2 bg-blue-900 text-white rounded-lg text-sm hover:bg-blue-800 transition">
+                            Lihat Struk
+                        </a>
+                    <?php endif; ?>
 
                     
                     <?php if($trx->status === 'dikirim'): ?>
@@ -57,4 +62,4 @@
 </div>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.user', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/user/transactions.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.user', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\samia\OneDrive\Documents\Github\tryout1\resources\views/user/transactions.blade.php ENDPATH**/ ?>

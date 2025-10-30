@@ -104,4 +104,4 @@
     </script>
 </body>
 </html>
-<?php /**PATH C:\Users\SamiUSK\resources\views/layouts/app.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\samia\OneDrive\Documents\Github\tryout1\resources\views/layouts/app.blade.php ENDPATH**/ ?>

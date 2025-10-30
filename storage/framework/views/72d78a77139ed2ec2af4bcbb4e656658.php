@@ -1,15 +1,16 @@
 <?php $__env->startSection('styles'); ?>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #dbeafe, #bfdbfe, #93c5fd);
-            min-height: 100vh;
-        }
-        .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-        }
-    </style>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    body {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe, #93c5fd);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+    .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+    }
+</style>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -22,11 +23,12 @@
 
     <!-- Gambar -->
     <?php if($about && $about->image): ?>
-        <div class="flex justify-center mb-12">
+        <div class="flex justify-center mb-10">
             <img src="<?php echo e(asset('storage/' . $about->image)); ?>"
                  class="h-80 w-100 object-cover rounded-2xl border-4 border-white shadow-2xl">
         </div>
     <?php endif; ?>
+
 
     <!-- Deskripsi dengan Read More -->
     <?php
@@ -57,7 +59,6 @@
             </button>
         <?php endif; ?>
     </div>
-    
 
     
     <section id="produk" class="container mx-auto px-6 py-12">
@@ -67,53 +68,33 @@
             </h3>
         </div>
 
-        
-        <?php if(request('search')): ?>
-            <p class="mb-6 text-gray-600">
-                Hasil pencarian untuk:
-                <span class="font-semibold">"<?php echo e(request('search')); ?>"</span>
-            </p>
-        <?php endif; ?>
+        <div id="produk-container">
+            <div id="produk-page" class="grid gap-8 md:grid-cols-3 lg:grid-cols-4">
+                <?php $__empty_1 = true; $__currentLoopData = $produk; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <div class="bg-white rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
+                        <a href="<?php echo e(route('user.deskripsi', $item->id)); ?>">
+                            <img src="<?php echo e(asset('storage/' . $item->foto)); ?>"
+                                 alt="<?php echo e($item->nama); ?>"
+                                 class="w-full h-48 object-cover rounded-t">
+                            <div class="p-4">
+                                <h4 class="text-lg font-semibold"><?php echo e($item->nama); ?></h4>
+                            </div>
+                        </a>
+                        <div class="px-4 pb-4">
+                            <p class="text-xl font-bold text-blue-900 mt-2">
+                                Rp <?php echo e(number_format($item->harga,0,',','.')); ?>
 
-        <div class="grid gap-8 md:grid-cols-3 lg:grid-cols-4">
-            <?php $__empty_1 = true; $__currentLoopData = $produk; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                <div class="bg-white rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
-                    <a href="<?php echo e(route('user.deskripsi', $item->id)); ?>">
-                        <img src="<?php echo e(asset('storage/' . $item->foto)); ?>"
-                             alt="<?php echo e($item->nama); ?>"
-                             class="w-full h-48 object-cover rounded-t">
-                        <div class="p-4">
-                            <h4 class="text-lg font-semibold"><?php echo e($item->nama); ?></h4>
+                            </p>
+                            <p class="text-gray-500 text-sm">Kategori: <?php echo e($item->kategori ? $item->kategori->nama : '-'); ?></p>
                         </div>
-                    </a>
-                    <div class="px-4 pb-4">
-                        <p class="text-xl font-bold text-blue-900 mt-2">
-                            Rp <?php echo e(number_format($item->harga,0,',','.')); ?>
-
-                        </p>
-                        <p class="text-gray-500 text-sm">Kategori: <?php echo e($item->kategori ? $item->kategori->nama : '-'); ?></p>
-
-                        <?php if($item->stok > 0): ?>
-                            <form action="<?php echo e(route('user.cart.add', $item->id)); ?>" method="POST" class="mt-4 flex items-center space-x-2">
-                                <?php echo csrf_field(); ?>
-                                <input type="number" name="jumlah" value="1" min="1" max="<?php echo e($item->stok); ?>"
-                                       class="w-16 border rounded text-center text-black">
-                                <button type="submit" class="flex-1 bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-800 transition">
-                                    + Keranjang
-                                </button>
-                            </form>
-                        <?php else: ?>
-                            <p class="mt-4 text-red-500 font-semibold">Stok Habis</p>
-                        <?php endif; ?>
                     </div>
-                </div>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                <p class="text-gray-600 col-span-4">Tidak ada buku ditemukan.</p>
-            <?php endif; ?>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                    <p class="text-gray-600 col-span-4">Tidak ada produk ditemukan.</p>
+                <?php endif; ?>
+            </div>
         </div>
-    </section>
 
-    
+       
     <?php if($produk->lastPage() > 1): ?>
         <div class="mt-10 flex justify-center">
             <nav class="flex items-center space-x-2 bg-white/70 backdrop-blur-md px-4 py-2 rounded-xl shadow-md">
@@ -170,8 +151,11 @@
         </div>
     <?php endif; ?>
 
-    <!-- Statistik (hiasan) -->
-    <div class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16 text-center">
+
+    </section>
+
+    <!-- Statistik -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16 text-center">
         <div class="bg-gradient-to-r from-blue-500 to-blue-700 p-8 rounded-2xl shadow-lg text-white">
             <h3 class="text-5xl font-bold mb-2"><?php echo e($totalProduk ?? '120+'); ?></h3>
             <p class="opacity-90 text-lg">Total Produk</p>
@@ -184,6 +168,7 @@
             <h3 class="text-5xl font-bold mb-2"><?php echo e($transactionCount ?? '1000+'); ?></h3>
             <p class="opacity-90 text-lg">Buku Terjual</p>
         </div>
+
     </div>
 
     <!-- Misi -->
@@ -206,14 +191,50 @@
         </p>
     </div>
 
-    <!-- Tombol Back -->
+    <!-- Tombol Edit -->
+    <?php if(auth()->guard()->check()): ?>
     <div class="text-center">
-        <a href="<?php echo e(route('user.dashboard')); ?>"
-           class="px-6 py-3 bg-blue-600 text-white text-lg rounded-xl shadow hover:bg-blue-700 transition">
-           ⬅️ Kembali ke Dashboard
+        
+        <a href="<?php echo e(route('admin.about.edit')); ?>"
+           class="px-6 py-3 bg-yellow-500 text-white text-lg rounded-xl shadow hover:bg-yellow-600 transition">
+           ✏️ Edit
         </a>
     </div>
+    <?php endif; ?>
 </div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const container = document.querySelector('#produk-container');
+
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('#nextPage, #prevPage');
+        if (!btn) return;
+
+        e.preventDefault();
+        const url = btn.id === 'nextPage'
+            ? "<?php echo e($produk->nextPageUrl()); ?>"
+            : "<?php echo e($produk->previousPageUrl()); ?>";
+
+        if (!url) return;
+
+        container.style.opacity = 0.5;
+
+        fetch(url)
+            .then(res => res.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newContent = doc.querySelector('#produk-container').innerHTML;
+                container.innerHTML = newContent;
+                container.style.opacity = 1;
+                window.scrollTo({ top: container.offsetTop - 100, behavior: 'smooth' });
+            })
+            .catch(err => console.error('Gagal memuat halaman:', err));
+    });
+});
+</script>
 
 
 <script>
@@ -234,4 +255,4 @@
 </script>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.user', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/user/about.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\samia\OneDrive\Documents\Github\tryout1\resources\views/admin/about/index.blade.php ENDPATH**/ ?>

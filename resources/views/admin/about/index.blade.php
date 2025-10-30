@@ -192,7 +192,8 @@
     <!-- Tombol Edit -->
     @auth
     <div class="text-center">
-        <a href="{{ route('admin.about.edit', $about->id) }}"
+        {{-- route does not require an id because About is a single record (About::first()) --}}
+        <a href="{{ route('admin.about.edit') }}"
            class="px-6 py-3 bg-yellow-500 text-white text-lg rounded-xl shadow hover:bg-yellow-600 transition">
            ✏️ Edit
         </a>

@@ -17,7 +17,7 @@
     <h1 class="text-2xl font-bold mb-6">Edit About Us</h1>
 
     
-    <form action="<?php echo e(route('admin.about.update', $about->id)); ?>" method="POST" enctype="multipart/form-data">
+    <form action="<?php echo e(route('admin.about.update')); ?>" method="POST" enctype="multipart/form-data">
         <?php echo csrf_field(); ?>
         <?php echo method_field('PUT'); ?> 
 
@@ -63,4 +63,4 @@
 </div>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/admin/about/edit.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\samia\OneDrive\Documents\Github\tryout1\resources\views/admin/about/edit.blade.php ENDPATH**/ ?>

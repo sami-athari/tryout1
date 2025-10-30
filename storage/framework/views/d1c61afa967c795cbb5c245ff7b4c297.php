@@ -1,20 +1,68 @@
-<?php $__env->startSection('content'); ?>
-<div class="min-h-screen bg-white">
+<?php $__env->startSection('styles'); ?>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe, #93c5fd);
+            min-height: 100vh;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+<?php $__env->stopSection(); ?>
 
-    
-    <section class="relative bg-gradient-to-r from-blue-900 via-blue-800 to-black text-white py-64 overflow-hidden">
-        <div class="container mx-auto text-center px-6">
-            <h2 class="text-4xl md:text-5xl font-extrabold mb-4 animate-fadeInDown">
-                Selamat Datang di Seilmu
-            </h2>
-            <p class="text-lg md:text-xl mb-6 animate-fadeInUp">
-                Temukan ribuan buku favoritmu dengan berbagai kategori menarik.
-            </p>
-            <a href="#produk" class="bg-white text-blue-900 font-semibold px-6 py-3 rounded-full shadow-lg hover:bg-gray-100 transition animate-bounce">
-                Mulai Belanja
-            </a>
+<?php $__env->startSection('content'); ?>
+<?php
+    // prevent "Undefined variable $query"
+    $query = request('search') ?? '';
+?>
+
+<div class="container mx-auto px-6 py-16 text-gray-800">
+    <!-- Judul -->
+    <h1 class="text-6xl font-extrabold text-blue-900 mb-10 text-center drop-shadow-lg">
+        <?php echo e($about->title ?? 'Tentang Seilmu'); ?>
+
+    </h1>
+
+    <!-- Gambar -->
+    <?php if($about && $about->image): ?>
+        <div class="flex justify-center mb-12">
+            <img src="<?php echo e(asset('storage/' . $about->image)); ?>"
+                 class="h-80 w-100 object-cover rounded-2xl border-4 border-white shadow-2xl">
         </div>
-    </section>
+    <?php endif; ?>
+
+    <!-- Deskripsi dengan Read More -->
+    <?php
+        $desc = $about->description ?? 'Belum ada deskripsi';
+        // Pisah jadi kalimat
+        $sentences = preg_split('/(?<=[.?!])\s+/', $desc, -1, PREG_SPLIT_NO_EMPTY);
+        $showReadMore = count($sentences) > 5;
+        $firstPart = implode(' ', array_slice($sentences, 0, 5));
+        $remainingPart = implode(' ', array_slice($sentences, 5));
+    ?>
+
+    <div class="text-center max-w-4xl mx-auto mb-14 text-gray-700">
+        <p id="shortDesc" class="text-xl leading-relaxed">
+            <?php echo nl2br(e($firstPart)); ?>
+
+            <?php if($showReadMore): ?>
+                <span id="dots">...</span>
+            <?php endif; ?>
+        </p>
+        <?php if($showReadMore): ?>
+            <p id="moreDesc" class="hidden text-xl leading-relaxed">
+                <?php echo nl2br(e($remainingPart)); ?>
+
+            </p>
+            <button id="toggleBtn"
+                    class="mt-3 text-blue-700 font-semibold hover:underline transition">
+                Baca Selengkapnya
+            </button>
+        <?php endif; ?>
+    </div>
+    
 
     
     <section id="produk" class="container mx-auto px-6 py-12">
@@ -24,7 +72,6 @@
             </h3>
         </div>
 
-
         
         <?php if(request('search')): ?>
             <p class="mb-6 text-gray-600">
@@ -33,23 +80,19 @@
             </p>
         <?php endif; ?>
 
-        <div class="grid gap-8 md:grid-cols-3 lg:grid-cols-4" id="productGrid">
+        <div class="grid gap-8 md:grid-cols-3 lg:grid-cols-4">
             <?php $__empty_1 = true; $__currentLoopData = $produk; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <?php
                     // use named route if available, otherwise fall back to a safe URL
                     $deskripsiRoute = \Illuminate\Support\Facades\Route::has('user.deskripsi')
                         ? route('user.deskripsi', $item->id)
                         : url('/deskripsi/' . $item->id);
-                    $imageSrc = $item->foto ? asset('storage/' . $item->foto) : asset('images/placeholder.png');
-                    $priceNumeric = (int) $item->harga;
                 ?>
 
-                <div class="product-card bg-white rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300"
-                     data-price="<?php echo e($priceNumeric); ?>">
-
+                <div class="bg-white rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
                     
                     <a href="<?php echo e($deskripsiRoute); ?>">
-                        <img src="<?php echo e($imageSrc); ?>"
+                        <img src="<?php echo e($item->foto ? asset('storage/' . $item->foto) : asset('images/placeholder.png')); ?>"
                              alt="<?php echo e($item->nama); ?>"
                              class="w-full h-48 object-cover rounded-t">
                         <div class="p-4">
@@ -83,7 +126,8 @@
             <?php endif; ?>
         </div>
     </section>
- 
+
+    
     <?php if($produk->lastPage() > 1): ?>
         <div class="mt-10 flex justify-center">
             <nav class="flex items-center space-x-2 bg-white/70 backdrop-blur-md px-4 py-2 rounded-xl shadow-md">
@@ -140,70 +184,68 @@
         </div>
     <?php endif; ?>
 
-    
-    <footer class="bg-blue-900 text-white text-center py-6 mt-12">
-        <p>&copy; <?php echo e(date('Y')); ?> Seilmu. All rights reserved.</p>
-    </footer>
+    <!-- Statistik (hiasan) -->
+    <div class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16 text-center">
+        <div class="bg-gradient-to-r from-blue-500 to-blue-700 p-8 rounded-2xl shadow-lg text-white">
+            <h3 class="text-5xl font-bold mb-2"><?php echo e($totalProduk ?? '120+'); ?></h3>
+            <p class="opacity-90 text-lg">Total Produk</p>
+        </div>
+        <div class="bg-gradient-to-r from-green-400 to-green-600 p-8 rounded-2xl shadow-lg text-white">
+            <h3 class="text-5xl font-bold mb-2"><?php echo e($userCount ?? '500+'); ?></h3>
+            <p class="opacity-90 text-lg">Pengguna Aktif</p>
+        </div>
+        <div class="bg-gradient-to-r from-yellow-400 to-orange-500 p-8 rounded-2xl shadow-lg text-white">
+            <h3 class="text-5xl font-bold mb-2"><?php echo e($transactionCount ?? '1000+'); ?></h3>
+            <p class="opacity-90 text-lg">Buku Terjual</p>
+        </div>
+    </div>
+
+    <!-- Misi -->
+    <div class="mb-14">
+        <h2 class="text-4xl font-bold text-blue-800 mb-4">📘 Misi Kami</h2>
+        <p class="text-lg text-gray-700"><?php echo e($about->mission ?? 'Belum ada misi.'); ?></p>
+    </div>
+
+    <!-- Kenapa -->
+    <div class="mb-14">
+        <h2 class="text-4xl font-bold text-blue-800 mb-4">✨ Kenapa Seilmu?</h2>
+        <p class="text-lg text-gray-700"><?php echo e($about->why ?? 'Belum ada alasan.'); ?></p>
+    </div>
+
+    <!-- Tagline -->
+    <div class="mb-20 text-center">
+        <h2 class="text-4xl font-bold text-blue-800 mb-3">🚀 Tagline Kami</h2>
+        <p class="italic text-2xl text-gray-700">
+            "<?php echo e($about->tagline ?? 'Belum ada tagline.'); ?>"
+        </p>
+    </div>
+
+    <!-- Tombol Back -->
+    <div class="text-center">
+        <a href="<?php echo e(route('user.dashboard')); ?>"
+           class="px-6 py-3 bg-blue-600 text-white text-lg rounded-xl shadow hover:bg-blue-700 transition">
+           ⬅️ Kembali ke Dashboard
+        </a>
+    </div>
 </div>
 
 
-<style>
-@keyframes fadeInDown {
-    0% { opacity: 0; transform: translateY(-20px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeInUp {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-.animate-fadeInDown {
-    animation: fadeInDown 1s ease forwards;
-}
-.animate-fadeInUp {
-    animation: fadeInUp 1s ease forwards;
-}
-</style>
-
-
 <script>
-    (function(){
-        const params = new URLSearchParams(window.location.search);
-        const sort = params.get('sort_harga'); // 'asc' or 'desc'
-        const min = params.has('price_min') ? parseInt(params.get('price_min')) : null;
-        const max = params.has('price_max') ? parseInt(params.get('price_max')) : null;
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleBtn = document.getElementById('toggleBtn');
+        const moreText = document.getElementById('moreDesc');
+        const dots = document.getElementById('dots');
 
-        const grid = document.getElementById('productGrid');
-        if (!grid) return;
-
-        // Collect product nodes
-        const items = Array.from(grid.querySelectorAll('.product-card'));
-
-        // Filter by price range if provided
-        const filtered = items.filter(el => {
-            const price = parseInt(el.dataset.price || 0);
-            if (min !== null && !isNaN(min) && price < min) return false;
-            if (max !== null && !isNaN(max) && price > max) return false;
-            return true;
-        });
-
-        // Sort if requested (client-side fallback)
-        if (sort === 'asc' || sort === 'desc') {
-            filtered.sort((a,b) => {
-                const pa = parseInt(a.dataset.price || 0);
-                const pb = parseInt(b.dataset.price || 0);
-                return sort === 'asc' ? pa - pb : pb - pa;
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const isHidden = moreText.classList.contains('hidden');
+                moreText.classList.toggle('hidden');
+                dots.classList.toggle('hidden');
+                toggleBtn.textContent = isHidden ? 'Tutup' : 'Baca Selengkapnya';
             });
         }
-
-        // Clear and re-append nodes in order
-        grid.innerHTML = '';
-        if (filtered.length === 0) {
-            grid.innerHTML = '<p class="text-gray-600 col-span-4">Tidak ada buku ditemukan.</p>';
-        } else {
-            filtered.forEach(n => grid.appendChild(n));
-        }
-    })();
+    });
 </script>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.user', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/user/dashboard.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.user', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\samia\OneDrive\Documents\Github\tryout1\resources\views/user/about.blade.php ENDPATH**/ ?>
