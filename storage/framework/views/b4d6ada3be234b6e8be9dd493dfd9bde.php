@@ -1,57 +1,55 @@
-@extends('layouts.user')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="container mx-auto px-6 py-8">
     <h2 class="text-2xl font-bold text-gray-800 mb-6">Riwayat Transaksi</h2>
 
-    @forelse($transaksi as $trx)
+    <?php $__empty_1 = true; $__currentLoopData = $transaksi; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trx): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
     <div class="bg-white shadow-md rounded-lg p-6 mb-6 border">
         <div class="flex justify-between items-center">
             <div>
-                <p class="text-lg font-semibold text-gray-700">Invoice: #{{ $trx->id }}</p>
+                <p class="text-lg font-semibold text-gray-700">Invoice: #<?php echo e($trx->id); ?></p>
                 <p class="mt-1">
                     <span class="font-medium">Status:</span>
-                    @if($trx->status === 'pending')
+                    <?php if($trx->status === 'pending'): ?>
                         <span class="px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-700">Pending</span>
-                    @elseif($trx->status === 'dikirim')
+                    <?php elseif($trx->status === 'dikirim'): ?>
                         <span class="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-700">Dikirim</span>
-                    @elseif($trx->status === 'selesai')
+                    <?php elseif($trx->status === 'selesai'): ?>
                         <span class="px-3 py-1 rounded-full text-sm bg-green-100 text-green-700">Selesai</span>
-                    @elseif($trx->status === 'dibatalkan')
+                    <?php elseif($trx->status === 'dibatalkan'): ?>
                         <span class="px-3 py-1 rounded-full text-sm bg-red-100 text-red-700">Dibatalkan</span>
-                    @endif
+                    <?php endif; ?>
                 </p>
             </div>
 
             <div class="flex items-center gap-3">
-                @if ($trx->status !== 'pending')
-                    <a href="{{ route('user.struk', $trx->id) }}"
+                <?php if($trx->status !== 'pending'): ?>
+                    <a href="<?php echo e(route('user.struk', $trx->id)); ?>"
                        class="px-4 py-2 bg-blue-900 text-white rounded-lg text-sm hover:bg-blue-800 transition">
                         Lihat Struk
                     </a>
-                @endif
-                @if ($trx->status === 'dikirim')
-                    <form method="POST" action="{{ route('user.transactions.selesai', $trx->id) }}">
-                        @csrf
+                <?php endif; ?>
+                <?php if($trx->status === 'dikirim'): ?>
+                    <form method="POST" action="<?php echo e(route('user.transactions.selesai', $trx->id)); ?>">
+                        <?php echo csrf_field(); ?>
                         <button type="submit"
                                 class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-500 transition">
                             Terima
                         </button>
                     </form>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
 
-        {{-- FORM REVIEW --}}
-        @if ($trx->status === 'selesai')
+        
+        <?php if($trx->status === 'selesai'): ?>
         <div class="mt-6 border-t pt-4">
             <h4 class="text-lg font-semibold text-gray-800 mb-3">Berikan Review Produk</h4>
 
-            @if ($trx->items->isEmpty())
+            <?php if($trx->items->isEmpty()): ?>
                 <p class="text-sm text-gray-500">Tidak ada produk pada transaksi ini.</p>
-            @else
-                @foreach ($trx->items as $item)
-                    @php
+            <?php else: ?>
+                <?php $__currentLoopData = $trx->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php
                         // Check if user already reviewed this product.
                         // If the reviews table has a transaction_id column, include it for stricter matching.
                         $reviewQuery = \App\Models\Review::where('produk_id', $item->produk_id)
@@ -62,54 +60,54 @@
                         }
 
                         $alreadyReviewed = $reviewQuery->exists();
-                    @endphp
+                    ?>
 
                     <div class="border p-4 rounded-lg mb-4 bg-gray-50">
                         <div class="flex justify-between items-center">
-                            <p class="font-medium text-gray-700">{{ $item->produk->nama ?? 'Produk tidak ditemukan' }}</p>
+                            <p class="font-medium text-gray-700"><?php echo e($item->produk->nama ?? 'Produk tidak ditemukan'); ?></p>
 
-                            @if (!$alreadyReviewed)
-                                <button onclick="openReviewModal({{ $item->produk_id }}, {{ $trx->id }})"
+                            <?php if(!$alreadyReviewed): ?>
+                                <button onclick="openReviewModal(<?php echo e($item->produk_id); ?>, <?php echo e($trx->id); ?>)"
                                     class="text-blue-700 font-semibold hover:underline text-sm">Beri Review ⭐</button>
-                            @else
+                            <?php else: ?>
                                 <p class="text-sm text-green-600">✅ Sudah direview</p>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
-                @endforeach
-            @endif
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            <?php endif; ?>
         </div>
-        @endif
+        <?php endif; ?>
     </div>
-    @empty
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
         <p class="text-gray-500 text-center">Belum ada transaksi yang tercatat.</p>
-    @endforelse
+    <?php endif; ?>
 </div>
 
-{{-- MODAL POPUP --}}
+
 <div id="reviewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 relative">
         <button onclick="closeReviewModal()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800">✖</button>
 
         <h3 class="text-xl font-semibold mb-4">Beri Penilaian Produk</h3>
-        <form id="reviewForm" action="{{ route('user.review.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
+        <form id="reviewForm" action="<?php echo e(route('user.review.store')); ?>" method="POST" enctype="multipart/form-data">
+            <?php echo csrf_field(); ?>
             <input type="hidden" name="produk_id" id="produk_id">
 
-            {{-- include transaction_id only if DB column exists to avoid insert errors --}}
-            @if(\Illuminate\Support\Facades\Schema::hasColumn('reviews', 'transaction_id'))
+            
+            <?php if(\Illuminate\Support\Facades\Schema::hasColumn('reviews', 'transaction_id')): ?>
                 <input type="hidden" name="transaction_id" id="transaction_id">
-            @endif
+            <?php endif; ?>
 
             <div class="flex items-center mb-3 space-x-2 justify-center">
-                @for ($i = 1; $i <= 5; $i++)
-                    <svg onclick="setRating({{ $i }})" id="star-{{ $i }}" xmlns="http://www.w3.org/2000/svg" fill="none"
+                <?php for($i = 1; $i <= 5; $i++): ?>
+                    <svg onclick="setRating(<?php echo e($i); ?>)" id="star-<?php echo e($i); ?>" xmlns="http://www.w3.org/2000/svg" fill="none"
                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         class="w-10 h-10 text-gray-400 cursor-pointer hover:text-yellow-400 transition">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M11.48 3.5a.75.75 0 011.04 0l2.27 2.18a.75.75 0 00.56.25h3.18a.75.75 0 01.44 1.36l-2.57 2.11a.75.75 0 00-.25.68l.86 3.45a.75.75 0 01-1.1.82l-2.92-1.73a.75.75 0 00-.78 0l-2.92 1.73a.75.75 0 01-1.1-.82l.86-3.45a.75.75 0 00-.25-.68L6.03 7.29A.75.75 0 016.47 6h3.18a.75.75 0 00.56-.25l2.27-2.18z" />
                     </svg>
-                @endfor
+                <?php endfor; ?>
             </div>
 
             <input type="hidden" name="rating" id="rating" required>
@@ -151,4 +149,6 @@ function setRating(rating) {
     }
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.user', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/user/transactions.blade.php ENDPATH**/ ?>

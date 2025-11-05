@@ -1,6 +1,4 @@
-@extends('layouts.admin')
-
-@section('styles')
+<?php $__env->startSection('styles'); ?>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
     body {
@@ -13,9 +11,9 @@
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="flex flex-col md:flex-row gap-6">
 
     <!-- 🧍 Kolom Kiri: Daftar Pengguna -->
@@ -25,22 +23,22 @@
         <input type="text" id="searchUser" placeholder="Cari pengguna..."
                class="w-full mb-3 px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
 
-        @php
+        <?php
             $users = $transactions->pluck('user')->unique('id');
-        @endphp
+        ?>
 
         <ul id="userList" class="divide-y divide-blue-100 max-h-[500px] overflow-y-auto">
-            @foreach($users as $user)
+            <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <li class="py-2 px-3 cursor-pointer hover:bg-blue-100 rounded-md transition"
-                    onclick="showTransactions({{ $user->id }})"
-                    data-name="{{ strtolower($user->name) }}"
-                    data-id="{{ $user->id }}">
+                    onclick="showTransactions(<?php echo e($user->id); ?>)"
+                    data-name="<?php echo e(strtolower($user->name)); ?>"
+                    data-id="<?php echo e($user->id); ?>">
                     <div class="flex items-center justify-between">
-                        <span class="font-medium text-blue-900">{{ $user->name }}</span>
+                        <span class="font-medium text-blue-900"><?php echo e($user->name); ?></span>
                         <i class="ri-arrow-right-s-line text-blue-800"></i>
                     </div>
                 </li>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </ul>
     </div>
 
@@ -96,9 +94,9 @@
     });
 
     // 📦 Tampilkan transaksi sesuai user
-    const allTransactions = @json($transactions);
-    const csrfToken = '{{ csrf_token() }}';
-    const confirmUrlBase = "{{ url('/admin/transactions/konfirmasi') }}"; // will append /{id}
+    const allTransactions = <?php echo json_encode($transactions, 15, 512) ?>;
+    const csrfToken = '<?php echo e(csrf_token()); ?>';
+    const confirmUrlBase = "<?php echo e(url('/admin/transactions/konfirmasi')); ?>"; // will append /{id}
 
     function showTransactions(userId) {
         const list = document.getElementById('transactionList');
@@ -147,4 +145,6 @@
 
     }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/admin/transactions/index.blade.php ENDPATH**/ ?>

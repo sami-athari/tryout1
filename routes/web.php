@@ -20,6 +20,7 @@ use App\Http\Controllers\HomeController;
 use App\Models\Produk;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\Admin\AboutControllerAdmin;
+use App\Http\Controllers\User\WishlistController;
 
 // ⬇️ Landing Page
 Route::get('/', function () {
@@ -83,10 +84,13 @@ Route::prefix('admin')->middleware(['auth', RoleMiddleware::class . ':admin'])->
 
 // ⬇️ User Routes - Only accessible for role 'user'
 Route::prefix('user')->middleware(['auth', RoleMiddleware::class . ':user'])->name('user.')->group(function () {
-
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
     Route::get('/produk/{id}', [UserDashboardController::class, 'show'])->name('deskripsi');
-    
+    Route::post('/review/store', [App\Http\Controllers\User\ReviewController::class, 'store'])->name('review.store');
+
+     Route::get('/wishlist', [WishlistController::class, 'index'])->name('user.wishlist');
+    Route::post('/wishlist/add/{produk_id}', 'App\Http\Controllers\User\WishlistController@store')->name('user.wishlist.add');
+    Route::delete('/wishlist/remove/{id}', 'App\Http\Controllers\User\WishlistController@destroy')->name('user.wishlist.remove');
 
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart');

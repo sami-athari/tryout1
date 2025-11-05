@@ -1,14 +1,14 @@
 <!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
-    <title>{{ config('app.name', 'Seilmu') }}</title>
+    <title><?php echo e(config('app.name', 'Seilmu')); ?></title>
 
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/sass/app.scss', 'resources/js/app.js']); ?>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -109,7 +109,7 @@
 </head>
 
 <body class="bg-white text-gray-800">
-    @php
+    <?php
         use App\Models\Notification;
 
         $user = Auth::user();
@@ -131,7 +131,7 @@
 
         // kategori tetap dipakai
         $kategori = \App\Models\Kategori::all();
-    @endphp
+    ?>
 
     <div id="app">
         <!-- Navbar -->
@@ -140,31 +140,30 @@
                 <!-- Branding -->
                 <div class="flex items-center space-x-3">
                     <span class="text-2xl font-bold">
-                        <a href="{{ url('/') }}">📚 Seilmu</a>
+                        <a href="<?php echo e(url('/')); ?>">📚 Seilmu</a>
                     </span>
-                    @auth
-                        <span class="text-sm text-gray-300 italic">Halo, {{ Auth::user()->name }}</span>
-                    @endauth
+                    <?php if(auth()->guard()->check()): ?>
+                        <span class="text-sm text-gray-300 italic">Halo, <?php echo e(Auth::user()->name); ?></span>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Menu Desktop -->
                 <div class="hidden md:flex items-center space-x-6 text-lg">
-                    @auth
-                        @if ($isUser)
-                            <a href="{{ route('user.dashboard') }}" class="hover:text-blue-300">Home</a>
-                            <a href="{{ route('user.about') }}" class="hover:text-blue-300">About Us</a>
-                            <a href="{{ route('user.cart') }}" class="hover:text-blue-300">Cart</a>
-                            <a href="{{ route('user.transactions') }}" class="hover:text-blue-300">History</a>
-                            <a href="{{ route('user.wishlist') }}" class="hover:text-blue-300">Wishlist</a>
-
-                        @endif
-                    @endauth
+                    <?php if(auth()->guard()->check()): ?>
+                        <?php if($isUser): ?>
+                            <a href="<?php echo e(route('user.dashboard')); ?>" class="hover:text-blue-300">Home</a>
+                            <a href="<?php echo e(route('user.about')); ?>" class="hover:text-blue-300">About Us</a>
+                            <a href="<?php echo e(route('user.cart')); ?>" class="hover:text-blue-300">Cart</a>
+                            <a href="<?php echo e(route('user.transactions')); ?>" class="hover:text-blue-300">History</a>
+                            <a href="<?php echo e(\Illuminate\Support\Facades\Route::has('user.wishlist') ? route('user.wishlist') : url('/wishlist')); ?>" class="hover:text-blue-300">Wishlist</a>
+                        <?php endif; ?>
+                    <?php endif; ?>
 
 
 
                     <!-- Chat dengan notifikasi untuk user -->
                     <div class="relative group">
-                        <a href="{{ route('chat.index') }}" class="hover:text-blue-300 flex items-center">
+                        <a href="<?php echo e(route('chat.index')); ?>" class="hover:text-blue-300 flex items-center">
                             <svg class="w-6 h-6 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -172,75 +171,80 @@
                             </svg>
                             <span>Chat</span>
 
-                            @if ($userNotifCount > 0)
+                            <?php if($userNotifCount > 0): ?>
                                 <span
                                     class="absolute -top-2 -right-3 bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center animate-pulse">
-                                    {{ $userNotifCount }}
+                                    <?php echo e($userNotifCount); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </a>
 
-                        @if ($isUser)
+                        <?php if($isUser): ?>
                             <div
                                 class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute right-0 mt-2 w-80 bg-white text-gray-800 rounded-lg shadow-lg z-50 pointer-events-auto">
                                 <div class="p-3 border-b bg-blue-900 text-white font-semibold rounded-t-lg">
                                     Notifikasi
                                 </div>
 
-                                @if ($userNotifications->isEmpty())
+                                <?php if($userNotifications->isEmpty()): ?>
                                     <div class="p-3 text-sm text-gray-600">Tidak ada notifikasi baru.</div>
-                                @else
+                                <?php else: ?>
                                     <ul class="max-h-64 overflow-auto">
-                                        @foreach ($userNotifications as $notif)
+                                        <?php $__currentLoopData = $userNotifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notif): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <li class="hover:bg-gray-100">
-                                                <a href="{{ route('chat.show', $notif->sender_id) }}"
+                                                <a href="<?php echo e(route('chat.show', $notif->sender_id)); ?>"
                                                     class="flex items-start p-3 space-x-3">
                                                     <div class="flex-shrink-0">
                                                         <div
                                                             class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-medium">
-                                                            {{ strtoupper(substr($notif->sender->name ?? 'U', 0, 1)) }}
+                                                            <?php echo e(strtoupper(substr($notif->sender->name ?? 'U', 0, 1))); ?>
+
                                                         </div>
                                                     </div>
                                                     <div class="flex-1 min-w-0">
                                                         <div class="flex justify-between items-center">
                                                             <p class="text-sm font-medium text-gray-900 truncate">
-                                                                {{ $notif->sender->name ?? 'User' }}</p>
+                                                                <?php echo e($notif->sender->name ?? 'User'); ?></p>
                                                             <p class="text-xs text-gray-500 ml-2 whitespace-nowrap">
-                                                                {{ $notif->created_at->diffForHumans() }}
+                                                                <?php echo e($notif->created_at->diffForHumans()); ?>
+
                                                             </p>
                                                         </div>
                                                         <p class="text-sm text-gray-600 truncate">
-                                                            {{ \Illuminate\Support\Str::limit($notif->message ?? 'Pesan baru', 80) }}
+                                                            <?php echo e(\Illuminate\Support\Str::limit($notif->message ?? 'Pesan baru', 80)); ?>
+
                                                         </p>
                                                     </div>
                                                 </a>
                                             </li>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </ul>
                                     <div class="p-2 border-t text-center">
-                                        <a href="{{ route('chat.index') }}" class="text-sm text-blue-700 hover:underline">Lihat
+                                        <a href="<?php echo e(route('chat.index')); ?>" class="text-sm text-blue-700 hover:underline">Lihat
                                             semua chat</a>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
 
                 <!-- Search + Kategori + Sortir Harga (Desktop) -->
-                <form action="{{ route('user.dashboard') }}" method="GET" class="hidden md:flex md:flex-col items-start space-y-2">
+                <form action="<?php echo e(route('user.dashboard')); ?>" method="GET" class="hidden md:flex md:flex-col items-start space-y-2">
                     <div class="flex items-center space-x-2">
                         <select name="kategori"
                             class="border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
                             <option value="">Semua Kategori</option>
-                            @foreach ($kategori as $k)
-                                <option value="{{ $k->id }}" {{ request('kategori') == $k->id ? 'selected' : '' }}>
-                                    {{ $k->nama }}
+                            <?php $__currentLoopData = $kategori; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($k->id); ?>" <?php echo e(request('kategori') == $k->id ? 'selected' : ''); ?>>
+                                    <?php echo e($k->nama); ?>
+
                                 </option>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
 
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
+                        <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Cari produk..."
                             class="border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
 
                         <!-- Replaced: sort select -> interactive dropdown with price inputs -->
@@ -262,21 +266,21 @@
                                 <div class="flex items-center gap-3 mb-3 text-gray-800">
                                     <label class="inline-flex items-center">
                                         <input type="radio" name="sort_harga" value="asc" class="form-radio text-blue-600"
-                                            {{ request('sort_harga') == 'asc' ? 'checked' : '' }}>
+                                            <?php echo e(request('sort_harga') == 'asc' ? 'checked' : ''); ?>>
                                         <span class="ml-2">Termurah</span>
                                     </label>
                                     <label class="inline-flex items-center">
                                         <input type="radio" name="sort_harga" value="desc" class="form-radio text-blue-600"
-                                            {{ request('sort_harga') == 'desc' ? 'checked' : '' }}>
+                                            <?php echo e(request('sort_harga') == 'desc' ? 'checked' : ''); ?>>
                                         <span class="ml-2">Termahal</span>
                                     </label>
                                 </div>
                                 <div class="mb-3 text-sm text-gray-600">Rentang Harga (Rp)</div>
                                 <div class="flex items-center space-x-2 mb-3">
-                                    <input type="number" name="price_min" value="{{ request('price_min') }}" min="0" step="1000"
+                                    <input type="number" name="price_min" value="<?php echo e(request('price_min')); ?>" min="0" step="1000"
                                            inputmode="numeric" placeholder="Min"
                                            class="w-1/2 border rounded-lg px-2 py-1 text-black focus:ring focus:ring-blue-200">
-                                    <input type="number" name="price_max" value="{{ request('price_max') }}" min="0" step="1000"
+                                    <input type="number" name="price_max" value="<?php echo e(request('price_max')); ?>" min="0" step="1000"
                                            inputmode="numeric" placeholder="Max"
                                            class="w-1/2 border rounded-lg px-2 py-1 text-black focus:ring focus:ring-blue-200">
                                 </div>
@@ -304,30 +308,30 @@
 
                 <!-- Auth Desktop -->
                 <div class="hidden md:block">
-                    @guest
+                    <?php if(auth()->guard()->guest()): ?>
                         <div class="space-x-3">
-                            @if (Route::has('login'))
-                                <a href="{{ route('login') }}"
+                            <?php if(Route::has('login')): ?>
+                                <a href="<?php echo e(route('login')); ?>"
                                     class="px-3 py-2 bg-white text-blue-900 font-semibold rounded-lg hover:bg-gray-100">Login</a>
-                            @endif
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}"
+                            <?php endif; ?>
+                            <?php if(Route::has('register')): ?>
+                                <a href="<?php echo e(route('register')); ?>"
                                     class="px-3 py-2 border border-white rounded-lg hover:bg-white hover:text-blue-900">Register</a>
-                            @endif
+                            <?php endif; ?>
                         </div>
-                    @else
+                    <?php else: ?>
                         <button onclick="toggleDropdown()" class="px-3 py-2 bg-white text-blue-900 rounded-lg hover:bg-gray-200">
                             Menu ⬇
                         </button>
                         <div id="dropdownMenu"
                             class="hidden absolute right-0 mt-2 w-40 bg-white text-blue-900 rounded-lg shadow-lg">
-                            <form id="logout-form" method="POST" action="{{ route('logout') }}">
-                                @csrf
+                            <form id="logout-form" method="POST" action="<?php echo e(route('logout')); ?>">
+                                <?php echo csrf_field(); ?>
                                 <button type="button" onclick="confirmLogout(event)"
                                     class="w-full text-left px-4 py-2 hover:bg-blue-100">Logout</button>
                             </form>
                         </div>
-                    @endguest
+                    <?php endif; ?>
                 </div>
 
                 <!-- Hamburger (Mobile) -->
@@ -341,14 +345,13 @@
 
             <!-- Mobile Menu -->
             <div id="mobileMenu" class="hidden md:hidden bg-blue-800 text-white px-6 py-4 space-y-4">
-                @auth
-                    <a href="{{ route('user.dashboard') }}" class="block hover:text-blue-300">Home</a>
-                    <a href="{{ route('user.about') }}" class="block hover:text-blue-300">About Us</a>
-                    <a href="{{ route('user.cart') }}" class="block hover:text-blue-300">Cart</a>
-                    <a href="{{ route('user.transactions') }}" class="block hover:text-blue-300">History</a>
-                    <a href="{{ route('user.wishlist') }}" class="block hover:text-blue-300">Wishlist</a>
-
-                @endauth
+                <?php if(auth()->guard()->check()): ?>
+                    <a href="<?php echo e(route('user.dashboard')); ?>" class="block hover:text-blue-300">Home</a>
+                    <a href="<?php echo e(route('user.about')); ?>" class="block hover:text-blue-300">About Us</a>
+                    <a href="<?php echo e(route('user.cart')); ?>" class="block hover:text-blue-300">Cart</a>
+                    <a href="<?php echo e(route('user.transactions')); ?>" class="block hover:text-blue-300">History</a>
+                    <a href="<?php echo e(\Illuminate\Support\Facades\Route::has('user.wishlist') ? route('user.wishlist') : url('/wishlist')); ?>" class="block hover:text-blue-300">Wishlist</a>
+                <?php endif; ?>
 
                 <!-- Dark Mode Toggle Mobile -->
                 <div class="flex items-center justify-between py-2">
@@ -361,18 +364,19 @@
                 </div>
 
                 <!-- Search Mobile + Sortir Harga -->
-                <form action="{{ route('user.dashboard') }}" method="GET" class="space-y-2">
+                <form action="<?php echo e(route('user.dashboard')); ?>" method="GET" class="space-y-2">
                     <select name="kategori"
                         class="w-full border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
                         <option value="">Semua Kategori</option>
-                        @foreach ($kategori as $k)
-                            <option value="{{ $k->id }}" {{ request('kategori') == $k->id ? 'selected' : '' }}>
-                                {{ $k->nama }}
+                        <?php $__currentLoopData = $kategori; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($k->id); ?>" <?php echo e(request('kategori') == $k->id ? 'selected' : ''); ?>>
+                                <?php echo e($k->nama); ?>
+
                             </option>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
 
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
+                    <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Cari produk..."
                         class="w-full border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
 
                     <!-- Mobile: collapse-able panel for sort + price -->
@@ -381,15 +385,15 @@
 
                         <div class="mt-2 space-y-2">
                             <div class="flex items-center gap-3">
-                                <label><input type="radio" name="sort_harga" value="asc" {{ request('sort_harga') == 'asc' ? 'checked' : '' }}> <span class="ml-1">Termurah</span></label>
-                                <label><input type="radio" name="sort_harga" value="desc" {{ request('sort_harga') == 'desc' ? 'checked' : '' }}> <span class="ml-1">Termahal</span></label>
+                                <label><input type="radio" name="sort_harga" value="asc" <?php echo e(request('sort_harga') == 'asc' ? 'checked' : ''); ?>> <span class="ml-1">Termurah</span></label>
+                                <label><input type="radio" name="sort_harga" value="desc" <?php echo e(request('sort_harga') == 'desc' ? 'checked' : ''); ?>> <span class="ml-1">Termahal</span></label>
                             </div>
 
                             <div class="flex gap-2">
-                                <input type="number" name="price_min" value="{{ request('price_min') }}" min="0" step="1000"
+                                <input type="number" name="price_min" value="<?php echo e(request('price_min')); ?>" min="0" step="1000"
                                        inputmode="numeric" placeholder="Min Rp"
                                        class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
-                                <input type="number" name="price_max" value="{{ request('price_max') }}" min="0" step="1000"
+                                <input type="number" name="price_max" value="<?php echo e(request('price_max')); ?>" min="0" step="1000"
                                        inputmode="numeric" placeholder="Max Rp"
                                        class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
                             </div>
@@ -408,7 +412,7 @@
         </nav>
 
         <main class="w-full">
-            @yield('content')
+            <?php echo $__env->yieldContent('content'); ?>
         </main>
     </div>
 
@@ -507,3 +511,4 @@
 </body>
 
 </html>
+<?php /**PATH C:\Users\SamiUSK\resources\views/layouts/user.blade.php ENDPATH**/ ?>
