@@ -38,35 +38,60 @@
         <div class="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" id="productGrid">
             @forelse($produk as $item)
                 @php
-                    $deskripsiRoute = \Illuminate\Support\Facades\Route::has('user.deskripsi')
-                        ? route('user.deskripsi', $item->id)
-                        : url('/deskripsi/' . $item->id);
+                    // prefer 'user.produk.show' -> 'user.deskripsi' -> fallback url
+                    if (\Illuminate\Support\Facades\Route::has('user.produk.show')) {
+                        $deskripsiRoute = route('user.produk.show', $item->id);
+                    } elseif (\Illuminate\Support\Facades\Route::has('user.deskripsi')) {
+                        $deskripsiRoute = route('user.deskripsi', $item->id);
+                    } else {
+                        $deskripsiRoute = url('/deskripsi/' . $item->id);
+                    }
                     $imageSrc = $item->foto ? asset('storage/' . $item->foto) : asset('images/placeholder.png');
                     $priceNumeric = (int) $item->harga;
                 @endphp
 
-                {{-- Kartu Produk --}}
+                {{-- changed: enhanced product card with discount badge, rating, sold count and promo line --}}
                 <div class="relative product-card bg-white rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300"
                      data-price="{{ $priceNumeric }}">
                     <a href="{{ $deskripsiRoute }}">
                         <div class="relative overflow-hidden">
+
+
                             <img src="{{ $imageSrc }}"
                                  alt="{{ $item->nama }}"
                                  class="w-full aspect-[4/3] object-cover rounded-t-xl transition-transform duration-300 hover:scale-105">
                         </div>
+
                         <div class="p-4">
                             <h4 class="text-lg sm:text-xl font-semibold text-gray-800 line-clamp-2">{{ $item->nama }}</h4>
+
+                            <p class="text-lg sm:text-xl font-bold text-blue-900 mt-1">
+                                Rp {{ number_format($item->harga ?? 0,0,',','.') }}
+                            </p>
+
+                            {{-- Bonus atau Promo Line --}}
+                            <p class="text-sm text-red-600 font-semibold mt-1">
+                                Hemat s.d {{ rand(1,3) }}% Pakai Bonus
+                            </p>
+
+                            {{-- Rating dan terjual --}}
+                            <div class="flex items-center text-sm text-gray-600 mt-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 .587l3.668 7.568L24 9.423l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.27 0 9.423l8.332-1.268z"/>
+                                </svg>
+                                <span class="font-medium">
+                                    {{ number_format($item->average_rating ?? ($item->reviews->avg('rating') ?? 0), 1) }}
+                                </span>
+                                <span class="mx-1">•</span>
+                               <h3 class="text-1xl font-bold mb-2">{{ $transactionCount ?? '1000+' }}</h3>
+            <p class="opacity-90 text-lg">Buku Terjual</p>
+                            </div>
                         </div>
                     </a>
 
                     <div class="px-4 pb-4">
-                        <p class="text-lg sm:text-xl font-bold text-blue-900 mt-2">
-                            Rp {{ number_format($item->harga,0,',','.') }}
-                        </p>
-                        <p class="text-gray-500 text-sm">Kategori: {{ $item->kategori ? $item->kategori->nama : '-' }}</p>
-
                         @if($item->stok > 0)
-                            <form action="{{ route('user.cart.add', $item->id) }}" method="POST" class="mt-4 flex items-center space-x-2">
+                            <form action="{{ route('user.cart.add', $item->id) }}" method="POST" class="mt-3 flex items-center space-x-2">
                                 @csrf
                                 <input type="number" name="jumlah" value="1" min="1" max="{{ $item->stok }}"
                                        class="w-16 border border-gray-300 rounded text-center text-black focus:ring focus:ring-blue-200">
@@ -75,46 +100,8 @@
                                 </button>
                             </form>
                         @else
-                            <p class="mt-4 text-red-500 font-semibold">Stok Habis</p>
+                            <p class="mt-3 text-red-500 font-semibold">Stok Habis</p>
                         @endif
-                    </div>
-
-                    {{-- ⋮ Tombol Opsi --}}
-                    <div class="absolute bottom-3 right-3">
-                        <button class="options-btn bg-white/90 hover:bg-gray-100 text-gray-700 p-2 rounded-full shadow transition">
-                            ⋮
-                        </button>
-
-                        {{-- Popup Tambah Wishlist --}}
-                        <div class="hidden options-menu absolute bottom-10 right-0 bg-white border rounded-lg shadow-lg w-44 py-2 z-50">
-                            @php
-                                $hasWishlistRoute = \Illuminate\Support\Facades\Route::has('user.wishlist.add');
-                            @endphp
-
-                            @if($hasWishlistRoute)
-                                {{-- Server-side form when route exists --}}
-                                <form action="{{ route('user.wishlist.add', $item->id) }}" method="POST" class="px-4">
-                                    @csrf
-                                    <button type="submit"
-                                            class="flex items-center gap-2 w-full text-left text-sm text-gray-700 hover:text-pink-600 hover:bg-pink-50 py-2 rounded-md transition">
-                                        ❤️ Tambah ke Wishlist
-                                    </button>
-                                </form>
-                            @else
-                                {{-- Client-side fallback to avoid 404 --}}
-                                <div class="px-3">
-                                    @if(auth()->check())
-                                        <button type="button" data-id="{{ $item->id }}" class="add-wishlist-local flex items-center gap-2 w-full text-left text-sm text-gray-700 hover:text-pink-600 hover:bg-pink-50 py-2 rounded-md transition">
-                                            ❤️ Tambah ke Wishlist
-                                        </button>
-                                    @else
-                                        <a href="{{ route('login') }}" class="flex items-center gap-2 w-full text-left text-sm text-gray-700 hover:text-pink-600 hover:bg-pink-50 py-2 rounded-md transition">
-                                            ❤️ Tambah ke Wishlist
-                                        </a>
-                                    @endif
-                                </div>
-                            @endif
-                        </div>
                     </div>
                 </div>
             @empty
