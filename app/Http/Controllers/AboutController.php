@@ -13,6 +13,7 @@ class AboutController extends Controller
 {
     public function index()
     {
+        $totalSold = Produk::sum('transaction_count');
         $about = About::first(); // ambil data pertama dari tabel abouts
         $kategori = Kategori::all();
         // contoh statistik (hiasan)
@@ -23,6 +24,6 @@ class AboutController extends Controller
         $produk = Produk::paginate(4);
 
 
-        return view('user.about', compact('about', 'totalProduk', 'produk', 'userCount', 'transactionCount','kategori',));
+        return view('user.about', compact('about', 'totalProduk', 'produk', 'userCount', 'transactionCount','kategori','totalSold'));
     }
 }

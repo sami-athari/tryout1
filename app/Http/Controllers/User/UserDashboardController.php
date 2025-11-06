@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\Kategori;
-
+use App\Models\Transaction;
 class UserDashboardController extends Controller
 {
     /**
@@ -14,7 +14,7 @@ class UserDashboardController extends Controller
      */
     public function index(Request $request)
 {
-    $query = Produk::query()->with('kategori');
+    $query = Produk::query()->with(['kategori', 'reviews']);
 
     // 🔍 Filter pencarian nama produk
     if ($request->filled('search')) {
@@ -47,11 +47,11 @@ class UserDashboardController extends Controller
 
     // 🔹 Ambil hasil dengan pagination
     $produk = $query->paginate(8)->appends($request->query());
-
+    $transactionCount = Transaction::count();
     // 🔹 Ambil semua kategori untuk filter dropdown
     $kategori = Kategori::all();
 
-    return view('user.dashboard', compact('produk', 'kategori'));
+    return view('user.dashboard', compact('produk', 'kategori','transactionCount'));
 }
 
 

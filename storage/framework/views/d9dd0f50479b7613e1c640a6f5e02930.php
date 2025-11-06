@@ -36,36 +36,70 @@
         <div class="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" id="productGrid">
             <?php $__empty_1 = true; $__currentLoopData = $produk; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <?php
-                    $deskripsiRoute = \Illuminate\Support\Facades\Route::has('user.deskripsi')
-                        ? route('user.deskripsi', $item->id)
-                        : url('/deskripsi/' . $item->id);
+                    if (\Illuminate\Support\Facades\Route::has('user.produk.show')) {
+                        $deskripsiRoute = route('user.produk.show', $item->id);
+                    } elseif (\Illuminate\Support\Facades\Route::has('user.deskripsi')) {
+                        $deskripsiRoute = route('user.deskripsi', $item->id);
+                    } else {
+                        $deskripsiRoute = url('/deskripsi/' . $item->id);
+                    }
+
                     $imageSrc = $item->foto ? asset('storage/' . $item->foto) : asset('images/placeholder.png');
                     $priceNumeric = (int) $item->harga;
+                    $sold = (int) ($item->transaction_count ?? 0);
+
+                    if ($sold >= 1000000) {
+                        $soldLabel = number_format($sold / 1000000, 1) . 'M+';
+                    } elseif ($sold >= 1000) {
+                        $soldLabel = number_format($sold / 1000, 1) . 'k+';
+                    } else {
+                        $soldLabel = (string) $sold;
+                    }
+
+                    $rating = number_format($item->average_rating ?? ($item->reviews->avg('rating') ?? 0), 1);
                 ?>
 
-                
                 <div class="relative product-card bg-white rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300"
                      data-price="<?php echo e($priceNumeric); ?>">
+
+                    
+                    <div class="absolute top-3 right-3 z-10">
+                        <button type="button"
+                                class="add-wishlist-local inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/80 hover:bg-white focus:outline-none transition"
+                                data-id="<?php echo e($item->id); ?>">
+                            <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2">
+                                <path d="M20.8 8.6c-.9-2-3-3.3-5.3-3.3-1.5 0-2.9.6-3.9 1.6L12 6.8l-.6-.6C9.9 5 8.5 4.4 7 4.4 4.7 4.4 2.6 5.6 1.7 7.6c-1 2.3-.2 5 1.9 7.1L12 21l8.4-6.3c2.1-2.1 2.9-4.8 1.9-7.1z" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+
                     <a href="<?php echo e($deskripsiRoute); ?>">
                         <div class="relative overflow-hidden">
-                            <img src="<?php echo e($imageSrc); ?>"
-                                 alt="<?php echo e($item->nama); ?>"
+                            <img src="<?php echo e($imageSrc); ?>" alt="<?php echo e($item->nama); ?>"
                                  class="w-full aspect-[4/3] object-cover rounded-t-xl transition-transform duration-300 hover:scale-105">
                         </div>
+
                         <div class="p-4">
                             <h4 class="text-lg sm:text-xl font-semibold text-gray-800 line-clamp-2"><?php echo e($item->nama); ?></h4>
+                            <p class="text-lg sm:text-xl font-bold text-blue-900 mt-1">
+                                Rp <?php echo e(number_format($item->harga ?? 0,0,',','.')); ?>
+
+                            </p>
+                            <div class="flex items-center text-sm text-gray-600 mt-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 .587l3.668 7.568L24 9.423l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.27 0 9.423l8.332-1.268z"/>
+                                </svg>
+                                <span class="font-medium">⭐ <?php echo e($rating); ?></span>
+                                <span class="mx-1">•</span>
+                                <span class="text-sm"><?php echo e($soldLabel); ?> terjual</span>
+                            </div>
                         </div>
                     </a>
 
                     <div class="px-4 pb-4">
-                        <p class="text-lg sm:text-xl font-bold text-blue-900 mt-2">
-                            Rp <?php echo e(number_format($item->harga,0,',','.')); ?>
-
-                        </p>
-                        <p class="text-gray-500 text-sm">Kategori: <?php echo e($item->kategori ? $item->kategori->nama : '-'); ?></p>
-
                         <?php if($item->stok > 0): ?>
-                            <form action="<?php echo e(route('user.cart.add', $item->id)); ?>" method="POST" class="mt-4 flex items-center space-x-2">
+                            <form action="<?php echo e(route('user.cart.add', $item->id)); ?>" method="POST" class="mt-3 flex items-center space-x-2">
                                 <?php echo csrf_field(); ?>
                                 <input type="number" name="jumlah" value="1" min="1" max="<?php echo e($item->stok); ?>"
                                        class="w-16 border border-gray-300 rounded text-center text-black focus:ring focus:ring-blue-200">
@@ -74,46 +108,8 @@
                                 </button>
                             </form>
                         <?php else: ?>
-                            <p class="mt-4 text-red-500 font-semibold">Stok Habis</p>
+                            <p class="mt-3 text-red-500 font-semibold">Stok Habis</p>
                         <?php endif; ?>
-                    </div>
-
-                    
-                    <div class="absolute bottom-3 right-3">
-                        <button class="options-btn bg-white/90 hover:bg-gray-100 text-gray-700 p-2 rounded-full shadow transition">
-                            ⋮
-                        </button>
-
-                        
-                        <div class="hidden options-menu absolute bottom-10 right-0 bg-white border rounded-lg shadow-lg w-44 py-2 z-50">
-                            <?php
-                                $hasWishlistRoute = \Illuminate\Support\Facades\Route::has('user.wishlist.add');
-                            ?>
-
-                            <?php if($hasWishlistRoute): ?>
-                                
-                                <form action="<?php echo e(route('user.wishlist.add', $item->id)); ?>" method="POST" class="px-4">
-                                    <?php echo csrf_field(); ?>
-                                    <button type="submit"
-                                            class="flex items-center gap-2 w-full text-left text-sm text-gray-700 hover:text-pink-600 hover:bg-pink-50 py-2 rounded-md transition">
-                                        ❤️ Tambah ke Wishlist
-                                    </button>
-                                </form>
-                            <?php else: ?>
-                                
-                                <div class="px-3">
-                                    <?php if(auth()->check()): ?>
-                                        <button type="button" data-id="<?php echo e($item->id); ?>" class="add-wishlist-local flex items-center gap-2 w-full text-left text-sm text-gray-700 hover:text-pink-600 hover:bg-pink-50 py-2 rounded-md transition">
-                                            ❤️ Tambah ke Wishlist
-                                        </button>
-                                    <?php else: ?>
-                                        <a href="<?php echo e(route('login')); ?>" class="flex items-center gap-2 w-full text-left text-sm text-gray-700 hover:text-pink-600 hover:bg-pink-50 py-2 rounded-md transition">
-                                            ❤️ Tambah ke Wishlist
-                                        </a>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endif; ?>
-                        </div>
                     </div>
                 </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -194,6 +190,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // Dropdown option menu handler
     document.querySelectorAll('.options-btn').forEach(btn => {
         btn.addEventListener('click', e => {
             e.stopPropagation();
@@ -210,17 +207,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.options-menu').forEach(m => m.classList.remove('active'));
         }
     });
-});
-</script>
 
-
-<?php if (! $__env->hasRenderedOnce('30efb80c-7440-4f81-ae3d-fbd0e812b253')): $__env->markAsRenderedOnce('30efb80c-7440-4f81-ae3d-fbd0e812b253');
-$__env->startPush('scripts'); ?> 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // handle local wishlist buttons when server route missing
+    // Wishlist lokal (non-login)
     document.querySelectorAll('.add-wishlist-local').forEach(btn => {
-        btn.addEventListener('click', function (e) {
+        btn.addEventListener('click', function () {
             const id = this.dataset.id;
             if (!id) return;
             try {
@@ -228,16 +218,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 const raw = localStorage.getItem(key);
                 let list = raw ? JSON.parse(raw) : [];
 
-                // avoid duplicates
                 if (!list.find(i => String(i.id) === String(id))) {
                     list.push({ id: id, added_at: new Date().toISOString() });
                     localStorage.setItem(key, JSON.stringify(list));
 
-                    // UI feedback
-                    this.textContent = '❤️ Ditambahkan';
-                    this.classList.add('opacity-80', 'pointer-events-none');
+                    this.innerHTML = '<svg class="w-6 h-6 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.35-10-7.1C-1.2 9.6 3.2 4 8.9 7.1 12 9 12 9 12 9s0 0 3.1-1.9C20.8 4 25.2 9.6 22 13.9 19.5 16.65 12 21 12 21z"/></svg>';
 
-                    // optional toast using SweetAlert2 if available
                     if (window.Swal) {
                         Swal.fire({
                             toast: true,
@@ -247,8 +233,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             showConfirmButton: false,
                             timer: 1800
                         });
-                    } else {
-                        alert('Produk ditambahkan ke wishlist (lokal).');
                     }
                 } else {
                     if (window.Swal) {
@@ -269,7 +253,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-<?php $__env->stopPush(); endif; ?>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.user', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/user/dashboard.blade.php ENDPATH**/ ?>

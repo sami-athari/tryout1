@@ -61,7 +61,7 @@
             </button>
         @endif
     </div>
-    
+
 
     {{-- Produk Section --}}
     <section id="produk" class="container mx-auto px-6 py-12">
@@ -193,7 +193,7 @@
             <p class="opacity-90 text-lg">Pengguna Aktif</p>
         </div>
         <div class="bg-gradient-to-r from-yellow-400 to-orange-500 p-8 rounded-2xl shadow-lg text-white">
-            <h3 class="text-5xl font-bold mb-2">{{ $transactionCount ?? '1000+' }}</h3>
+           <h3 class="text-5xl font-bold mb-2">{{ number_format($totalSold) }}</h3>
             <p class="opacity-90 text-lg">Buku Terjual</p>
         </div>
     </div>

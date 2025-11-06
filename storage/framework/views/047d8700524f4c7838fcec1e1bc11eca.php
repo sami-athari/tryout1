@@ -105,6 +105,43 @@
             transform: translateX(30px);
             background: #1a202c;
         }
+
+        /* autosuggest box */
+        .suggestions-container {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .suggestion-item {
+            padding: 0.5rem;
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item.active {
+            background: #f1f5f9;
+        }
+
+        .suggestion-thumb {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .suggestion-title {
+            font-weight: 600;
+            font-size: .95rem;
+            color: #0f172a;
+        }
+
+        .suggestion-sub {
+            font-size: .825rem;
+            color: #6b7280;
+        }
     </style>
 </head>
 
@@ -155,7 +192,7 @@
                             <a href="<?php echo e(route('user.about')); ?>" class="hover:text-blue-300">About Us</a>
                             <a href="<?php echo e(route('user.cart')); ?>" class="hover:text-blue-300">Cart</a>
                             <a href="<?php echo e(route('user.transactions')); ?>" class="hover:text-blue-300">History</a>
-                            <a href="<?php echo e(\Illuminate\Support\Facades\Route::has('user.wishlist') ? route('user.wishlist') : url('/wishlist')); ?>" class="hover:text-blue-300">Wishlist</a>
+
                         <?php endif; ?>
                     <?php endif; ?>
 
@@ -244,8 +281,14 @@
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
 
+                        <!-- Desktop search input: add class and data attribute -->
                         <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Cari produk..."
-                            class="border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
+                            class="ajax-search border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200"
+                            autocomplete="off"
+                            data-suggest-url="<?php echo e(route('api.products.suggest')); ?>">
+
+                        <!-- suggestion container (desktop) -->
+                        <div class="suggestions-container hidden absolute mt-12 w-80 bg-white border rounded shadow-lg z-50" id="desktop-suggestions"></div>
 
                         <!-- Replaced: sort select -> interactive dropdown with price inputs -->
                         <div class="relative">
@@ -320,17 +363,43 @@
                             <?php endif; ?>
                         </div>
                     <?php else: ?>
-                        <button onclick="toggleDropdown()" class="px-3 py-2 bg-white text-blue-900 rounded-lg hover:bg-gray-200">
+                       <!-- Dropdown Menu -->
+                <?php if(auth()->guard()->check()): ?>
+                    <div class="relative">
+                        <button onclick="toggleDropdown()"
+                            class="px-3 py-2 bg-white text-blue-900 rounded-lg hover:bg-gray-200 flex items-center">
                             Menu ⬇
                         </button>
                         <div id="dropdownMenu"
-                            class="hidden absolute right-0 mt-2 w-40 bg-white text-blue-900 rounded-lg shadow-lg">
+                            class="hidden absolute right-0 mt-2 w-60 bg-white text-blue-900 rounded-xl shadow-xl overflow-hidden border border-gray-200 z-50">
+                            <a href="<?php echo e(route('user.wishlist')); ?>"
+                                class="block px-4 py-2 hover:bg-blue-100 text-sm font-medium">
+                                ❤️ Wishlist
+                            </a>
+
+                            <div class="border-t border-gray-200 my-1"></div>
+
+                            <!-- Bahasa Section -->
+                            <div class="px-4 py-3 text-sm font-medium space-y-2">
+                                <div class="text-gray-700 font-semibold flex items-center gap-2">
+                                    🌍 Pilih Bahasa
+                                </div>
+                                <div id="google_translate_element" class="w-full"></div>
+                            </div>
+
+                            <div class="border-t border-gray-200 my-1"></div>
+
                             <form id="logout-form" method="POST" action="<?php echo e(route('logout')); ?>">
                                 <?php echo csrf_field(); ?>
                                 <button type="button" onclick="confirmLogout(event)"
-                                    class="w-full text-left px-4 py-2 hover:bg-blue-100">Logout</button>
+                                    class="w-full text-left px-4 py-2 hover:bg-blue-100 text-sm font-semibold text-red-600">
+                                    🚪 Logout
+                                </button>
                             </form>
                         </div>
+                    </div>
+                <?php endif; ?>
+
                     <?php endif; ?>
                 </div>
 
@@ -350,9 +419,21 @@
                     <a href="<?php echo e(route('user.about')); ?>" class="block hover:text-blue-300">About Us</a>
                     <a href="<?php echo e(route('user.cart')); ?>" class="block hover:text-blue-300">Cart</a>
                     <a href="<?php echo e(route('user.transactions')); ?>" class="block hover:text-blue-300">History</a>
-                    <a href="<?php echo e(\Illuminate\Support\Facades\Route::has('user.wishlist') ? route('user.wishlist') : url('/wishlist')); ?>" class="block hover:text-blue-300">Wishlist</a>
-                <?php endif; ?>
 
+
+                <?php endif; ?>
+                 <!-- Google Translate Script -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'id',
+                includedLanguages: 'id,en,ja,ko,zh-CN,ar,fr,de,es',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript"
+        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
                 <!-- Dark Mode Toggle Mobile -->
                 <div class="flex items-center justify-between py-2">
                     <span>Dark Mode</span>
@@ -377,7 +458,12 @@
                     </select>
 
                     <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Cari produk..."
-                        class="w-full border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
+                        class="ajax-search w-full border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200"
+                        autocomplete="off"
+                        data-suggest-url="<?php echo e(route('api.products.suggest')); ?>">
+
+                    <!-- suggestion container (mobile) -->
+                    <div class="suggestions-container hidden mt-2 w-full bg-white border rounded shadow-lg z-50" id="mobile-suggestions"></div>
 
                     <!-- Mobile: collapse-able panel for sort + price -->
                     <details class="bg-white text-black rounded-lg p-2">
@@ -507,6 +593,148 @@
                 });
             }
         })();
+
+        (function(){
+    const debounce = (fn, delay=300) => {
+        let t;
+        return (...args) => {
+            clearTimeout(t);
+            t = setTimeout(() => fn(...args), delay);
+        };
+    };
+
+    function createSuggestionItem(item) {
+        const el = document.createElement('div');
+        el.className = 'suggestion-item';
+        el.tabIndex = 0;
+        el.innerHTML = `
+            <img src="${item.foto}" class="suggestion-thumb" alt="${escapeHtml(item.nama)}">
+            <div>
+                <div class="suggestion-title">${escapeHtml(item.nama)}</div>
+                <div class="suggestion-sub">Rp ${Number(item.harga || 0).toLocaleString('id-ID')}</div>
+            </div>
+        `;
+        el.dataset.url = item.url;
+        return el;
+    }
+
+    function escapeHtml(str){ return String(str).replace(/[&<>"'`=\/]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;",'/':'&#47;','`':'&#96;','=':'&#61;'}[s])); }
+
+    function attachAutosuggest(input, container) {
+        const suggestUrl = input.dataset.suggestUrl;
+        if (!suggestUrl) return;
+
+        let activeIndex = -1;
+        let items = [];
+
+        const show = () => container.classList.remove('hidden');
+        const hide = () => {
+            container.classList.add('hidden');
+            activeIndex = -1;
+            items = [];
+            container.innerHTML = '';
+        };
+
+        const setActive = (idx) => {
+            const nodes = Array.from(container.children);
+            nodes.forEach((n, i) => n.classList.toggle('active', i === idx));
+            activeIndex = idx;
+        };
+
+        const handleSelect = (idx) => {
+            const el = container.children[idx];
+            if (!el) return;
+            const url = el.dataset.url;
+            // navigate to product page
+            if (url) window.location.href = url;
+        };
+
+        const fetchSuggestions = debounce(async (q) => {
+            if (!q || q.trim().length < 1) { hide(); return; }
+            try {
+                const res = await fetch(`${suggestUrl}?q=${encodeURIComponent(q)}`, { credentials: 'same-origin' });
+                if (!res.ok) { hide(); return; }
+                const json = await res.json();
+                container.innerHTML = '';
+                if (!Array.isArray(json) || json.length === 0) { hide(); return; }
+                json.forEach(it => container.appendChild(createSuggestionItem(it)));
+                items = Array.from(container.children);
+                // click handlers
+                items.forEach((it, idx) => {
+                    it.addEventListener('click', () => handleSelect(idx));
+                    it.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') handleSelect(idx);
+                    });
+                });
+                show();
+            } catch (err) {
+                hide();
+                console.error('Suggest error', err);
+            }
+        }, 250);
+
+        input.addEventListener('input', (e) => {
+            const q = e.target.value;
+            fetchSuggestions(q);
+        });
+
+        input.addEventListener('keydown', (e) => {
+            const key = e.key;
+            if (key === 'ArrowDown') {
+                e.preventDefault();
+                if (items.length === 0) return;
+                const next = (activeIndex + 1) % items.length;
+                setActive(next);
+                items[next].scrollIntoView({ block: 'nearest' });
+            } else if (key === 'ArrowUp') {
+                e.preventDefault();
+                if (items.length === 0) return;
+                const prev = (activeIndex - 1 + items.length) % items.length;
+                setActive(prev);
+                items[prev].scrollIntoView({ block: 'nearest' });
+            } else if (key === 'Enter') {
+                if (activeIndex >= 0) {
+                    e.preventDefault();
+                    handleSelect(activeIndex);
+                }
+            } else if (key === 'Escape') {
+                hide();
+            }
+        });
+
+        // hide on outside click
+        document.addEventListener('click', (ev) => {
+            if (!container.contains(ev.target) && ev.target !== input) hide();
+        });
+
+        // hide on blur with slight delay to allow click
+        input.addEventListener('blur', () => setTimeout(hide, 150));
+    }
+
+    // attach to desktop and mobile inputs
+    document.addEventListener('DOMContentLoaded', () => {
+        const desktopInput = document.querySelector('.ajax-search:not([data-mobile])'); // first desktop
+        const desktopContainer = document.getElementById('desktop-suggestions');
+        if (desktopInput && desktopContainer) attachAutosuggest(desktopInput, desktopContainer);
+
+        const mobileInput = document.querySelector('.ajax-search[data-mobile="1"]') || document.querySelector('.ajax-search.w-full');
+        const mobileContainer = document.getElementById('mobile-suggestions');
+        if (mobileInput && mobileContainer) attachAutosuggest(mobileInput, mobileContainer);
+
+        // If desktop input exists but no explicit mobile marker, also try to attach for other .ajax-search inputs
+        document.querySelectorAll('.ajax-search').forEach((inp) => {
+            if (inp === desktopInput || inp === mobileInput) return;
+            // create sibling container if not present
+            let container = inp.parentElement.querySelector('.suggestions-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'suggestions-container hidden mt-2 w-full bg-white border rounded shadow-lg z-50';
+                inp.parentElement.appendChild(container);
+            }
+            attachAutosuggest(inp, container);
+        });
+    });
+})();
     </script>
 </body>
 

@@ -1,6 +1,4 @@
-@extends('layouts.admin')
-
-@section('styles')
+<?php $__env->startSection('styles'); ?>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
     body {
@@ -13,53 +11,56 @@
         backdrop-filter: blur(12px);
     }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="container mx-auto px-6 py-16 text-gray-800">
     <!-- Judul -->
     <h1 class="text-6xl font-extrabold text-blue-900 mb-10 text-center drop-shadow-lg">
-        {{ $about->title ?? 'Tentang Seilmu' }}
+        <?php echo e($about->title ?? 'Tentang Seilmu'); ?>
+
     </h1>
 
     <!-- Gambar -->
-    @if($about && $about->image)
+    <?php if($about && $about->image): ?>
         <div class="flex justify-center mb-10">
-            <img src="{{ asset('storage/' . $about->image) }}"
+            <img src="<?php echo e(asset('storage/' . $about->image)); ?>"
                  class="h-80 w-100 object-cover rounded-2xl border-4 border-white shadow-2xl">
         </div>
-    @endif
+    <?php endif; ?>
 
 
     <!-- Deskripsi dengan Read More -->
-    @php
+    <?php
         $desc = $about->description ?? 'Belum ada deskripsi';
         // Pisah jadi kalimat
         $sentences = preg_split('/(?<=[.?!])\s+/', $desc, -1, PREG_SPLIT_NO_EMPTY);
         $showReadMore = count($sentences) > 5;
         $firstPart = implode(' ', array_slice($sentences, 0, 5));
         $remainingPart = implode(' ', array_slice($sentences, 5));
-    @endphp
+    ?>
 
     <div class="text-center max-w-4xl mx-auto mb-14 text-gray-700">
         <p id="shortDesc" class="text-xl leading-relaxed">
-            {!! nl2br(e($firstPart)) !!}
-            @if($showReadMore)
+            <?php echo nl2br(e($firstPart)); ?>
+
+            <?php if($showReadMore): ?>
                 <span id="dots">...</span>
-            @endif
+            <?php endif; ?>
         </p>
-        @if($showReadMore)
+        <?php if($showReadMore): ?>
             <p id="moreDesc" class="hidden text-xl leading-relaxed">
-                {!! nl2br(e($remainingPart)) !!}
+                <?php echo nl2br(e($remainingPart)); ?>
+
             </p>
             <button id="toggleBtn"
                     class="mt-3 text-blue-700 font-semibold hover:underline transition">
                 Baca Selengkapnya
             </button>
-        @endif
+        <?php endif; ?>
     </div>
 
-    {{-- Produk Section --}}
+    
     <section id="produk" class="container mx-auto px-6 py-12">
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-2xl font-bold text-blue-900 border-b-2 border-blue-900 inline-block">
@@ -69,85 +70,86 @@
 
         <div id="produk-container">
             <div id="produk-page" class="grid gap-8 md:grid-cols-3 lg:grid-cols-4">
-                @forelse($produk as $item)
+                <?php $__empty_1 = true; $__currentLoopData = $produk; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <div class="bg-white rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
                         <a >
-                            <img src="{{ asset('storage/' . $item->foto) }}"
-                                 alt="{{ $item->nama }}"
+                            <img src="<?php echo e(asset('storage/' . $item->foto)); ?>"
+                                 alt="<?php echo e($item->nama); ?>"
                                  class="w-full h-48 object-cover rounded-t">
                             <div class="p-4">
-                                <h4 class="text-lg font-semibold">{{ $item->nama }}</h4>
+                                <h4 class="text-lg font-semibold"><?php echo e($item->nama); ?></h4>
                             </div>
                         </a>
                         <div class="px-4 pb-4">
                             <p class="text-xl font-bold text-blue-900 mt-2">
-                                Rp {{ number_format($item->harga,0,',','.') }}
+                                Rp <?php echo e(number_format($item->harga,0,',','.')); ?>
+
                             </p>
-                            <p class="text-gray-500 text-sm">Kategori: {{ $item->kategori ? $item->kategori->nama : '-' }}</p>
+                            <p class="text-gray-500 text-sm">Kategori: <?php echo e($item->kategori ? $item->kategori->nama : '-'); ?></p>
                         </div>
                     </div>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <p class="text-gray-600 col-span-4">Tidak ada produk ditemukan.</p>
-                @endforelse
+                <?php endif; ?>
             </div>
         </div>
 
-       {{-- Pagination (modern, center) --}}
-    @if ($produk->lastPage() > 1)
+       
+    <?php if($produk->lastPage() > 1): ?>
         <div class="mt-10 flex justify-center">
             <nav class="flex items-center space-x-2 bg-white/70 backdrop-blur-md px-4 py-2 rounded-xl shadow-md">
-                {{-- Tombol Prev --}}
-                @if ($produk->onFirstPage())
+                
+                <?php if($produk->onFirstPage()): ?>
                     <span class="px-3 py-1.5 text-gray-400 cursor-not-allowed select-none">‹</span>
-                @else
-                    <a href="{{ $produk->previousPageUrl() }}"
+                <?php else: ?>
+                    <a href="<?php echo e($produk->previousPageUrl()); ?>"
                        class="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                        ‹
                     </a>
-                @endif
+                <?php endif; ?>
 
-                {{-- Nomor Halaman --}}
-                @php
+                
+                <?php
                     $current = $produk->currentPage();
                     $last = $produk->lastPage();
                     $start = max(1, $current - 2);
                     $end = min($last, $current + 2);
-                @endphp
+                ?>
 
-                @if ($start > 1)
-                    <a href="{{ $produk->url(1) }}" class="px-3 py-1 text-blue-700 hover:bg-blue-100 rounded-md">1</a>
-                    @if ($start > 2)
+                <?php if($start > 1): ?>
+                    <a href="<?php echo e($produk->url(1)); ?>" class="px-3 py-1 text-blue-700 hover:bg-blue-100 rounded-md">1</a>
+                    <?php if($start > 2): ?>
                         <span class="text-gray-500">...</span>
-                    @endif
-                @endif
+                    <?php endif; ?>
+                <?php endif; ?>
 
-                @for ($i = $start; $i <= $end; $i++)
-                    @if ($i == $current)
-                        <span class="px-3 py-1 bg-blue-600 text-white rounded-md font-semibold shadow">{{ $i }}</span>
-                    @else
-                        <a href="{{ $produk->url($i) }}" class="px-3 py-1 text-blue-700 hover:bg-blue-100 rounded-md transition">{{ $i }}</a>
-                    @endif
-                @endfor
+                <?php for($i = $start; $i <= $end; $i++): ?>
+                    <?php if($i == $current): ?>
+                        <span class="px-3 py-1 bg-blue-600 text-white rounded-md font-semibold shadow"><?php echo e($i); ?></span>
+                    <?php else: ?>
+                        <a href="<?php echo e($produk->url($i)); ?>" class="px-3 py-1 text-blue-700 hover:bg-blue-100 rounded-md transition"><?php echo e($i); ?></a>
+                    <?php endif; ?>
+                <?php endfor; ?>
 
-                @if ($end < $last)
-                    @if ($end < $last - 1)
+                <?php if($end < $last): ?>
+                    <?php if($end < $last - 1): ?>
                         <span class="text-gray-500">...</span>
-                    @endif
-                    <a href="{{ $produk->url($last) }}" class="px-3 py-1 text-blue-700 hover:bg-blue-100 rounded-md">{{ $last }}</a>
-                @endif
+                    <?php endif; ?>
+                    <a href="<?php echo e($produk->url($last)); ?>" class="px-3 py-1 text-blue-700 hover:bg-blue-100 rounded-md"><?php echo e($last); ?></a>
+                <?php endif; ?>
 
-                {{-- Tombol Next --}}
-                @if ($produk->hasMorePages())
-                    <a href="{{ $produk->nextPageUrl() }}"
+                
+                <?php if($produk->hasMorePages()): ?>
+                    <a href="<?php echo e($produk->nextPageUrl()); ?>"
                        class="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                        ›
                     </a>
-                @else
+                <?php else: ?>
                     <span class="px-3 py-1.5 text-gray-400 cursor-not-allowed select-none">›</span>
-                @endif
+                <?php endif; ?>
             </nav>
         </div>
-    @endif
+    <?php endif; ?>
 
 
     </section>
@@ -155,15 +157,15 @@
     <!-- Statistik -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16 text-center">
         <div class="bg-gradient-to-r from-blue-500 to-blue-700 p-8 rounded-2xl shadow-lg text-white">
-            <h3 class="text-5xl font-bold mb-2">{{ $totalProduk ?? '120+' }}</h3>
+            <h3 class="text-5xl font-bold mb-2"><?php echo e($totalProduk ?? '120+'); ?></h3>
             <p class="opacity-90 text-lg">Total Produk</p>
         </div>
         <div class="bg-gradient-to-r from-green-400 to-green-600 p-8 rounded-2xl shadow-lg text-white">
-            <h3 class="text-5xl font-bold mb-2">{{ $userCount ?? '500+' }}</h3>
+            <h3 class="text-5xl font-bold mb-2"><?php echo e($userCount ?? '500+'); ?></h3>
             <p class="opacity-90 text-lg">Pengguna Aktif</p>
         </div>
         <div class="bg-gradient-to-r from-yellow-400 to-orange-500 p-8 rounded-2xl shadow-lg text-white">
-            <h3 class="text-5xl font-bold mb-2">{{ $transactionCount ?? '1000+' }}</h3>
+            <h3 class="text-5xl font-bold mb-2"><?php echo e($transactionCount ?? '1000+'); ?></h3>
             <p class="opacity-90 text-lg">Buku Terjual</p>
         </div>
 
@@ -172,36 +174,36 @@
     <!-- Misi -->
     <div class="mb-14">
         <h2 class="text-4xl font-bold text-blue-800 mb-4">📘 Misi Kami</h2>
-        <p class="text-lg text-gray-700">{{ $about->mission ?? 'Belum ada misi.' }}</p>
+        <p class="text-lg text-gray-700"><?php echo e($about->mission ?? 'Belum ada misi.'); ?></p>
     </div>
 
     <!-- Kenapa -->
     <div class="mb-14">
         <h2 class="text-4xl font-bold text-blue-800 mb-4">✨ Kenapa Seilmu?</h2>
-        <p class="text-lg text-gray-700">{{ $about->why ?? 'Belum ada alasan.' }}</p>
+        <p class="text-lg text-gray-700"><?php echo e($about->why ?? 'Belum ada alasan.'); ?></p>
     </div>
 
     <!-- Tagline -->
     <div class="mb-20 text-center">
         <h2 class="text-4xl font-bold text-blue-800 mb-3">🚀 Tagline Kami</h2>
         <p class="italic text-2xl text-gray-700">
-            "{{ $about->tagline ?? 'Belum ada tagline.' }}"
+            "<?php echo e($about->tagline ?? 'Belum ada tagline.'); ?>"
         </p>
     </div>
 
     <!-- Tombol Edit -->
-    @auth
+    <?php if(auth()->guard()->check()): ?>
     <div class="text-center">
-        {{-- route does not require an id because About is a single record (About::first()) --}}
-        <a href="{{ route('admin.about.edit') }}"
+        
+        <a href="<?php echo e(route('admin.about.edit')); ?>"
            class="px-6 py-3 bg-yellow-500 text-white text-lg rounded-xl shadow hover:bg-yellow-600 transition">
            ✏️ Edit
         </a>
     </div>
-    @endauth
+    <?php endif; ?>
 </div>
 
-{{-- Script pagination smooth --}}
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const container = document.querySelector('#produk-container');
@@ -212,8 +214,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         e.preventDefault();
         const url = btn.id === 'nextPage'
-            ? "{{ $produk->nextPageUrl() }}"
-            : "{{ $produk->previousPageUrl() }}";
+            ? "<?php echo e($produk->nextPageUrl()); ?>"
+            : "<?php echo e($produk->previousPageUrl()); ?>";
 
         if (!url) return;
 
@@ -234,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-{{-- Script untuk Read More --}}
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const toggleBtn = document.getElementById('toggleBtn');
@@ -251,4 +253,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\SamiUSK\resources\views/admin/about/index.blade.php ENDPATH**/ ?>

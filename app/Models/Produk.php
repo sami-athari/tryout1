@@ -1,5 +1,6 @@
 <?php
 
+// app/Models/Produk.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,25 +10,46 @@ class Produk extends Model
 {
     use HasFactory;
 
-    // Kolom yang bisa diisi
-    protected $fillable = [
-        'kategori_id',
-        'nama',
-        'harga',
-        'stok',
-        'deskripsi',
-        'foto',
+    protected $fillable = ['nama', 'harga', 'stok', 'foto', 'kategori_id', 'deskripsi', 'transaction_count'];
+
+    protected $casts = [
+        'harga' => 'integer',
+        'stok' => 'integer',
+        'transaction_count' => 'integer',
     ];
 
-    // Relasi ke kategori
-    
     public function kategori()
     {
         return $this->belongsTo(Kategori::class);
     }
 
+    // Relationship example: Produk hasMany TransactionItems (adjust names to your schema)
     public function transactionItems()
-{
-    return $this->hasMany(TransactionItem::class,'produk_id');
+    {
+        return $this->hasMany(\App\Models\TransactionItem::class, 'produk_id', 'id');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    // Hitung rata-rata rating
+    public function getAverageRatingAttribute()
+    {
+        return $this->reviews()->avg('rating') ?? 0;
+    }
+
+    // Hitung total ulasan
+    public function getReviewCountAttribute()
+    {
+        return $this->reviews()->count();
+    }
+
+    // Contoh jumlah terjual (kalau kamu punya kolom “terjual” di DB)
+    public function getSoldCountAttribute()
+    {
+        return $this->attributes['terjual'] ?? rand(100, 800); // fallback sementara
+    }
 }
-}
+

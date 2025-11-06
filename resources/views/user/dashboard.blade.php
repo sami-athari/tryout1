@@ -38,7 +38,6 @@
         <div class="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" id="productGrid">
             @forelse($produk as $item)
                 @php
-                    // prefer 'user.produk.show' -> 'user.deskripsi' -> fallback url
                     if (\Illuminate\Support\Facades\Route::has('user.produk.show')) {
                         $deskripsiRoute = route('user.produk.show', $item->id);
                     } elseif (\Illuminate\Support\Facades\Route::has('user.deskripsi')) {
@@ -46,45 +45,55 @@
                     } else {
                         $deskripsiRoute = url('/deskripsi/' . $item->id);
                     }
+
                     $imageSrc = $item->foto ? asset('storage/' . $item->foto) : asset('images/placeholder.png');
                     $priceNumeric = (int) $item->harga;
+                    $sold = (int) ($item->transaction_count ?? 0);
+
+                    if ($sold >= 1000000) {
+                        $soldLabel = number_format($sold / 1000000, 1) . 'M+';
+                    } elseif ($sold >= 1000) {
+                        $soldLabel = number_format($sold / 1000, 1) . 'k+';
+                    } else {
+                        $soldLabel = (string) $sold;
+                    }
+
+                    $rating = number_format($item->average_rating ?? ($item->reviews->avg('rating') ?? 0), 1);
                 @endphp
 
-                {{-- changed: enhanced product card with discount badge, rating, sold count and promo line --}}
                 <div class="relative product-card bg-white rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300"
                      data-price="{{ $priceNumeric }}">
+
+                    {{-- Wishlist --}}
+                    <div class="absolute top-3 right-3 z-10">
+                        <button type="button"
+                                class="add-wishlist-local inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/80 hover:bg-white focus:outline-none transition"
+                                data-id="{{ $item->id }}">
+                            <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2">
+                                <path d="M20.8 8.6c-.9-2-3-3.3-5.3-3.3-1.5 0-2.9.6-3.9 1.6L12 6.8l-.6-.6C9.9 5 8.5 4.4 7 4.4 4.7 4.4 2.6 5.6 1.7 7.6c-1 2.3-.2 5 1.9 7.1L12 21l8.4-6.3c2.1-2.1 2.9-4.8 1.9-7.1z" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+
                     <a href="{{ $deskripsiRoute }}">
                         <div class="relative overflow-hidden">
-
-
-                            <img src="{{ $imageSrc }}"
-                                 alt="{{ $item->nama }}"
+                            <img src="{{ $imageSrc }}" alt="{{ $item->nama }}"
                                  class="w-full aspect-[4/3] object-cover rounded-t-xl transition-transform duration-300 hover:scale-105">
                         </div>
 
                         <div class="p-4">
                             <h4 class="text-lg sm:text-xl font-semibold text-gray-800 line-clamp-2">{{ $item->nama }}</h4>
-
                             <p class="text-lg sm:text-xl font-bold text-blue-900 mt-1">
                                 Rp {{ number_format($item->harga ?? 0,0,',','.') }}
                             </p>
-
-                            {{-- Bonus atau Promo Line --}}
-                            <p class="text-sm text-red-600 font-semibold mt-1">
-                                Hemat s.d {{ rand(1,3) }}% Pakai Bonus
-                            </p>
-
-                            {{-- Rating dan terjual --}}
                             <div class="flex items-center text-sm text-gray-600 mt-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 .587l3.668 7.568L24 9.423l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.27 0 9.423l8.332-1.268z"/>
                                 </svg>
-                                <span class="font-medium">
-                                    {{ number_format($item->average_rating ?? ($item->reviews->avg('rating') ?? 0), 1) }}
-                                </span>
+                                <span class="font-medium">⭐ {{ $rating }}</span>
                                 <span class="mx-1">•</span>
-                               <h3 class="text-1xl font-bold mb-2">{{ $transactionCount ?? '1000+' }}</h3>
-            <p class="opacity-90 text-lg">Buku Terjual</p>
+                                <span class="text-sm">{{ $soldLabel }} terjual</span>
                             </div>
                         </div>
                     </a>
@@ -165,7 +174,7 @@
     </footer>
 </div>
 
-{{-- Style animasi tambahan --}}
+{{-- Dropdown Menu Animation --}}
 <style>
 .options-menu {
     opacity: 0;
@@ -179,9 +188,10 @@
 }
 </style>
 
-{{-- Script interaktif --}}
+{{-- Scripts --}}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // Dropdown option menu handler
     document.querySelectorAll('.options-btn').forEach(btn => {
         btn.addEventListener('click', e => {
             e.stopPropagation();
@@ -198,16 +208,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.options-menu').forEach(m => m.classList.remove('active'));
         }
     });
-});
-</script>
 
-{{-- Add client-side wishlist handler (paste near end of file) --}}
-@pushonce('scripts') {{-- custom helper to avoid duplicate insertion; if unavailable it's OK --}}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // handle local wishlist buttons when server route missing
+    // Wishlist lokal (non-login)
     document.querySelectorAll('.add-wishlist-local').forEach(btn => {
-        btn.addEventListener('click', function (e) {
+        btn.addEventListener('click', function () {
             const id = this.dataset.id;
             if (!id) return;
             try {
@@ -215,16 +219,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 const raw = localStorage.getItem(key);
                 let list = raw ? JSON.parse(raw) : [];
 
-                // avoid duplicates
                 if (!list.find(i => String(i.id) === String(id))) {
                     list.push({ id: id, added_at: new Date().toISOString() });
                     localStorage.setItem(key, JSON.stringify(list));
 
-                    // UI feedback
-                    this.textContent = '❤️ Ditambahkan';
-                    this.classList.add('opacity-80', 'pointer-events-none');
+                    this.innerHTML = '<svg class="w-6 h-6 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.35-10-7.1C-1.2 9.6 3.2 4 8.9 7.1 12 9 12 9 12 9s0 0 3.1-1.9C20.8 4 25.2 9.6 22 13.9 19.5 16.65 12 21 12 21z"/></svg>';
 
-                    // optional toast using SweetAlert2 if available
                     if (window.Swal) {
                         Swal.fire({
                             toast: true,
@@ -234,8 +234,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             showConfirmButton: false,
                             timer: 1800
                         });
-                    } else {
-                        alert('Produk ditambahkan ke wishlist (lokal).');
                     }
                 } else {
                     if (window.Swal) {
@@ -256,5 +254,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-@endpushonce
 @endsection
