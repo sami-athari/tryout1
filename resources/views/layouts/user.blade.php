@@ -13,103 +13,169 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* Dark mode transitions */
+        /* Smooth transitions */
         * {
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
 
-        /* Dark mode classes */
-        .dark-mode {
-            background-color: #1a1a2e;
-            color: #eee;
+        /* Dark mode base */
+        body {
+            transition: background-color 0.3s ease;
         }
 
+        body.dark-mode {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        /* Dark mode overrides */
         .dark-mode .bg-white {
-            background-color: #16213e !important;
+            background-color: #1e293b !important;
         }
 
         .dark-mode .text-gray-800 {
-            color: #e4e4e4 !important;
+            color: #e2e8f0 !important;
         }
 
         .dark-mode .text-gray-600 {
-            color: #b8b8b8 !important;
+            color: #cbd5e1 !important;
         }
 
         .dark-mode .text-gray-500 {
-            color: #9a9a9a !important;
+            color: #94a3b8 !important;
+        }
+
+        .dark-mode .text-gray-700 {
+            color: #cbd5e1 !important;
+        }
+
+        .dark-mode .text-gray-900 {
+            color: #f1f5f9 !important;
+        }
+
+        .dark-mode .text-black {
+            color: #e2e8f0 !important;
         }
 
         .dark-mode .bg-blue-900 {
-            background-color: #0f3460 !important;
+            background-color: #1e3a8a !important;
+        }
+
+        .dark-mode .bg-blue-800 {
+            background-color: #1e40af !important;
+        }
+
+        .dark-mode .bg-blue-50 {
+            background-color: #1e293b !important;
+        }
+
+        .dark-mode .bg-gray-50 {
+            background-color: #1e293b !important;
         }
 
         .dark-mode .shadow-md,
         .dark-mode .shadow-lg,
+        .dark-mode .shadow-xl,
         .dark-mode .shadow-2xl {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5) !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6) !important;
         }
 
         .dark-mode .border-gray-300,
+        .dark-mode .border-gray-200,
         .dark-mode .border {
-            border-color: #374151 !important;
+            border-color: #334155 !important;
         }
 
         .dark-mode input,
         .dark-mode select,
         .dark-mode textarea {
-            background-color: #1f2937;
-            color: #e4e4e4;
-            border-color: #374151;
+            background-color: #1e293b !important;
+            color: #e2e8f0 !important;
+            border-color: #334155 !important;
+        }
+
+        .dark-mode input::placeholder,
+        .dark-mode select::placeholder,
+        .dark-mode textarea::placeholder {
+            color: #64748b !important;
         }
 
         .dark-mode .hover\:bg-gray-100:hover {
-            background-color: #1f2937 !important;
+            background-color: #334155 !important;
         }
 
         .dark-mode .hover\:bg-blue-100:hover {
-            background-color: #1e3a5f !important;
+            background-color: #1e3a8a !important;
         }
 
-        /* Dark mode toggle button */
-        .theme-toggle {
+        .dark-mode .hover\:bg-gray-50:hover {
+            background-color: #334155 !important;
+        }
+
+        .dark-mode .hover\:bg-blue-50:hover {
+            background-color: #1e3a8a !important;
+        }
+
+        .dark-mode .bg-gradient-to-r {
+            background: linear-gradient(to right, #1e3a8a, #1e293b, #000) !important;
+        }
+
+        .dark-mode .bg-red-50 {
+            background-color: #450a0a !important;
+        }
+
+        .dark-mode .hover\:bg-red-50:hover {
+            background-color: #7f1d1d !important;
+        }
+
+        /* Modern dark mode toggle */
+        .theme-toggle-btn {
             position: relative;
-            width: 60px;
-            height: 30px;
-            background: #ddd;
-            border-radius: 30px;
+            width: 56px;
+            height: 28px;
+            background: #cbd5e1;
+            border-radius: 28px;
             cursor: pointer;
-            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            transition: background 0.3s ease;
         }
 
-        .dark-mode .theme-toggle {
-            background: #4a5568;
+        .theme-toggle-btn:hover {
+            background: #94a3b8;
+        }
+
+        .dark-mode .theme-toggle-btn {
+            background: #3b82f6;
+        }
+
+        .dark-mode .theme-toggle-btn:hover {
+            background: #2563eb;
         }
 
         .theme-toggle-slider {
-            position: absolute;
-            top: 3px;
-            left: 3px;
             width: 24px;
             height: 24px;
             background: white;
             border-radius: 50%;
-            transition: transform 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .dark-mode .theme-toggle-slider {
-            transform: translateX(30px);
-            background: #1a202c;
+            transform: translateX(28px);
         }
 
-        /* autosuggest box */
+        /* Autosuggest box */
         .suggestions-container {
             max-height: 320px;
             overflow-y: auto;
+        }
+
+        .dark-mode .suggestions-container {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
         }
 
         .suggestion-item {
@@ -125,6 +191,11 @@
             background: #f1f5f9;
         }
 
+        .dark-mode .suggestion-item:hover,
+        .dark-mode .suggestion-item.active {
+            background: #334155;
+        }
+
         .suggestion-thumb {
             width: 48px;
             height: 48px;
@@ -138,9 +209,45 @@
             color: #0f172a;
         }
 
+        .dark-mode .suggestion-title {
+            color: #e2e8f0;
+        }
+
         .suggestion-sub {
             font-size: .825rem;
             color: #6b7280;
+        }
+
+        .dark-mode .suggestion-sub {
+            color: #94a3b8;
+        }
+
+        /* Navbar improvements */
+        nav {
+            backdrop-filter: blur(10px);
+        }
+
+        /* Modern scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .dark-mode ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
 </head>
@@ -152,7 +259,6 @@
         $user = Auth::user();
         $isUser = Auth::check() && $user->role === 'user';
 
-        // Ambil notifikasi belum dibaca untuk user yang login (receiver_id = auth()->id())
         $userNotifications = collect();
         $userNotifCount = 0;
 
@@ -166,74 +272,69 @@
             $userNotifCount = $userNotifications->count();
         }
 
-        // kategori tetap dipakai
         $kategori = \App\Models\Kategori::all();
     @endphp
 
     <div id="app">
-        <!-- Navbar -->
-        <nav class="bg-blue-900 text-white shadow-md sticky top-0 z-50">
-            <div class="container mx-auto px-4 py-4 flex justify-between items-center relative">
+        <!-- Modern Navbar -->
+        <nav class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center relative">
                 <!-- Branding -->
-                <div class="flex items-center space-x-3">
-                    <span class="text-2xl font-bold">
-                        <a href="{{ url('/') }}">📚 Seilmu</a>
+                <div class="flex items-center space-x-4">
+                    <span class="text-2xl font-bold tracking-tight">
+                        <a href="{{ url('/') }}" class="flex items-center gap-2">
+                            <span class="text-3xl">📚</span>
+                            <span>Seilmu</span>
+                        </a>
                     </span>
                     @auth
-                        <span class="text-sm text-gray-300 italic">Halo, {{ Auth::user()->name }}</span>
+                        <span class="hidden md:inline-block text-sm text-blue-200">Halo, {{ Auth::user()->name }}</span>
                     @endauth
                 </div>
 
                 <!-- Menu Desktop -->
-                <div class="hidden md:flex items-center space-x-6 text-lg">
+                <div class="hidden md:flex items-center space-x-6">
                     @auth
                         @if ($isUser)
-                            <a href="{{ route('user.dashboard') }}" class="hover:text-blue-300">Home</a>
-                            <a href="{{ route('user.about') }}" class="hover:text-blue-300">About Us</a>
-                            <a href="{{ route('user.cart') }}" class="hover:text-blue-300">Cart</a>
-                            <a href="{{ route('user.transactions') }}" class="hover:text-blue-300">History</a>
-
+                            <a href="{{ route('user.dashboard') }}" class="hover:text-blue-300 transition">Home</a>
+                            <a href="{{ route('user.about') }}" class="hover:text-blue-300 transition">About</a>
+                            <a href="{{ route('user.cart') }}" class="hover:text-blue-300 transition">Cart</a>
+                            <a href="{{ route('user.transactions') }}" class="hover:text-blue-300 transition">History</a>
                         @endif
                     @endauth
 
-
-
-                    <!-- Chat dengan notifikasi untuk user -->
+                    <!-- Chat with notifications -->
                     <div class="relative group">
-                        <a href="{{ route('chat.index') }}" class="hover:text-blue-300 flex items-center">
-                            <svg class="w-6 h-6 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <a href="{{ route('chat.index') }}" class="hover:text-blue-300 transition flex items-center gap-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 10h.01M12 10h.01M16 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                             </svg>
                             <span>Chat</span>
 
                             @if ($userNotifCount > 0)
-                                <span
-                                    class="absolute -top-2 -right-3 bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center animate-pulse">
+                                <span class="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                                     {{ $userNotifCount }}
                                 </span>
                             @endif
                         </a>
 
                         @if ($isUser)
-                            <div
-                                class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute right-0 mt-2 w-80 bg-white text-gray-800 rounded-lg shadow-lg z-50 pointer-events-auto">
-                                <div class="p-3 border-b bg-blue-900 text-white font-semibold rounded-t-lg">
+                            <div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 absolute right-0 mt-2 w-80 bg-white text-gray-800 rounded-xl shadow-2xl z-50">
+                                <div class="p-3 border-b bg-blue-900 text-white font-semibold rounded-t-xl">
                                     Notifikasi
                                 </div>
 
                                 @if ($userNotifications->isEmpty())
-                                    <div class="p-3 text-sm text-gray-600">Tidak ada notifikasi baru.</div>
+                                    <div class="p-4 text-sm text-gray-600">Tidak ada notifikasi baru.</div>
                                 @else
                                     <ul class="max-h-64 overflow-auto">
                                         @foreach ($userNotifications as $notif)
-                                            <li class="hover:bg-gray-100">
+                                            <li class="hover:bg-gray-50 transition">
                                                 <a href="{{ route('chat.show', $notif->sender_id) }}"
                                                     class="flex items-start p-3 space-x-3">
                                                     <div class="flex-shrink-0">
-                                                        <div
-                                                            class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-medium">
+                                                        <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-medium">
                                                             {{ strtoupper(substr($notif->sender->name ?? 'U', 0, 1)) }}
                                                         </div>
                                                     </div>
@@ -254,8 +355,7 @@
                                         @endforeach
                                     </ul>
                                     <div class="p-2 border-t text-center">
-                                        <a href="{{ route('chat.index') }}" class="text-sm text-blue-700 hover:underline">Lihat
-                                            semua chat</a>
+                                        <a href="{{ route('chat.index') }}" class="text-sm text-blue-700 hover:underline">Lihat semua</a>
                                     </div>
                                 @endif
                             </div>
@@ -263,186 +363,9 @@
                     </div>
                 </div>
 
-                <!-- Search + Kategori + Sortir Harga (Desktop) -->
-                <form action="{{ route('user.dashboard') }}" method="GET" class="hidden md:flex md:flex-col items-start space-y-2">
-                    <div class="flex items-center space-x-2">
-                        <select name="kategori"
-                            class="border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
-                            <option value="">Semua Kategori</option>
-                            @foreach ($kategori as $k)
-                                <option value="{{ $k->id }}" {{ request('kategori') == $k->id ? 'selected' : '' }}>
-                                    {{ $k->nama }}
-                                </option>
-                            @endforeach
-                        </select>
-
-                        <!-- Desktop search input: add class and data attribute -->
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
-                            class="ajax-search border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200"
-                            autocomplete="off"
-                            data-suggest-url="{{ route('api.products.suggest') }}">
-
-                        <!-- suggestion container (desktop) -->
-                        <div class="suggestions-container hidden absolute mt-12 w-80 bg-white border rounded shadow-lg z-50" id="desktop-suggestions"></div>
-
-                        <!-- Replaced: sort select -> interactive dropdown with price inputs -->
-                        <div class="relative">
-                            <button type="button" id="priceSortBtn"
-                                    class="flex items-center space-x-2 border rounded-lg px-3 py-2 bg-white text-black hover:shadow"
-                                    aria-expanded="false">
-                                <span>Urutkan Harga</span>
-                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-
-                            <div id="priceSortPanel"
-                                class="hidden absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-50">
-                                <div class="mb-2 text-sm text-gray-700 font-semibold">Urutkan:</div>
-
-                                <div class="flex items-center gap-3 mb-3 text-gray-800">
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="sort_harga" value="asc" class="form-radio text-blue-600"
-                                            {{ request('sort_harga') == 'asc' ? 'checked' : '' }}>
-                                        <span class="ml-2">Termurah</span>
-                                    </label>
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="sort_harga" value="desc" class="form-radio text-blue-600"
-                                            {{ request('sort_harga') == 'desc' ? 'checked' : '' }}>
-                                        <span class="ml-2">Termahal</span>
-                                    </label>
-                                </div>
-                                <div class="mb-3 text-sm text-gray-600">Rentang Harga (Rp)</div>
-                                <div class="flex items-center space-x-2 mb-3">
-                                    <input type="number" name="price_min" value="{{ request('price_min') }}" min="0" step="1000"
-                                           inputmode="numeric" placeholder="Min"
-                                           class="w-1/2 border rounded-lg px-2 py-1 text-black focus:ring focus:ring-blue-200">
-                                    <input type="number" name="price_max" value="{{ request('price_max') }}" min="0" step="1000"
-                                           inputmode="numeric" placeholder="Max"
-                                           class="w-1/2 border rounded-lg px-2 py-1 text-black focus:ring focus:ring-blue-200">
-                                </div>
-
-                                <div class="flex justify-between">
-                                    <button type="button" id="priceReset" class="text-sm text-gray-600 hover:underline">Reset</button>
-                                    <button type="submit" class="bg-blue-800 text-white px-3 py-1 rounded text-sm">Terapkan</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button type="submit"
-                            class="hidden">Cari</button>
-                    </div>
-                </form>
-
-                <!-- Dark Mode Toggle -->
-                    <div class="flex items-center space-x-2">
-                        <div class="theme-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
-                            <div class="theme-toggle-slider">
-                                <span id="themeIcon">☀️</span>
-                            </div>
-                        </div>
-                    </div>
-
-                <!-- Auth Desktop -->
-                <div class="hidden md:block">
-                    @guest
-                        <div class="space-x-3">
-                            @if (Route::has('login'))
-                                <a href="{{ route('login') }}"
-                                    class="px-3 py-2 bg-white text-blue-900 font-semibold rounded-lg hover:bg-gray-100">Login</a>
-                            @endif
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}"
-                                    class="px-3 py-2 border border-white rounded-lg hover:bg-white hover:text-blue-900">Register</a>
-                            @endif
-                        </div>
-                    @else
-                       <!-- Dropdown Menu -->
-                @auth
-                    <div class="relative">
-                        <button onclick="toggleDropdown()"
-                            class="px-3 py-2 bg-white text-blue-900 rounded-lg hover:bg-gray-200 flex items-center">
-                            Menu ⬇
-                        </button>
-                        <div id="dropdownMenu"
-                            class="hidden absolute right-0 mt-2 w-60 bg-white text-blue-900 rounded-xl shadow-xl overflow-hidden border border-gray-200 z-50">
-                            <a href="{{ route('user.wishlist') }}"
-                                class="block px-4 py-2 hover:bg-blue-100 text-sm font-medium">
-                                ❤️ Wishlist
-                            </a>
-
-                            <div class="border-t border-gray-200 my-1"></div>
-
-                            <!-- Bahasa Section -->
-                            <div class="px-4 py-3 text-sm font-medium space-y-2">
-                                <div class="text-gray-700 font-semibold flex items-center gap-2">d
-                                    🌍 Pilih Bahasa
-                                </div>
-                                <div id="google_translate_element" class="w-full"></div>
-                            </div>
-
-                            <div class="border-t border-gray-200 my-1"></div>
-
-                            <form id="logout-form" method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="button" onclick="confirmLogout(event)"
-                                    class="w-full text-left px-4 py-2 hover:bg-blue-100 text-sm font-semibold text-red-600">
-                                    🚪 Logout
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                @endauth
-
-                    @endguest
-                </div>
-
-                <!-- Hamburger (Mobile) -->
-                <button class="md:hidden focus:outline-none" onclick="toggleMobileMenu()">
-                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Mobile Menu -->
-            <div id="mobileMenu" class="hidden md:hidden bg-blue-800 text-white px-6 py-4 space-y-4">
-                @auth
-                    <a href="{{ route('user.dashboard') }}" class="block hover:text-blue-300">Home</a>
-                    <a href="{{ route('user.about') }}" class="block hover:text-blue-300">About Us</a>
-                    <a href="{{ route('user.cart') }}" class="block hover:text-blue-300">Cart</a>
-                    <a href="{{ route('user.transactions') }}" class="block hover:text-blue-300">History</a>
-
-
-                @endauth
-                 <!-- Google Translate Script -->
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'id',
-                includedLanguages: 'id,en,ja,ko,zh-CN,ar,fr,de,es',
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-            }, 'google_translate_element');
-        }
-    </script>
-    <script type="text/javascript"
-        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-                <!-- Dark Mode Toggle Mobile -->
-                <div class="flex items-center justify-between py-2">
-                    <span>Dark Mode</span>
-                    <div class="theme-toggle" onclick="toggleDarkMode()">
-                        <div class="theme-toggle-slider">
-                            <span id="themeIconMobile">☀️</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Search Mobile + Sortir Harga -->
-                <form action="{{ route('user.dashboard') }}" method="GET" class="space-y-2">
-                    <select name="kategori"
-                        class="w-full border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
+                <!-- Search + Filters (Desktop) -->
+                <form action="{{ route('user.dashboard') }}" method="GET" class="hidden md:flex items-center gap-2">
+                    <select name="kategori" class="border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400">
                         <option value="">Semua Kategori</option>
                         @foreach ($kategori as $k)
                             <option value="{{ $k->id }}" {{ request('kategori') == $k->id ? 'selected' : '' }}>
@@ -451,83 +374,258 @@
                         @endforeach
                     </select>
 
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
-                        class="ajax-search w-full border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200"
-                        autocomplete="off"
-                        data-suggest-url="{{ route('api.products.suggest') }}">
+                    <div class="relative">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
+                            class="ajax-search border rounded-lg px-4 py-2 text-black focus:ring-2 focus:ring-blue-400 w-64"
+                            autocomplete="off"
+                            data-suggest-url="{{ route('api.products.suggest') }}">
+                        <div class="suggestions-container hidden absolute mt-2 w-full bg-white border rounded-lg shadow-xl z-50" id="desktop-suggestions"></div>
+                    </div>
 
-                    <!-- suggestion container (mobile) -->
-                    <div class="suggestions-container hidden mt-2 w-full bg-white border rounded shadow-lg z-50" id="mobile-suggestions"></div>
+                    <!-- Price sort dropdown -->
+                    <div class="relative">
+                        <button type="button" id="priceSortBtn"
+                                class="flex items-center gap-2 border rounded-lg px-4 py-2 bg-white text-black hover:bg-gray-50 transition">
+                            <span>Harga</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
 
-                    <!-- Mobile: collapse-able panel for sort + price -->
-                    <details class="bg-white text-black rounded-lg p-2">
-                        <summary class="cursor-pointer px-2 py-1">Urutkan Harga & Filter</summary>
+                        <div id="priceSortPanel" class="hidden absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-xl p-4 z-50">
+                            <div class="mb-3 text-sm text-gray-700 font-semibold">Urutkan:</div>
 
-                        <div class="mt-2 space-y-2">
-                            <div class="flex items-center gap-3">
-                                <label><input type="radio" name="sort_harga" value="asc" {{ request('sort_harga') == 'asc' ? 'checked' : '' }}> <span class="ml-1">Termurah</span></label>
-                                <label><input type="radio" name="sort_harga" value="desc" {{ request('sort_harga') == 'desc' ? 'checked' : '' }}> <span class="ml-1">Termahal</span></label>
+                            <div class="flex gap-3 mb-4">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="sort_harga" value="asc" class="form-radio text-blue-600"
+                                        {{ request('sort_harga') == 'asc' ? 'checked' : '' }}>
+                                    <span class="ml-2 text-gray-800">Termurah</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="sort_harga" value="desc" class="form-radio text-blue-600"
+                                        {{ request('sort_harga') == 'desc' ? 'checked' : '' }}>
+                                    <span class="ml-2 text-gray-800">Termahal</span>
+                                </label>
+                            </div>
+
+                            <div class="mb-2 text-sm text-gray-600">Rentang Harga (Rp)</div>
+                            <div class="flex gap-2 mb-4">
+                                <input type="number" name="price_min" value="{{ request('price_min') }}" min="0" step="1000"
+                                       placeholder="Min" class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400">
+                                <input type="number" name="price_max" value="{{ request('price_max') }}" min="0" step="1000"
+                                       placeholder="Max" class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400">
+                            </div>
+
+                            <div class="flex justify-between">
+                                <button type="button" id="priceReset" class="text-sm text-gray-600 hover:text-gray-900">Reset</button>
+                                <button type="submit" class="bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition">Terapkan</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Right side: Dark Mode + Auth -->
+                <div class="hidden md:flex items-center gap-4">
+                    <!-- Dark Mode Toggle -->
+                    <div class="theme-toggle-btn" onclick="toggleDarkMode()" title="Toggle dark mode">
+                        <div class="theme-toggle-slider"></div>
+                    </div>
+
+                    @guest
+                        <div class="flex gap-2">
+                            @if (Route::has('login'))
+                                <a href="{{ route('login') }}" class="px-4 py-2 bg-white text-blue-900 font-semibold rounded-lg hover:bg-gray-100 transition">Login</a>
+                            @endif
+                            @if (Route::has('register'))
+                                <a href="{{ route('register') }}" class="px-4 py-2 border border-white rounded-lg hover:bg-white hover:text-blue-900 transition">Register</a>
+                            @endif
+                        </div>
+                    @else
+                        <div class="relative">
+                            <button onclick="toggleDropdown()"
+                                class="px-4 py-2 bg-white text-blue-900 rounded-lg hover:bg-gray-100 transition flex items-center gap-2">
+                                Menu
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-56 bg-white text-blue-900 rounded-xl shadow-2xl overflow-hidden border z-50">
+                                <a href="{{ route('user.wishlist') }}" class="block px-4 py-3 hover:bg-blue-50 transition text-sm font-medium">
+                                    ❤️ Wishlist
+                                </a>
+
+                                <div class="border-t"></div>
+
+                                <div class="px-4 py-3 text-sm">
+                                    <div class="text-gray-700 font-semibold mb-2 flex items-center gap-2">
+                                        🌍 Pilih Bahasa
+                                    </div>
+                                    <div id="google_translate_element"></div>
+                                </div>
+
+                                <div class="border-t"></div>
+
+                                <form id="logout-form" method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="button" onclick="confirmLogout(event)"
+                                        class="w-full text-left px-4 py-3 hover:bg-red-50 transition text-sm font-semibold text-red-600">
+                                        🚪 Logout
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endguest
+                </div>
+
+                <!-- Hamburger (Mobile) -->
+                <button class="md:hidden focus:outline-none" onclick="toggleMobileMenu()">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="hidden md:hidden bg-blue-800 text-white px-6 py-4 space-y-3">
+                @auth
+                    <a href="{{ route('user.dashboard') }}" class="block hover:text-blue-300 transition">Home</a>
+                    <a href="{{ route('user.about') }}" class="block hover:text-blue-300 transition">About</a>
+                    <a href="{{ route('user.cart') }}" class="block hover:text-blue-300 transition">Cart</a>
+                    <a href="{{ route('user.transactions') }}" class="block hover:text-blue-300 transition">History</a>
+                    <a href="{{ route('chat.index') }}" class="block hover:text-blue-300 transition">
+                        Chat
+                        @if ($userNotifCount > 0)
+                            <span class="inline-block bg-red-500 text-white text-xs px-2 py-0.5 rounded-full ml-1">{{ $userNotifCount }}</span>
+                        @endif
+                    </a>
+                @endauth
+
+                <!-- Dark Mode Toggle Mobile -->
+                <div class="flex items-center justify-between py-2 border-t border-blue-700 mt-3 pt-3">
+                    <span class="text-sm">Mode Gelap</span>
+                    <div class="theme-toggle-btn" onclick="toggleDarkMode()">
+                        <div class="theme-toggle-slider"></div>
+                    </div>
+                </div>
+
+                <!-- Mobile Search -->
+                <form action="{{ route('user.dashboard') }}" method="GET" class="space-y-3 pt-2 border-t border-blue-700">
+                    <select name="kategori" class="w-full border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400">
+                        <option value="">Semua Kategori</option>
+                        @foreach ($kategori as $k)
+                            <option value="{{ $k->id }}" {{ request('kategori') == $k->id ? 'selected' : '' }}>
+                                {{ $k->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <div class="relative">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
+                            class="ajax-search w-full border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400"
+                            autocomplete="off"
+                            data-suggest-url="{{ route('api.products.suggest') }}">
+                        <div class="suggestions-container hidden mt-2 w-full bg-white border rounded-lg shadow-xl z-50" id="mobile-suggestions"></div>
+                    </div>
+
+                    <details class="bg-white text-black rounded-lg p-3">
+                        <summary class="cursor-pointer font-medium">Harga & Filter</summary>
+                        <div class="mt-3 space-y-3">
+                            <div class="flex gap-3">
+                                <label class="flex items-center">
+                                    <input type="radio" name="sort_harga" value="asc" {{ request('sort_harga') == 'asc' ? 'checked' : '' }}>
+                                    <span class="ml-2">Termurah</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="sort_harga" value="desc" {{ request('sort_harga') == 'desc' ? 'checked' : '' }}>
+                                    <span class="ml-2">Termahal</span>
+                                </label>
                             </div>
 
                             <div class="flex gap-2">
                                 <input type="number" name="price_min" value="{{ request('price_min') }}" min="0" step="1000"
-                                       inputmode="numeric" placeholder="Min Rp"
-                                       class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
+                                       placeholder="Min Rp" class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400">
                                 <input type="number" name="price_max" value="{{ request('price_max') }}" min="0" step="1000"
-                                       inputmode="numeric" placeholder="Max Rp"
-                                       class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring focus:ring-blue-200">
+                                       placeholder="Max Rp" class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400">
                             </div>
 
-                            <div class="flex justify-between">
-                                <button type="reset" class="text-sm text-gray-700">Reset</button>
-                                <button type="submit" class="bg-blue-700 text-white px-4 py-2 rounded-lg">Terapkan</button>
-                            </div>
+                            <button type="submit" class="w-full bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition">Terapkan</button>
                         </div>
                     </details>
-
-                    <button type="submit"
-                        class="w-full bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Cari</button>
                 </form>
+
+                @guest
+                    <div class="flex flex-col gap-2 border-t border-blue-700 pt-3 mt-3">
+                        @if (Route::has('login'))
+                            <a href="{{ route('login') }}" class="block text-center px-4 py-2 bg-white text-blue-900 font-semibold rounded-lg hover:bg-gray-100 transition">Login</a>
+                        @endif
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="block text-center px-4 py-2 border border-white rounded-lg hover:bg-white hover:text-blue-900 transition">Register</a>
+                        @endif
+                    </div>
+                @else
+                    <div class="border-t border-blue-700 pt-3 mt-3 space-y-2">
+                        <a href="{{ route('user.wishlist') }}" class="block px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition">
+                            ❤️ Wishlist
+                        </a>
+
+                        <div class="px-4 py-2 bg-white/10 rounded-lg">
+                            <div class="text-sm font-semibold mb-2">🌍 Pilih Bahasa</div>
+                            <div id="google_translate_element_mobile"></div>
+                        </div>
+
+                        <form id="logout-form-mobile" method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="button" onclick="confirmLogout(event)"
+                                class="w-full text-left px-4 py-2 bg-red-500/20 rounded-lg hover:bg-red-500/30 transition font-semibold text-red-300">
+                                🚪 Logout
+                            </button>
+                        </form>
+                    </div>
+                @endguest
             </div>
         </nav>
 
-        <main class="w-full">
+        <main class="w-full min-h-screen">
             @yield('content')
         </main>
     </div>
 
-    <script>
-        // Dark Mode Functions
-        function toggleDarkMode() {
-            const body = document.body;
-            const isDark = body.classList.toggle('dark-mode');
+    <!-- Google Translate -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'id',
+                includedLanguages: 'id,en,ja,ko,zh-CN,ar,fr,de,es',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
 
-            // Update icons
-            const icon = document.getElementById('themeIcon');
-            const iconMobile = document.getElementById('themeIconMobile');
-
-            if (isDark) {
-                icon.textContent = '🌙';
-                if (iconMobile) iconMobile.textContent = '🌙';
-                localStorage.setItem('darkMode', 'enabled');
-            } else {
-                icon.textContent = '☀️';
-                if (iconMobile) iconMobile.textContent = '☀️';
-                localStorage.setItem('darkMode', 'disabled');
+            // Also init mobile version if exists
+            if (document.getElementById('google_translate_element_mobile')) {
+                new google.translate.TranslateElement({
+                    pageLanguage: 'id',
+                    includedLanguages: 'id,en,ja,ko,zh-CN,ar,fr,de,es',
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                }, 'google_translate_element_mobile');
             }
         }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-        // Load dark mode preference on page load
-        (function() {
+    <script>
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+        }
+
+        // Load dark mode preference
+        document.addEventListener('DOMContentLoaded', () => {
             const darkMode = localStorage.getItem('darkMode');
             if (darkMode === 'enabled') {
                 document.body.classList.add('dark-mode');
-                const icon = document.getElementById('themeIcon');
-                const iconMobile = document.getElementById('themeIconMobile');
-                if (icon) icon.textContent = '🌙';
-                if (iconMobile) iconMobile.textContent = '🌙';
             }
-        })();
+        });
 
         function toggleDropdown() {
             document.getElementById('dropdownMenu').classList.toggle('hidden');
@@ -547,7 +645,9 @@
                 confirmButtonColor: '#2563eb',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Ya, keluar',
-                cancelButtonText: 'Batal'
+                cancelButtonText: 'Batal',
+                background: document.body.classList.contains('dark-mode') ? '#1e293b' : '#fff',
+                color: document.body.classList.contains('dark-mode') ? '#e2e8f0' : '#000'
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('logout-form')?.submit();
@@ -556,19 +656,18 @@
             });
         }
 
-        // Toggle desktop price sort panel
+        // Price sort panel toggle
         (function(){
             const btn = document.getElementById('priceSortBtn');
             const panel = document.getElementById('priceSortPanel');
             const reset = document.getElementById('priceReset');
 
             if (btn && panel) {
-                btn.addEventListener('click', () => {
-                    const open = panel.classList.toggle('hidden') === false;
-                    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    panel.classList.toggle('hidden');
                 });
 
-                // Reset inputs inside the panel
                 if (reset) {
                     reset.addEventListener('click', () => {
                         panel.querySelectorAll('input').forEach(i => {
@@ -578,157 +677,141 @@
                     });
                 }
 
-                // Close panel when clicking outside
                 document.addEventListener('click', (e) => {
                     if (!panel.contains(e.target) && !btn.contains(e.target)) {
                         panel.classList.add('hidden');
-                        btn.setAttribute('aria-expanded', 'false');
                     }
                 });
             }
         })();
 
+        // Autosuggest
         (function(){
-    const debounce = (fn, delay=300) => {
-        let t;
-        return (...args) => {
-            clearTimeout(t);
-            t = setTimeout(() => fn(...args), delay);
-        };
-    };
+            const debounce = (fn, delay=300) => {
+                let t;
+                return (...args) => {
+                    clearTimeout(t);
+                    t = setTimeout(() => fn(...args), delay);
+                };
+            };
 
-    function createSuggestionItem(item) {
-        const el = document.createElement('div');
-        el.className = 'suggestion-item';
-        el.tabIndex = 0;
-        el.innerHTML = `
-            <img src="${item.foto}" class="suggestion-thumb" alt="${escapeHtml(item.nama)}">
-            <div>
-                <div class="suggestion-title">${escapeHtml(item.nama)}</div>
-                <div class="suggestion-sub">Rp ${Number(item.harga || 0).toLocaleString('id-ID')}</div>
-            </div>
-        `;
-        el.dataset.url = item.url;
-        return el;
-    }
+            function createSuggestionItem(item) {
+                const el = document.createElement('div');
+                el.className = 'suggestion-item';
+                el.tabIndex = 0;
+                el.innerHTML = `
+                    <img src="${item.foto}" class="suggestion-thumb" alt="${escapeHtml(item.nama)}">
+                    <div>
+                        <div class="suggestion-title">${escapeHtml(item.nama)}</div>
+                        <div class="suggestion-sub">Rp ${Number(item.harga || 0).toLocaleString('id-ID')}</div>
+                    </div>
+                `;
+                el.dataset.url = item.url;
+                return el;
+            }
 
-    function escapeHtml(str){ return String(str).replace(/[&<>"'`=\/]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;",'/':'&#47;','`':'&#96;','=':'&#61;'}[s])); }
+            function escapeHtml(str){
+                return String(str).replace(/[&<>"'`=\/]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;",'/':'&#47;','`':'&#96;','=':'&#61;'}[s]));
+            }
 
-    function attachAutosuggest(input, container) {
-        const suggestUrl = input.dataset.suggestUrl;
-        if (!suggestUrl) return;
+            function attachAutosuggest(input, container) {
+                const suggestUrl = input.dataset.suggestUrl;
+                if (!suggestUrl) return;
 
-        let activeIndex = -1;
-        let items = [];
+                let activeIndex = -1;
+                let items = [];
 
-        const show = () => container.classList.remove('hidden');
-        const hide = () => {
-            container.classList.add('hidden');
-            activeIndex = -1;
-            items = [];
-            container.innerHTML = '';
-        };
+                const show = () => container.classList.remove('hidden');
+                const hide = () => {
+                    container.classList.add('hidden');
+                    activeIndex = -1;
+                    items = [];
+                    container.innerHTML = '';
+                };
 
-        const setActive = (idx) => {
-            const nodes = Array.from(container.children);
-            nodes.forEach((n, i) => n.classList.toggle('active', i === idx));
-            activeIndex = idx;
-        };
+                const setActive = (idx) => {
+                    Array.from(container.children).forEach((n, i) => n.classList.toggle('active', i === idx));
+                    activeIndex = idx;
+                };
 
-        const handleSelect = (idx) => {
-            const el = container.children[idx];
-            if (!el) return;
-            const url = el.dataset.url;
-            // navigate to product page
-            if (url) window.location.href = url;
-        };
+                const handleSelect = (idx) => {
+                    const el = container.children[idx];
+                    if (!el || !el.dataset.url) return;
+                    window.location.href = el.dataset.url;
+                };
 
-        const fetchSuggestions = debounce(async (q) => {
-            if (!q || q.trim().length < 1) { hide(); return; }
-            try {
-                const res = await fetch(`${suggestUrl}?q=${encodeURIComponent(q)}`, { credentials: 'same-origin' });
-                if (!res.ok) { hide(); return; }
-                const json = await res.json();
-                container.innerHTML = '';
-                if (!Array.isArray(json) || json.length === 0) { hide(); return; }
-                json.forEach(it => container.appendChild(createSuggestionItem(it)));
-                items = Array.from(container.children);
-                // click handlers
-                items.forEach((it, idx) => {
-                    it.addEventListener('click', () => handleSelect(idx));
-                    it.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter') handleSelect(idx);
-                    });
+                const fetchSuggestions = debounce(async (q) => {
+                    if (!q || q.trim().length < 1) { hide(); return; }
+                    try {
+                        const res = await fetch(`${suggestUrl}?q=${encodeURIComponent(q)}`);
+                        if (!res.ok) { hide(); return; }
+                        const json = await res.json();
+                        container.innerHTML = '';
+                        if (!Array.isArray(json) || json.length === 0) { hide(); return; }
+                        json.forEach(it => container.appendChild(createSuggestionItem(it)));
+                        items = Array.from(container.children);
+                        items.forEach((it, idx) => {
+                            it.addEventListener('click', () => handleSelect(idx));
+                            it.addEventListener('keydown', (e) => {
+                                if (e.key === 'Enter') handleSelect(idx);
+                            });
+                        });
+                        show();
+                    } catch (err) {
+                        hide();
+                        console.error('Suggest error', err);
+                    }
+                }, 250);
+
+                input.addEventListener('input', (e) => fetchSuggestions(e.target.value));
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        if (items.length === 0) return;
+                        const next = (activeIndex + 1) % items.length;
+                        setActive(next);
+                        items[next].scrollIntoView({ block: 'nearest' });
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        if (items.length === 0) return;
+                        const prev = (activeIndex - 1 + items.length) % items.length;
+                        setActive(prev);
+                        items[prev].scrollIntoView({ block: 'nearest' });
+                    } else if (e.key === 'Enter') {
+                        if (activeIndex >= 0) {
+                            e.preventDefault();
+                            handleSelect(activeIndex);
+                        }
+                    } else if (e.key === 'Escape') {
+                        hide();
+                    }
                 });
-                show();
-            } catch (err) {
-                hide();
-                console.error('Suggest error', err);
+
+                document.addEventListener('click', (ev) => {
+                    if (!container.contains(ev.target) && ev.target !== input) hide();
+                });
+
+                input.addEventListener('blur', () => setTimeout(hide, 150));
             }
-        }, 250);
 
-        input.addEventListener('input', (e) => {
-            const q = e.target.value;
-            fetchSuggestions(q);
-        });
+            document.addEventListener('DOMContentLoaded', () => {
+                const desktopInput = document.querySelector('.ajax-search:not(.w-full)');
+                const desktopContainer = document.getElementById('desktop-suggestions');
+                if (desktopInput && desktopContainer) attachAutosuggest(desktopInput, desktopContainer);
 
-        input.addEventListener('keydown', (e) => {
-            const key = e.key;
-            if (key === 'ArrowDown') {
-                e.preventDefault();
-                if (items.length === 0) return;
-                const next = (activeIndex + 1) % items.length;
-                setActive(next);
-                items[next].scrollIntoView({ block: 'nearest' });
-            } else if (key === 'ArrowUp') {
-                e.preventDefault();
-                if (items.length === 0) return;
-                const prev = (activeIndex - 1 + items.length) % items.length;
-                setActive(prev);
-                items[prev].scrollIntoView({ block: 'nearest' });
-            } else if (key === 'Enter') {
-                if (activeIndex >= 0) {
-                    e.preventDefault();
-                    handleSelect(activeIndex);
-                }
-            } else if (key === 'Escape') {
-                hide();
+                const mobileInput = document.querySelector('.ajax-search.w-full');
+                const mobileContainer = document.getElementById('mobile-suggestions');
+                if (mobileInput && mobileContainer) attachAutosuggest(mobileInput, mobileContainer);
+            });
+        })();
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#dropdownMenu') && !e.target.closest('button[onclick="toggleDropdown()"]')) {
+                document.getElementById('dropdownMenu')?.classList.add('hidden');
             }
         });
-
-        // hide on outside click
-        document.addEventListener('click', (ev) => {
-            if (!container.contains(ev.target) && ev.target !== input) hide();
-        });
-
-        // hide on blur with slight delay to allow click
-        input.addEventListener('blur', () => setTimeout(hide, 150));
-    }
-
-    // attach to desktop and mobile inputs
-    document.addEventListener('DOMContentLoaded', () => {
-        const desktopInput = document.querySelector('.ajax-search:not([data-mobile])'); // first desktop
-        const desktopContainer = document.getElementById('desktop-suggestions');
-        if (desktopInput && desktopContainer) attachAutosuggest(desktopInput, desktopContainer);
-
-        const mobileInput = document.querySelector('.ajax-search[data-mobile="1"]') || document.querySelector('.ajax-search.w-full');
-        const mobileContainer = document.getElementById('mobile-suggestions');
-        if (mobileInput && mobileContainer) attachAutosuggest(mobileInput, mobileContainer);
-
-        // If desktop input exists but no explicit mobile marker, also try to attach for other .ajax-search inputs
-        document.querySelectorAll('.ajax-search').forEach((inp) => {
-            if (inp === desktopInput || inp === mobileInput) return;
-            // create sibling container if not present
-            let container = inp.parentElement.querySelector('.suggestions-container');
-            if (!container) {
-                container = document.createElement('div');
-                container.className = 'suggestions-container hidden mt-2 w-full bg-white border rounded shadow-lg z-50';
-                inp.parentElement.appendChild(container);
-            }
-            attachAutosuggest(inp, container);
-        });
-    });
-})();
     </script>
 </body>
 
