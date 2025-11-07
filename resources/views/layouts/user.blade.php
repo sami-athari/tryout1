@@ -13,79 +13,276 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* Smooth transitions */
+        /* Modern CSS Reset & Smooth Transitions */
         * {
-            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* Dark mode base */
         body {
-            transition: background-color 0.3s ease;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            background-color: #ffffff;
+            color: #1f2937;
         }
 
+        /* Dark Mode */
         body.dark-mode {
-            background-color: #0f172a;
+            background: linear-gradient(to bottom right, #0f172a, #1e293b);
             color: #e2e8f0;
         }
 
-        /* Dark mode overrides */
+        /* Glassmorphism for navbar */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+        }
+
+        .dark-mode .glass-nav {
+            background: rgba(30, 41, 59, 0.8);
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+        }
+
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #3b82f6, #6366f1);
+            border-radius: 10px;
+        }
+
+        .dark-mode ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #1e40af, #4338ca);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, #2563eb, #4f46e5);
+        }
+
+        /* Dark Mode Toggle Switch */
+        .theme-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #e5e7eb;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .theme-switch:hover {
+            background: #d1d5db;
+        }
+
+        .dark-mode .theme-switch {
+            background: #3b82f6;
+        }
+
+        .dark-mode .theme-switch:hover {
+            background: #2563eb;
+        }
+
+        .theme-switch-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dark-mode .theme-switch-slider {
+            transform: translateX(30px);
+        }
+
+        /* Icon transitions */
+        .sun-icon, .moon-icon {
+            width: 14px;
+            height: 14px;
+            position: absolute;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .sun-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .moon-icon {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .dark-mode .sun-icon {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .dark-mode .moon-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Dropdown animations */
+        .dropdown-enter {
+            animation: dropdown-enter 0.3s ease-out;
+        }
+
+        @keyframes dropdown-enter {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Notification badge pulse */
+        .notif-badge {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        /* Search input focus effect */
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .dark-mode .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Suggestions container */
+        .suggestions-container {
+            max-height: 400px;
+            overflow-y: auto;
+            animation: dropdown-enter 0.2s ease-out;
+        }
+
+        .dark-mode .suggestions-container {
+            background: rgba(30, 41, 59, 0.95) !important;
+            backdrop-filter: blur(12px);
+            border-color: #334155 !important;
+        }
+
+        .suggestion-item {
+            transition: all 0.2s ease;
+        }
+
+        .suggestion-item:hover {
+            background: #f3f4f6;
+            transform: translateX(4px);
+        }
+
+        .dark-mode .suggestion-item:hover {
+            background: #334155;
+        }
+
+        /* Mobile menu slide */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .mobile-menu.active {
+            max-height: 1000px;
+        }
+
+        /* Button hover effects */
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Dark mode text colors */
+        .dark-mode .text-gray-900 {
+            color: #e2e8f0 !important;
+        }
+
+        .dark-mode .text-gray-800 {
+            color: #cbd5e1 !important;
+        }
+
+        .dark-mode .text-gray-700 {
+            color: #94a3b8 !important;
+        }
+
+        .dark-mode .text-gray-600 {
+            color: #64748b !important;
+        }
+
+        .dark-mode .text-gray-500 {
+            color: #475569 !important;
+        }
+
+        /* Dark mode backgrounds */
         .dark-mode .bg-white {
             background-color: #1e293b !important;
         }
 
-        .dark-mode .text-gray-800 {
-            color: #e2e8f0 !important;
-        }
-
-        .dark-mode .text-gray-600 {
-            color: #cbd5e1 !important;
-        }
-
-        .dark-mode .text-gray-500 {
-            color: #94a3b8 !important;
-        }
-
-        .dark-mode .text-gray-700 {
-            color: #cbd5e1 !important;
-        }
-
-        .dark-mode .text-gray-900 {
-            color: #f1f5f9 !important;
-        }
-
-        .dark-mode .text-black {
-            color: #e2e8f0 !important;
-        }
-
-        .dark-mode .bg-blue-900 {
-            background-color: #1e3a8a !important;
-        }
-
-        .dark-mode .bg-blue-800 {
-            background-color: #1e40af !important;
-        }
-
-        .dark-mode .bg-blue-50 {
-            background-color: #1e293b !important;
-        }
-
         .dark-mode .bg-gray-50 {
+            background-color: #0f172a !important;
+        }
+
+        .dark-mode .bg-gray-100 {
             background-color: #1e293b !important;
         }
 
-        .dark-mode .shadow-md,
-        .dark-mode .shadow-lg,
-        .dark-mode .shadow-xl,
-        .dark-mode .shadow-2xl {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6) !important;
-        }
-
-        .dark-mode .border-gray-300,
+        /* Dark mode borders */
         .dark-mode .border-gray-200,
+        .dark-mode .border-gray-300,
         .dark-mode .border {
             border-color: #334155 !important;
         }
 
+        /* Dark mode inputs */
         .dark-mode input,
         .dark-mode select,
         .dark-mode textarea {
@@ -94,165 +291,30 @@
             border-color: #334155 !important;
         }
 
-        .dark-mode input::placeholder,
-        .dark-mode select::placeholder,
-        .dark-mode textarea::placeholder {
+        .dark-mode input::placeholder {
             color: #64748b !important;
+        }
+
+        /* Dark mode hover states */
+        .dark-mode .hover\:bg-gray-50:hover {
+            background-color: #334155 !important;
         }
 
         .dark-mode .hover\:bg-gray-100:hover {
             background-color: #334155 !important;
         }
 
-        .dark-mode .hover\:bg-blue-100:hover {
-            background-color: #1e3a8a !important;
-        }
-
-        .dark-mode .hover\:bg-gray-50:hover {
-            background-color: #334155 !important;
-        }
-
         .dark-mode .hover\:bg-blue-50:hover {
-            background-color: #1e3a8a !important;
-        }
-
-        .dark-mode .bg-gradient-to-r {
-            background: linear-gradient(to right, #1e3a8a, #1e293b, #000) !important;
-        }
-
-        .dark-mode .bg-red-50 {
-            background-color: #450a0a !important;
+            background-color: rgba(59, 130, 246, 0.1) !important;
         }
 
         .dark-mode .hover\:bg-red-50:hover {
-            background-color: #7f1d1d !important;
-        }
-
-        /* Modern dark mode toggle */
-        .theme-toggle-btn {
-            position: relative;
-            width: 56px;
-            height: 28px;
-            background: #cbd5e1;
-            border-radius: 28px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            padding: 2px;
-            transition: background 0.3s ease;
-        }
-
-        .theme-toggle-btn:hover {
-            background: #94a3b8;
-        }
-
-        .dark-mode .theme-toggle-btn {
-            background: #3b82f6;
-        }
-
-        .dark-mode .theme-toggle-btn:hover {
-            background: #2563eb;
-        }
-
-        .theme-toggle-slider {
-            width: 24px;
-            height: 24px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .dark-mode .theme-toggle-slider {
-            transform: translateX(28px);
-        }
-
-        /* Autosuggest box */
-        .suggestions-container {
-            max-height: 320px;
-            overflow-y: auto;
-        }
-
-        .dark-mode .suggestions-container {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-        }
-
-        .suggestion-item {
-            padding: 0.5rem;
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .suggestion-item:hover,
-        .suggestion-item.active {
-            background: #f1f5f9;
-        }
-
-        .dark-mode .suggestion-item:hover,
-        .dark-mode .suggestion-item.active {
-            background: #334155;
-        }
-
-        .suggestion-thumb {
-            width: 48px;
-            height: 48px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-
-        .suggestion-title {
-            font-weight: 600;
-            font-size: .95rem;
-            color: #0f172a;
-        }
-
-        .dark-mode .suggestion-title {
-            color: #e2e8f0;
-        }
-
-        .suggestion-sub {
-            font-size: .825rem;
-            color: #6b7280;
-        }
-
-        .dark-mode .suggestion-sub {
-            color: #94a3b8;
-        }
-
-        /* Navbar improvements */
-        nav {
-            backdrop-filter: blur(10px);
-        }
-
-        /* Modern scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-
-        .dark-mode ::-webkit-scrollbar-thumb {
-            background: #475569;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+            background-color: rgba(239, 68, 68, 0.1) !important;
         }
     </style>
 </head>
 
-<body class="bg-white text-gray-800">
+<body>
     @php
         use App\Models\Notification;
 
@@ -276,318 +338,364 @@
     @endphp
 
     <div id="app">
-        <!-- Modern Navbar -->
-        <nav class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
-            <div class="container mx-auto px-4 py-3 flex justify-between items-center relative">
-                <!-- Branding -->
-                <div class="flex items-center space-x-4">
-                    <span class="text-2xl font-bold tracking-tight">
-                        <a href="{{ url('/') }}" class="flex items-center gap-2">
-                            <span class="text-3xl">📚</span>
-                            <span>Seilmu</span>
-                        </a>
-                    </span>
-                    @auth
-                        <span class="hidden md:inline-block text-sm text-blue-200">Halo, {{ Auth::user()->name }}</span>
-                    @endauth
-                </div>
+        <!-- Modern Glassmorphism Navbar -->
+        <nav class="glass-nav sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-6 py-4">
+                <div class="flex justify-between items-center">
+                    <!-- Logo -->
+                    <a href="{{ url('/') }}" class="flex items-center gap-3 group">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                            <span class="text-2xl">📚</span>
+                        </div>
+                        <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                            Seilmu
+                        </span>
+                    </a>
 
-                <!-- Menu Desktop -->
-                <div class="hidden md:flex items-center space-x-6">
-                    @auth
-                        @if ($isUser)
-                            <a href="{{ route('user.dashboard') }}" class="hover:text-blue-300 transition">Home</a>
-                            <a href="{{ route('user.about') }}" class="hover:text-blue-300 transition">About</a>
-                            <a href="{{ route('user.cart') }}" class="hover:text-blue-300 transition">Cart</a>
-                            <a href="{{ route('user.transactions') }}" class="hover:text-blue-300 transition">History</a>
-                        @endif
-                    @endauth
-
-                    <!-- Chat with notifications -->
-                    <div class="relative group">
-                        <a href="{{ route('chat.index') }}" class="hover:text-blue-300 transition flex items-center gap-1">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                            </svg>
-                            <span>Chat</span>
-
-                            @if ($userNotifCount > 0)
-                                <span class="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                                    {{ $userNotifCount }}
-                                </span>
+                    <!-- Desktop Navigation -->
+                    <div class="hidden lg:flex items-center gap-8">
+                        @auth
+                            @if ($isUser)
+                                <a href="{{ route('user.dashboard') }}" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Home</a>
+                                <a href="{{ route('user.about') }}" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">About</a>
+                                <a href="{{ route('user.cart') }}" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Cart</a>
+                                <a href="{{ route('user.transactions') }}" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Orders</a>
                             @endif
-                        </a>
+                        @endauth
 
-                        @if ($isUser)
-                            <div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 absolute right-0 mt-2 w-80 bg-white text-gray-800 rounded-xl shadow-2xl z-50">
-                                <div class="p-3 border-b bg-blue-900 text-white font-semibold rounded-t-xl">
-                                    Notifikasi
-                                </div>
-
-                                @if ($userNotifications->isEmpty())
-                                    <div class="p-4 text-sm text-gray-600">Tidak ada notifikasi baru.</div>
-                                @else
-                                    <ul class="max-h-64 overflow-auto">
-                                        @foreach ($userNotifications as $notif)
-                                            <li class="hover:bg-gray-50 transition">
-                                                <a href="{{ route('chat.show', $notif->sender_id) }}"
-                                                    class="flex items-start p-3 space-x-3">
-                                                    <div class="flex-shrink-0">
-                                                        <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-medium">
-                                                            {{ strtoupper(substr($notif->sender->name ?? 'U', 0, 1)) }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-1 min-w-0">
-                                                        <div class="flex justify-between items-center">
-                                                            <p class="text-sm font-medium text-gray-900 truncate">
-                                                                {{ $notif->sender->name ?? 'User' }}</p>
-                                                            <p class="text-xs text-gray-500 ml-2 whitespace-nowrap">
-                                                                {{ $notif->created_at->diffForHumans() }}
-                                                            </p>
-                                                        </div>
-                                                        <p class="text-sm text-gray-600 truncate">
-                                                            {{ \Illuminate\Support\Str::limit($notif->message ?? 'Pesan baru', 80) }}
-                                                        </p>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                    <div class="p-2 border-t text-center">
-                                        <a href="{{ route('chat.index') }}" class="text-sm text-blue-700 hover:underline">Lihat semua</a>
-                                    </div>
+                        <!-- Chat with notifications -->
+                        <div class="relative group">
+                            <a href="{{ route('chat.index') }}" class="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors font-medium">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                                <span>Chat</span>
+                                @if ($userNotifCount > 0)
+                                    <span class="notif-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                                        {{ $userNotifCount }}
+                                    </span>
                                 @endif
-                            </div>
-                        @endif
-                    </div>
-                </div>
+                            </a>
 
-                <!-- Search + Filters (Desktop) -->
-                <form action="{{ route('user.dashboard') }}" method="GET" class="hidden md:flex items-center gap-2">
-                    <select name="kategori" class="border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400">
-                        <option value="">Semua Kategori</option>
-                        @foreach ($kategori as $k)
-                            <option value="{{ $k->id }}" {{ request('kategori') == $k->id ? 'selected' : '' }}>
-                                {{ $k->nama }}
-                            </option>
-                        @endforeach
-                    </select>
+                            @if ($isUser)
+                                <div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 absolute right-0 mt-2 w-96 bg-white rounded-2xl shadow-2xl border overflow-hidden dropdown-enter">
+                                    <div class="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold">
+                                        Notifications
+                                    </div>
 
-                    <div class="relative">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
-                            class="ajax-search border rounded-lg px-4 py-2 text-black focus:ring-2 focus:ring-blue-400 w-64"
-                            autocomplete="off"
-                            data-suggest-url="{{ route('api.products.suggest') }}">
-                        <div class="suggestions-container hidden absolute mt-2 w-full bg-white border rounded-lg shadow-xl z-50" id="desktop-suggestions"></div>
-                    </div>
-
-                    <!-- Price sort dropdown -->
-                    <div class="relative">
-                        <button type="button" id="priceSortBtn"
-                                class="flex items-center gap-2 border rounded-lg px-4 py-2 bg-white text-black hover:bg-gray-50 transition">
-                            <span>Harga</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-
-                        <div id="priceSortPanel" class="hidden absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-xl p-4 z-50">
-                            <div class="mb-3 text-sm text-gray-700 font-semibold">Urutkan:</div>
-
-                            <div class="flex gap-3 mb-4">
-                                <label class="flex items-center cursor-pointer">
-                                    <input type="radio" name="sort_harga" value="asc" class="form-radio text-blue-600"
-                                        {{ request('sort_harga') == 'asc' ? 'checked' : '' }}>
-                                    <span class="ml-2 text-gray-800">Termurah</span>
-                                </label>
-                                <label class="flex items-center cursor-pointer">
-                                    <input type="radio" name="sort_harga" value="desc" class="form-radio text-blue-600"
-                                        {{ request('sort_harga') == 'desc' ? 'checked' : '' }}>
-                                    <span class="ml-2 text-gray-800">Termahal</span>
-                                </label>
-                            </div>
-
-                            <div class="mb-2 text-sm text-gray-600">Rentang Harga (Rp)</div>
-                            <div class="flex gap-2 mb-4">
-                                <input type="number" name="price_min" value="{{ request('price_min') }}" min="0" step="1000"
-                                       placeholder="Min" class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400">
-                                <input type="number" name="price_max" value="{{ request('price_max') }}" min="0" step="1000"
-                                       placeholder="Max" class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400">
-                            </div>
-
-                            <div class="flex justify-between">
-                                <button type="button" id="priceReset" class="text-sm text-gray-600 hover:text-gray-900">Reset</button>
-                                <button type="submit" class="bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition">Terapkan</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
-                <!-- Right side: Dark Mode + Auth -->
-                <div class="hidden md:flex items-center gap-4">
-                    <!-- Dark Mode Toggle -->
-                    <div class="theme-toggle-btn" onclick="toggleDarkMode()" title="Toggle dark mode">
-                        <div class="theme-toggle-slider"></div>
-                    </div>
-
-                    @guest
-                        <div class="flex gap-2">
-                            @if (Route::has('login'))
-                                <a href="{{ route('login') }}" class="px-4 py-2 bg-white text-blue-900 font-semibold rounded-lg hover:bg-gray-100 transition">Login</a>
-                            @endif
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="px-4 py-2 border border-white rounded-lg hover:bg-white hover:text-blue-900 transition">Register</a>
+                                    @if ($userNotifications->isEmpty())
+                                        <div class="p-6 text-center text-gray-500">
+                                            <svg class="w-12 h-12 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                                            </svg>
+                                            <p>No new notifications</p>
+                                        </div>
+                                    @else
+                                        <ul class="max-h-80 overflow-y-auto">
+                                            @foreach ($userNotifications as $notif)
+                                                <li>
+                                                    <a href="{{ route('chat.show', $notif->sender_id) }}" class="flex items-start p-4 hover:bg-gray-50 transition-colors">
+                                                        <div class="flex-shrink-0">
+                                                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-lg">
+                                                                {{ strtoupper(substr($notif->sender->name ?? 'U', 0, 1)) }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="ml-3 flex-1">
+                                                            <div class="flex justify-between items-start">
+                                                                <p class="font-semibold text-gray-900">{{ $notif->sender->name ?? 'User' }}</p>
+                                                                <p class="text-xs text-gray-500">{{ $notif->created_at->diffForHumans() }}</p>
+                                                            </div>
+                                                            <p class="text-sm text-gray-600 mt-1">{{ \Illuminate\Support\Str::limit($notif->message ?? 'New message', 100) }}</p>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                        <div class="p-3 border-t text-center">
+                                            <a href="{{ route('chat.index') }}" class="text-blue-600 hover:text-blue-700 font-medium text-sm">View all messages</a>
+                                        </div>
+                                    @endif
+                                </div>
                             @endif
                         </div>
-                    @else
+                    </div>
+
+                    <!-- Search Bar (Desktop) -->
+                    <form action="{{ route('user.dashboard') }}" method="GET" class="hidden lg:flex items-center gap-3">
+                        <select name="kategori" class="search-input px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-all">
+                            <option value="">All Categories</option>
+                            @foreach ($kategori as $k)
+                                <option value="{{ $k->id }}" {{ request('kategori') == $k->id ? 'selected' : '' }}>{{ $k->nama }}</option>
+                            @endforeach
+                        </select>
+
                         <div class="relative">
-                            <button onclick="toggleDropdown()"
-                                class="px-4 py-2 bg-white text-blue-900 rounded-lg hover:bg-gray-100 transition flex items-center gap-2">
-                                Menu
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products..."
+                                class="ajax-search search-input pl-10 pr-4 py-2 w-80 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-all"
+                                autocomplete="off"
+                                data-suggest-url="{{ route('api.products.suggest') }}">
+                            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <div class="suggestions-container hidden absolute mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden z-50" id="desktop-suggestions"></div>
+                        </div>
+
+                        <!-- Price Sort Dropdown -->
+                        <div class="relative">
+                            <button type="button" id="priceSortBtn"
+                                    class="flex items-center gap-2 border border-gray-200 rounded-xl px-4 py-2 bg-white hover:bg-gray-50 transition-all">
+                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"/>
+                                </svg>
+                                <span class="text-gray-700 font-medium">Price</span>
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </button>
-                            <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-56 bg-white text-blue-900 rounded-xl shadow-2xl overflow-hidden border z-50">
-                                <a href="{{ route('user.wishlist') }}" class="block px-4 py-3 hover:bg-blue-50 transition text-sm font-medium">
+
+                            <div id="priceSortPanel" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-2xl p-4 z-50 dropdown-enter">
+                                <div class="mb-3 text-sm text-gray-700 font-semibold">Sort By:</div>
+
+                                <div class="flex gap-3 mb-4">
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="radio" name="sort_harga" value="asc" class="form-radio text-blue-600"
+                                            {{ request('sort_harga') == 'asc' ? 'checked' : '' }}>
+                                        <span class="ml-2 text-gray-800">Lowest Price</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="radio" name="sort_harga" value="desc" class="form-radio text-blue-600"
+                                            {{ request('sort_harga') == 'desc' ? 'checked' : '' }}>
+                                        <span class="ml-2 text-gray-800">Highest Price</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+        <input type="radio" name="sort" value="best" class="form-radio text-blue-600"
+               {{ request('sort') == 'best' ? 'checked' : '' }}>
+        <span class="ml-2 text-gray-800">Best Seller</span>
+    </label>
+                                </div>
+
+                                <div class="mb-2 text-sm text-gray-600">Price Range</div>
+                                <div class="flex gap-2 mb-4">
+                                    <input type="number" name="price_min" value="{{ request('price_min') }}" min="0" step="1000"
+                                           placeholder="Min" class="w-1/2 border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500 transition-all">
+                                    <input type="number" name="price_max" value="{{ request('price_max') }}" min="0" step="1000"
+                                           placeholder="Max" class="w-1/2 border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500 transition-all">
+                                </div>
+
+                                <div class="flex justify-between">
+                                    <button type="button" id="priceReset" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">Reset</button>
+                                    <button type="submit" class="btn-primary bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all transform hover:scale-105">
+                            Search
+                        </button>
+                    </form>
+
+                    <!-- Right Side -->
+                    <div class="hidden lg:flex items-center gap-4">
+                        <!-- Dark Mode Toggle -->
+                        <div class="theme-switch" onclick="toggleDarkMode()" title="Toggle theme">
+                            <div class="theme-switch-slider">
+                                <svg class="sun-icon text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
+                                </svg>
+                                <svg class="moon-icon text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        @guest
+                            <a href="{{ route('login') }}" class="px-6 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">Login</a>
+                            <a href="{{ route('register') }}" class="btn-primary bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all transform hover:scale-105">
+                                Sign Up
+                            </a>
+                        @else
+                            <div class="relative">
+                                <button onclick="toggleDropdown()" class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-sm">
+                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                    </div>
+                                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+
+                                <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border overflow-hidden dropdown-enter">
+                                    <div class="p-4 border-b">
+                                        <p class="font-semibold text-gray-900">{{ Auth::user()->name }}</p>
+                                        <p class="text-sm text-gray-500">{{ Auth::user()->email }}</p>
+                                    </div>
+
+                                    <a href="{{ route('user.wishlist') }}" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
+                                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                        </svg>
+                                        <span class="font-medium text-gray-700">Wishlist</span>
+                                    </a>
+
+                                    <div class="border-t p-4">
+                                        <div class="text-sm text-gray-600 mb-2 font-medium">Language</div>
+                                        <div id="google_translate_element"></div>
+                                    </div>
+
+                                    <div class="border-t">
+                                        <button onclick="confirmLogout(event)" class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                            </svg>
+                                            <span class="font-medium">Logout</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endguest
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-xl hover:bg-gray-100 transition-colors">
+                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu -->
+                <div id="mobileMenu" class="mobile-menu lg:hidden">
+                    <div class="pt-4 pb-6 space-y-4">
+                        @auth
+                            <a href="{{ route('user.dashboard') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">Home</a>
+                            <a href="{{ route('user.about') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">About</a>
+                            <a href="{{ route('user.cart') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">Cart</a>
+                            <a href="{{ route('user.transactions') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">Orders</a>
+                            <a href="{{ route('chat.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                                Chat
+                                @if ($userNotifCount > 0)
+                                    <span class="inline-block bg-red-500 text-white text-xs px-2 py-0.5 rounded-full ml-2">{{ $userNotifCount }}</span>
+                                @endif
+                            </a>
+                        @endauth
+
+                        <!-- Mobile Search -->
+                        <form action="{{ route('user.dashboard') }}" method="GET" class="space-y-3 pt-4 border-t">
+                            <select name="kategori" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+                                <option value="">All Categories</option>
+                                @foreach ($kategori as $k)
+                                    <option value="{{ $k->id }}" {{ request('kategori') == $k->id ? 'selected' : '' }}>{{ $k->nama }}</option>
+                                @endforeach
+                            </select>
+
+                            <div class="relative">
+                                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products..."
+                                    class="ajax-search w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
+                                    autocomplete="off"
+                                    data-suggest-url="{{ route('api.products.suggest') }}">
+                                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                                <div class="suggestions-container hidden mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden z-50" id="mobile-suggestions"></div>
+                            </div>
+
+                            <!-- Mobile Price Filter -->
+                            <details class="bg-gray-50 rounded-xl p-4">
+                                <summary class="cursor-pointer font-medium text-gray-900 flex items-center justify-between">
+                                    <span>Price & Filters</span>
+                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </summary>
+                                <div class="mt-4 space-y-4">
+                                    <div>
+                                        <div class="text-sm text-gray-600 mb-2">Sort By:</div>
+                                        <div class="flex gap-3">
+                                            <label class="flex items-center cursor-pointer">
+                                                <input type="radio" name="sort_harga" value="asc" class="form-radio text-blue-600" {{ request('sort_harga') == 'asc' ? 'checked' : '' }}>
+                                                <span class="ml-2 text-gray-800">Lowest</span>
+                                            </label>
+                                            <label class="flex items-center cursor-pointer">
+                                                <input type="radio" name="sort_harga" value="desc" class="form-radio text-blue-600" {{ request('sort_harga') == 'desc' ? 'checked' : '' }}>
+                                                <span class="ml-2 text-gray-800">Highest</span>
+
+                                            </label>
+                                            <label class="flex items-center cursor-pointer">
+        <input type="radio" name="sort" value="best" class="form-radio text-blue-600"
+               {{ request('sort') == 'best' ? 'checked' : '' }}>
+        <span class="ml-2 text-gray-800">Best Seller</span>
+    </label>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="text-sm text-gray-600 mb-2">Price Range:</div>
+                                        <div class="flex gap-2">
+                                            <input type="number" name="price_min" value="{{ request('price_min') }}" min="0" step="1000"
+                                                   placeholder="Min" class="w-1/2 border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500">
+                                            <input type="number" name="price_max" value="{{ request('price_max') }}" min="0" step="1000"
+                                                   placeholder="Max" class="w-1/2 border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500">
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all">
+                                Search
+                            </button>
+                        </form>
+
+                        <!-- Dark Mode Toggle Mobile -->
+                        <div class="flex items-center justify-between px-4 py-2 border-t pt-4">
+                            <span class="text-gray-700 font-medium">Dark Mode</span>
+                            <div class="theme-switch" onclick="toggleDarkMode()">
+                                <div class="theme-switch-slider">
+                                    <svg class="sun-icon text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <svg class="moon-icon text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        @guest
+                            <div class="space-y-2 pt-4 border-t">
+                                <a href="{{ route('login') }}" class="block w-full text-center px-6 py-2 border border-blue-600 text-blue-600 rounded-xl font-medium hover:bg-blue-50 transition-all">Login</a>
+                                <a href="{{ route('register') }}" class="block w-full text-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all">Sign Up</a>
+                            </div>
+                        @else
+                            <div class="pt-4 border-t space-y-2">
+                                <a href="{{ route('user.wishlist') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
                                     ❤️ Wishlist
                                 </a>
 
-                                <div class="border-t"></div>
-
-                                <div class="px-4 py-3 text-sm">
-                                    <div class="text-gray-700 font-semibold mb-2 flex items-center gap-2">
-                                        🌍 Pilih Bahasa
-                                    </div>
-                                    <div id="google_translate_element"></div>
+                                <div class="px-4 py-2">
+                                    <div class="text-sm text-gray-600 mb-2 font-medium">Language</div>
+                                    <div id="google_translate_element_mobile"></div>
                                 </div>
 
-                                <div class="border-t"></div>
-
-                                <form id="logout-form" method="POST" action="{{ route('logout') }}">
+                                <form id="logout-form-mobile" method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="button" onclick="confirmLogout(event)"
-                                        class="w-full text-left px-4 py-3 hover:bg-red-50 transition text-sm font-semibold text-red-600">
+                                    <button type="button" onclick="confirmLogout(event)" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium">
                                         🚪 Logout
                                     </button>
                                 </form>
                             </div>
-                        </div>
-                    @endguest
-                </div>
-
-                <!-- Hamburger (Mobile) -->
-                <button class="md:hidden focus:outline-none" onclick="toggleMobileMenu()">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Mobile Menu -->
-            <div id="mobileMenu" class="hidden md:hidden bg-blue-800 text-white px-6 py-4 space-y-3">
-                @auth
-                    <a href="{{ route('user.dashboard') }}" class="block hover:text-blue-300 transition">Home</a>
-                    <a href="{{ route('user.about') }}" class="block hover:text-blue-300 transition">About</a>
-                    <a href="{{ route('user.cart') }}" class="block hover:text-blue-300 transition">Cart</a>
-                    <a href="{{ route('user.transactions') }}" class="block hover:text-blue-300 transition">History</a>
-                    <a href="{{ route('chat.index') }}" class="block hover:text-blue-300 transition">
-                        Chat
-                        @if ($userNotifCount > 0)
-                            <span class="inline-block bg-red-500 text-white text-xs px-2 py-0.5 rounded-full ml-1">{{ $userNotifCount }}</span>
-                        @endif
-                    </a>
-                @endauth
-
-                <!-- Dark Mode Toggle Mobile -->
-                <div class="flex items-center justify-between py-2 border-t border-blue-700 mt-3 pt-3">
-                    <span class="text-sm">Mode Gelap</span>
-                    <div class="theme-toggle-btn" onclick="toggleDarkMode()">
-                        <div class="theme-toggle-slider"></div>
+                        @endguest
                     </div>
                 </div>
-
-                <!-- Mobile Search -->
-                <form action="{{ route('user.dashboard') }}" method="GET" class="space-y-3 pt-2 border-t border-blue-700">
-                    <select name="kategori" class="w-full border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400">
-                        <option value="">Semua Kategori</option>
-                        @foreach ($kategori as $k)
-                            <option value="{{ $k->id }}" {{ request('kategori') == $k->id ? 'selected' : '' }}>
-                                {{ $k->nama }}
-                            </option>
-                        @endforeach
-                    </select>
-
-                    <div class="relative">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
-                            class="ajax-search w-full border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400"
-                            autocomplete="off"
-                            data-suggest-url="{{ route('api.products.suggest') }}">
-                        <div class="suggestions-container hidden mt-2 w-full bg-white border rounded-lg shadow-xl z-50" id="mobile-suggestions"></div>
-                    </div>
-
-                    <details class="bg-white text-black rounded-lg p-3">
-                        <summary class="cursor-pointer font-medium">Harga & Filter</summary>
-                        <div class="mt-3 space-y-3">
-                            <div class="flex gap-3">
-                                <label class="flex items-center">
-                                    <input type="radio" name="sort_harga" value="asc" {{ request('sort_harga') == 'asc' ? 'checked' : '' }}>
-                                    <span class="ml-2">Termurah</span>
-                                </label>
-                                <label class="flex items-center">
-                                    <input type="radio" name="sort_harga" value="desc" {{ request('sort_harga') == 'desc' ? 'checked' : '' }}>
-                                    <span class="ml-2">Termahal</span>
-                                </label>
-                            </div>
-
-                            <div class="flex gap-2">
-                                <input type="number" name="price_min" value="{{ request('price_min') }}" min="0" step="1000"
-                                       placeholder="Min Rp" class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400">
-                                <input type="number" name="price_max" value="{{ request('price_max') }}" min="0" step="1000"
-                                       placeholder="Max Rp" class="w-1/2 border rounded-lg px-3 py-2 text-black focus:ring-2 focus:ring-blue-400">
-                            </div>
-
-                            <button type="submit" class="w-full bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition">Terapkan</button>
-                        </div>
-                    </details>
-                </form>
-
-                @guest
-                    <div class="flex flex-col gap-2 border-t border-blue-700 pt-3 mt-3">
-                        @if (Route::has('login'))
-                            <a href="{{ route('login') }}" class="block text-center px-4 py-2 bg-white text-blue-900 font-semibold rounded-lg hover:bg-gray-100 transition">Login</a>
-                        @endif
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="block text-center px-4 py-2 border border-white rounded-lg hover:bg-white hover:text-blue-900 transition">Register</a>
-                        @endif
-                    </div>
-                @else
-                    <div class="border-t border-blue-700 pt-3 mt-3 space-y-2">
-                        <a href="{{ route('user.wishlist') }}" class="block px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition">
-                            ❤️ Wishlist
-                        </a>
-
-                        <div class="px-4 py-2 bg-white/10 rounded-lg">
-                            <div class="text-sm font-semibold mb-2">🌍 Pilih Bahasa</div>
-                            <div id="google_translate_element_mobile"></div>
-                        </div>
-
-                        <form id="logout-form-mobile" method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="button" onclick="confirmLogout(event)"
-                                class="w-full text-left px-4 py-2 bg-red-500/20 rounded-lg hover:bg-red-500/30 transition font-semibold text-red-300">
-                                🚪 Logout
-                            </button>
-                        </form>
-                    </div>
-                @endguest
             </div>
         </nav>
 
         <main class="w-full min-h-screen">
             @yield('content')
         </main>
+
+        <form id="logout-form" method="POST" action="{{ route('logout') }}" class="hidden">
+            @csrf
+        </form>
     </div>
 
     <!-- Google Translate -->
@@ -599,7 +707,6 @@
                 layout: google.translate.TranslateElement.InlineLayout.SIMPLE
             }, 'google_translate_element');
 
-            // Also init mobile version if exists
             if (document.getElementById('google_translate_element_mobile')) {
                 new google.translate.TranslateElement({
                     pageLanguage: 'id',
@@ -612,40 +719,42 @@
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <script>
-        // Dark Mode Toggle
+        // Dark Mode
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
         }
 
-        // Load dark mode preference
         document.addEventListener('DOMContentLoaded', () => {
-            const darkMode = localStorage.getItem('darkMode');
-            if (darkMode === 'enabled') {
+            if (localStorage.getItem('darkMode') === 'enabled') {
                 document.body.classList.add('dark-mode');
             }
         });
 
+        // Dropdown
         function toggleDropdown() {
-            document.getElementById('dropdownMenu').classList.toggle('hidden');
+            const menu = document.getElementById('dropdownMenu');
+            menu.classList.toggle('hidden');
         }
 
+        // Mobile Menu
         function toggleMobileMenu() {
-            document.getElementById('mobileMenu').classList.toggle('hidden');
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('active');
         }
 
+        // Logout Confirmation
         function confirmLogout(event) {
             event.preventDefault();
             Swal.fire({
-                title: 'Keluar dari akun?',
-                text: "Kamu akan keluar dari akun!",
+                title: 'Logout?',
+                text: "Are you sure you want to logout?",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#2563eb',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, keluar',
-                cancelButtonText: 'Batal',
+                confirmButtonColor: '#3b82f6',
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: 'Yes, logout',
+                cancelButtonText: 'Cancel',
                 background: document.body.classList.contains('dark-mode') ? '#1e293b' : '#fff',
                 color: document.body.classList.contains('dark-mode') ? '#e2e8f0' : '#000'
             }).then((result) => {
@@ -697,13 +806,12 @@
 
             function createSuggestionItem(item) {
                 const el = document.createElement('div');
-                el.className = 'suggestion-item';
-                el.tabIndex = 0;
+                el.className = 'suggestion-item flex items-center gap-3 p-3 cursor-pointer';
                 el.innerHTML = `
-                    <img src="${item.foto}" class="suggestion-thumb" alt="${escapeHtml(item.nama)}">
-                    <div>
-                        <div class="suggestion-title">${escapeHtml(item.nama)}</div>
-                        <div class="suggestion-sub">Rp ${Number(item.harga || 0).toLocaleString('id-ID')}</div>
+                    <img src="${item.foto}" class="w-14 h-14 object-cover rounded-lg" alt="${escapeHtml(item.nama)}">
+                    <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-gray-900 truncate">${escapeHtml(item.nama)}</div>
+                        <div class="text-sm text-blue-600 font-medium">Rp ${Number(item.harga || 0).toLocaleString('id-ID')}</div>
                     </div>
                 `;
                 el.dataset.url = item.url;
@@ -730,12 +838,18 @@
                 };
 
                 const setActive = (idx) => {
-                    Array.from(container.children).forEach((n, i) => n.classList.toggle('active', i === idx));
+                    items.forEach((el, i) => {
+                        if (i === idx) {
+                            el.style.background = document.body.classList.contains('dark-mode') ? '#334155' : '#f3f4f6';
+                        } else {
+                            el.style.background = '';
+                        }
+                    });
                     activeIndex = idx;
                 };
 
                 const handleSelect = (idx) => {
-                    const el = container.children[idx];
+                    const el = items[idx];
                     if (!el || !el.dataset.url) return;
                     window.location.href = el.dataset.url;
                 };
@@ -805,7 +919,26 @@
                 if (mobileInput && mobileContainer) attachAutosuggest(mobileInput, mobileContainer);
             });
         })();
+        document.addEventListener("DOMContentLoaded", () => {
+    const bestRadio = document.querySelector("input[name='sort'][value='best']");
+    const priceRadios = document.querySelectorAll("input[name='sort_harga']");
 
+    if (bestRadio) {
+        bestRadio.addEventListener("change", () => {
+            if (bestRadio.checked) {
+                priceRadios.forEach(r => r.checked = false);
+            }
+        });
+    }
+
+    priceRadios.forEach(r => {
+        r.addEventListener("change", () => {
+            if (r.checked) {
+                bestRadio.checked = false;
+            }
+        });
+    });
+});
         // Close dropdowns when clicking outside
         document.addEventListener('click', (e) => {
             if (!e.target.closest('#dropdownMenu') && !e.target.closest('button[onclick="toggleDropdown()"]')) {

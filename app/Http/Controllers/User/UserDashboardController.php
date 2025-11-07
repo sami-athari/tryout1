@@ -7,70 +7,102 @@ use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\Kategori;
 use App\Models\Transaction;
+
 class UserDashboardController extends Controller
 {
     /**
-     * Halaman dashboard / daftar produk (dengan search + filter kategori)
+     * ✅ Dashboard Product List (Search + Filter + Sorting)
      */
     public function index(Request $request)
-{
-    $query = Produk::query()->with(['kategori', 'reviews']);
+    {
+        $query = Produk::query()->with(['kategori', 'reviews']);
 
-    // 🔍 Filter pencarian nama produk
-    if ($request->filled('search')) {
-        $query->where('nama', 'like', '%' . $request->search . '%');
-    }
+        /* ------------------------------
+         ✅ SEARCH
+        ------------------------------ */
+        if ($request->filled('search')) {
+            $query->where('nama', 'like', '%' . $request->search . '%');
+        }
 
-    // 🔽 Filter kategori
-    if ($request->filled('kategori')) {
-        $query->where('kategori_id', $request->kategori);
-    }
+        /* ------------------------------
+         ✅ FILTER KATEGORI
+        ------------------------------ */
+        if ($request->filled('kategori')) {
+            $query->where('kategori_id', $request->kategori);
+        }
 
-    // 💰 Filter harga minimum & maksimum
-    if ($request->filled('min_harga')) {
-        $query->where('harga', '>=', $request->min_harga);
-    }
-    if ($request->filled('max_harga')) {
-        $query->where('harga', '<=', $request->max_harga);
-    }
+        /* ------------------------------
+         ✅ PRICE MIN & MAX
+        ------------------------------ */
+        if ($request->filled('price_min')) {
+            $query->where('harga', '>=', (int) $request->price_min);
+        }
+        if ($request->filled('price_max')) {
+            $query->where('harga', '<=', (int) $request->price_max);
+        }
 
-    // ↕️ Sortir harga (termurah / termahal)
-    if ($request->filled('sort')) {
-        if ($request->sort == 'low_high') {
+        /* ------------------------------
+         ✅ SORTING EXCLUSIVE
+         - best seller TIDAK boleh digabung dengan sort_harga
+        ------------------------------ */
+
+        $sortHarga = $request->sort_harga;        // asc / desc
+        $sortBest  = $request->sort;              // best
+
+        // ✅ Kalau BEST SELLER aktif → NONAKTIFKAN sorting harga
+        if ($sortBest === 'best') {
+            $sortHarga = null;
+        }
+
+        // ✅ Kalau sorting harga aktif → NONAKTIFKAN BEST SELLER
+        if ($sortHarga === 'asc' || $sortHarga === 'desc') {
+            $sortBest = null;
+        }
+
+        /* ------------------------------
+         ✅ APPLY SORTING
+        ------------------------------ */
+
+        // ✅ Best Seller (Transaction Count)
+        if ($sortBest === 'best') {
+            $query->orderBy('transaction_count', 'desc');
+        }
+
+        // ✅ Lowest / Highest Price
+        if ($sortHarga === 'asc') {
             $query->orderBy('harga', 'asc');
-        } elseif ($request->sort == 'high_low') {
+        }
+        if ($sortHarga === 'desc') {
             $query->orderBy('harga', 'desc');
         }
-    } else {
-        $query->latest('id'); // default: produk terbaru
+
+        // ✅ Default Sorting (if no sorting at all)
+        if (!$sortHarga && !$sortBest) {
+            $query->latest('id');
+        }
+
+        /* ------------------------------
+         ✅ PAGINATION (KEEP QUERY PARAM)
+        ------------------------------ */
+        $produk = $query->paginate(12)->appends($request->query());
+
+        $kategori = Kategori::all();
+
+        return view('user.dashboard', compact('produk', 'kategori'));
     }
 
-    // 🔹 Ambil hasil dengan pagination
-    $produk = $query->paginate(8)->appends($request->query());
-    $transactionCount = Transaction::count();
-    // 🔹 Ambil semua kategori untuk filter dropdown
-    $kategori = Kategori::all();
-
-    return view('user.dashboard', compact('produk', 'kategori','transactionCount'));
-}
-
-
     /**
-     * Halaman detail produk
-     * Route: GET /produk/{id} => user.produk.show
+     * ✅ SHOW PRODUCT DETAIL
      */
     public function show($id)
     {
-        // Ambil produk beserta relasi kategori
         $produk = Produk::with('kategori')->findOrFail($id);
 
-        // Ambil produk terkait (dalam kategori sama), exclude produk saat ini
         $related = Produk::where('kategori_id', $produk->kategori_id)
-                         ->where('id', '!=', $produk->id)
-                         ->take(4)
-                         ->get();
+            ->where('id', '!=', $produk->id)
+            ->take(4)
+            ->get();
 
-        // Ambil kategori untuk layout / dropdown (jika layout membutuhkan)
         $kategori = Kategori::all();
 
         return view('user.deskripsi', compact('produk', 'related', 'kategori'));

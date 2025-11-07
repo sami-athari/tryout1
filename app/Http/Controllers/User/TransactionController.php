@@ -184,4 +184,71 @@ class TransactionController extends Controller
             return back()->with('error', 'Terjadi kesalahan saat memperbarui transaksi.');
         }
     }
+
+    /**
+     * Return global best seller products ordered by the Produk.transaction_count column.
+     *
+     * Usage: $this->bestSellersGlobal(10);
+     *
+     * @param int $limit
+     * @return \Illuminate\Support\Collection of Produk models
+     */
+    public function bestSellersGlobal(int $limit = 10)
+    {
+        // Return products ordered by transaction_count (descending)
+        return Produk::orderByDesc('transaction_count')
+            ->take($limit)
+            ->get();
+    }
+
+    /**
+     * Return products that the specified user bought the most.
+     * Aggregates TransactionItem.jumlah for transactions belonging to the user,
+     * then returns Produk models with an appended purchased_qty attribute.
+     *
+     * Usage: $this->bestSellersForUser(Auth::id(), 10);
+     *
+     * @param int|null $userId
+     * @param int $limit
+     * @return \Illuminate\Support\Collection of Produk models with ->purchased_qty
+     */
+    public function bestSellersForUser(?int $userId = null, int $limit = 10)
+    {
+        $userId = $userId ?? Auth::id();
+        if (!$userId) {
+            return collect();
+        }
+
+        // Aggregate quantities per product for this user's transactions.
+        $rows = TransactionItem::select('transaction_items.produk_id', DB::raw('SUM(transaction_items.jumlah) as total_qty'))
+            ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
+            ->where('transactions.user_id', $userId)
+            // consider only meaningful statuses (adjust if needed)
+            ->whereIn('transactions.status', ['dikirim', 'selesai'])
+            ->groupBy('transaction_items.produk_id')
+            ->orderByDesc('total_qty')
+            ->limit($limit)
+            ->get();
+
+        if ($rows->isEmpty()) {
+            return collect();
+        }
+
+        $produkIds = $rows->pluck('produk_id')->toArray();
+        $produks = Produk::whereIn('id', $produkIds)->get()->keyBy('id');
+
+        // Map aggregated rows to Produk models and attach purchased_qty
+        $result = $rows->map(function ($r) use ($produks) {
+            $p = $produks->get($r->produk_id);
+            if (!$p) {
+                return null;
+            }
+            // Attach purchased_qty attribute for easy access in views
+            $p->purchased_qty = (int) $r->total_qty;
+            return $p;
+        })->filter()->values();
+
+        // Ensure ordering by purchased_qty desc (rows were ordered but keep safe)
+        return $result->sortByDesc(fn($p) => $p->purchased_qty)->values();
+    }
 }

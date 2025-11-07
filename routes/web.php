@@ -68,6 +68,9 @@ Route::prefix('admin')->middleware(['auth', RoleMiddleware::class . ':admin'])->
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
+    
+    Route::post('/admin/transactions/update/{id}', [AdminTransactionController::class, 'updateStatus'])
+    ->name('admin.transactions.update');
 
     // CRUD Kategori & Produk
     Route::resource('produk', ProdukController::class);

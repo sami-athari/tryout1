@@ -239,14 +239,14 @@
 
 
                     @else
-                        <button type="button"
+                        {{-- <button type="button"
                                 disabled
                                 class="w-full bg-gray-300 text-gray-600 py-3 rounded-xl font-bold text-base cursor-not-allowed flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                             Stok Habis
-                        </button>
+                        </button> --}}
                     @endif
 
                             {{-- Add to Cart Button --}}
@@ -257,7 +257,7 @@
                                 </svg>
                                 + Masukkan ke Keranjang
                             </button>
-                            
+
                         </form>
 
 
