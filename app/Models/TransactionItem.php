@@ -8,9 +8,9 @@ class TransactionItem extends Model
 {
     protected $fillable = ['transaction_id', 'produk_id', 'jumlah', 'harga'];
 
-    public function transaction()
+      public function transaction()
     {
-        return $this->belongsTo(Transaction::class);
+        return $this->belongsTo(Transaction::class, 'transaction_id');
     }
 
     public function produk()

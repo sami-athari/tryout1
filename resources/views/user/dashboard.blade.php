@@ -54,6 +54,12 @@
         @endif
 
         <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            @php
+$userWishlist = Auth::check()
+    ? \App\Models\Wishlist::where('user_id', Auth::id())->pluck('produk_id')->toArray()
+    : [];
+@endphp
+
             @forelse($produk as $item)
                 @php
                     if (\Illuminate\Support\Facades\Route::has('user.produk.show')) {
@@ -84,12 +90,21 @@
 
                         {{-- Wishlist Button --}}
                         <button type="button"
-                                class="add-wishlist-local absolute top-4 right-4 z-10 w-11 h-11 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all hover:scale-110"
-                                data-id="{{ $item->id }}">
-                            <svg class="w-5 h-5 text-gray-700 hover:text-red-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20.8 8.6c-.9-2-3-3.3-5.3-3.3-1.5 0-2.9.6-3.9 1.6L12 6.8l-.6-.6C9.9 5 8.5 4.4 7 4.4 4.7 4.4 2.6 5.6 1.7 7.6c-1 2.3-.2 5 1.9 7.1L12 21l8.4-6.3c2.1-2.1 2.9-4.8 1.9-7.1z" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </button>
+    class="wishlist-btn absolute top-4 right-4 z-10 w-11 h-11 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all hover:scale-110"
+    data-id="{{ $item->id }}"
+    data-liked="{{ in_array($item->id, $userWishlist) ? 'true' : 'false' }}"
+>
+    @if(in_array($item->id, $userWishlist))
+        <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 21s-7.5-4.35-10-7.1C-1.2 9.6 3.2 4 8.9 7.1 12 9 12 9 12 9s0 0 3.1-1.9C20.8 4 25.2 9.6 22 13.9 19.5 16.65 12 21 12 21z"/>
+        </svg>
+    @else
+        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M20.8 8.6c-.9-2-3-3.3-5.3-3.3-1.5 0-2.9.6-3.9 1.6L12 6.8l-.6-.6C9.9 5 8.5 4.4 7 4.4 4.7 4.4 2.6 5.6 1.7 7.6c-1 2.3-.2 5 1.9 7.1L12 21l8.4-6.3c2.1-2.1 2.9-4.8 1.9-7.1z" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    @endif
+</button>
+
 
                         <a href="{{ $deskripsiRoute }}" class="block">
                             <div class="relative overflow-hidden aspect-[4/3] bg-gray-100">
@@ -413,90 +428,79 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Wishlist functionality
-    document.querySelectorAll('.add-wishlist-local').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.addEventListener('click', async function (e) {
             e.preventDefault();
             e.stopPropagation();
 
-            const id = this.dataset.id;
-            if (!id) return;
+            const produkId = this.dataset.id;
+            const liked = this.dataset.liked === "true";
 
-            try {
-                const key = 'seilmu_wishlist';
-                const raw = localStorage.getItem(key);
-                let list = raw ? JSON.parse(raw) : [];
+            const url = `/user/wishlist/toggle/${produkId}`;
+            const method = liked ? "DELETE" : "POST";
 
-                if (!list.find(i => String(i.id) === String(id))) {
-                    list.push({ id: id, added_at: new Date().toISOString() });
-                    localStorage.setItem(key, JSON.stringify(list));
+            const res = await fetch(url, {
+                method: method,
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                    "Accept": "application/json",
+                },
+            });
 
-                    this.innerHTML = '<svg class="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.35-10-7.1C-1.2 9.6 3.2 4 8.9 7.1 12 9 12 9 12 9s0 0 3.1-1.9C20.8 4 25.2 9.6 22 13.9 19.5 16.65 12 21 12 21z"/></svg>';
+            const data = await res.json();
 
-                    if (window.Swal) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Added to wishlist',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            background: document.body.classList.contains('dark-mode') ? '#1e293b' : '#fff',
-                            color: document.body.classList.contains('dark-mode') ? '#e2e8f0' : '#000'
-                        });
-                    }
-                } else {
-                    if (window.Swal) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'info',
-                            title: 'Already in wishlist',
-                            showConfirmButton: false,
-                            timer: 1200,
-                            background: document.body.classList.contains('dark-mode') ? '#1e293b' : '#fff',
-                            color: document.body.classList.contains('dark-mode') ? '#e2e8f0' : '#000'
-                        });
-                    }
+            // ✅ Added (DB)
+            if (data.status === 'added') {
+                this.dataset.liked = "true";
+                this.innerHTML = `
+                    <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 21s-7.5-4.35-10-7.1C-1.2 9.6 3.2 4 8.9 7.1 12 9 12 9 12 9s0 0 3.1-1.9C20.8 4 25.2 9.6 22 13.9 19.5 16.65 12 21 12 21z"/>
+                    </svg>
+                `;
+
+                // ✅ ✅ ✅ NOTIF KAMU YG HILANG — SUDAH BALIK
+                if (window.Swal) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Added to wishlist',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        background: document.body.classList.contains('dark-mode') ? '#1e293b' : '#fff',
+                        color: document.body.classList.contains('dark-mode') ? '#e2e8f0' : '#000'
+                    });
                 }
-            } catch (err) {
-                console.error('Wishlist error:', err);
+            }
+
+            // ✅ Removed (DB)
+            if (data.status === 'removed') {
+                this.dataset.liked = "false";
+                this.innerHTML = `
+                    <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M20.8 8.6c-.9-2-3-3.3-5.3-3.3-1.5 0-2.9.6-3.9 1.6L12 6.8l-.6-.6C9.9 5 8.5 4.4 7 4.4 4.7 4.4 2.6 5.6 1.7 7.6c-1 2.3-.2 5 1.9 7.1L12 21l8.4-6.3c2.1-2.1 2.9-4.8 1.9-7.1z" stroke-linecap="round" stroke-linejoin="round"/>
+                `;
+
+                // ✅ ✅ ✅ NOTIF REMOVE — SUDAH BALIK
+                if (window.Swal) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'info',
+                        title: 'Removed from wishlist',
+                        showConfirmButton: false,
+                        timer: 1200,
+                        background: document.body.classList.contains('dark-mode') ? '#1e293b' : '#fff',
+                        color: document.body.classList.contains('dark-mode') ? '#e2e8f0' : '#000'
+                    });
+                }
             }
         });
     });
 
-    // Smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const target = document.querySelector(link.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        });
-    });
-
-    // Quantity controls
-    document.querySelectorAll('.product-card').forEach(card => {
-        const minusBtn = card.querySelector('.qty-minus');
-        const plusBtn = card.querySelector('.qty-plus');
-        const input = card.querySelector('.qty-input');
-
-        if (minusBtn && input) {
-            minusBtn.addEventListener('click', () => {
-                const val = parseInt(input.value) || 1;
-                if (val > parseInt(input.min)) input.value = val - 1;
-            });
-        }
-
-        if (plusBtn && input) {
-            plusBtn.addEventListener('click', () => {
-                const val = parseInt(input.value) || 1;
-                const max = parseInt(input.max);
-                if (val < max) input.value = val + 1;
-            });
-        }
-    });
 });
+
 </script>
+
 @endsection

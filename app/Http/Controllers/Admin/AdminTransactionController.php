@@ -18,24 +18,24 @@ class AdminTransactionController extends Controller
         return view('admin.transactions.index', compact('transactions'));
     }
     public function updateStatus(Request $request, $id)
-{
-    if (auth()->user()->role !== 'admin') {
-        abort(403, 'Akses hanya untuk admin.');
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Akses hanya untuk admin.');
+        }
+
+        $request->validate([
+            'status' => 'required|string|in:pending,dikirim,selesai,dibatalkan',
+            'shipping_note' => 'nullable|string|max:1000'
+        ]);
+
+        $transaction = Transaction::findOrFail($id);
+
+        $transaction->status = $request->status;
+        $transaction->shipping_note = $request->shipping_note;
+        $transaction->save();
+
+        return back()->with('success', 'Status dan catatan pengiriman berhasil diperbarui.');
     }
-
-    $request->validate([
-        'status' => 'required|string',
-        'shipping_note' => 'nullable|string'
-    ]);
-
-    $transaction = Transaction::findOrFail($id);
-
-    $transaction->status = $request->status;
-    $transaction->shipping_note = $request->shipping_note;
-    $transaction->save();
-
-    return back()->with('success', 'Status dan catatan pengiriman berhasil diperbarui.');
-}
 
     public function konfirmasi($id)
     {

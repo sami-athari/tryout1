@@ -6,9 +6,10 @@
 
     @forelse($transaksi as $trx)
     <div class="bg-white shadow-md rounded-lg p-6 mb-6 border">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-start">
             <div>
                 <p class="text-lg font-semibold text-gray-700">Invoice: #{{ $trx->id }}</p>
+
                 <p class="mt-1">
                     <span class="font-medium">Status:</span>
                     @if($trx->status === 'pending')
@@ -21,8 +22,19 @@
                         <span class="px-3 py-1 rounded-full text-sm bg-red-100 text-red-700">Dibatalkan</span>
                     @endif
                 </p>
+
+                {{-- ✅ CATATAN ADMIN --}}
+                @if ($trx->shipping_note)
+                <div class="mt-3 px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p class="text-sm font-semibold text-blue-900 mb-1">Catatan Admin:</p>
+                    <p class="text-sm text-gray-700 whitespace-pre-line">
+                        {{ $trx->shipping_note }}
+                    </p>
+                </div>
+                @endif
             </div>
 
+            {{-- BUTTONS --}}
             <div class="flex items-center gap-3">
                 @if ($trx->status !== 'pending')
                     <a href="{{ route('user.struk', $trx->id) }}"
@@ -30,11 +42,12 @@
                         Lihat Struk
                     </a>
                 @endif
+
                 @if ($trx->status === 'dikirim')
                     <form method="POST" action="{{ route('user.transactions.selesai', $trx->id) }}">
                         @csrf
                         <button type="submit"
-                                class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-500 transition">
+                            class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-500 transition">
                             Terima
                         </button>
                     </form>
@@ -42,7 +55,7 @@
             </div>
         </div>
 
-        {{-- FORM REVIEW --}}
+        {{-- ✅ FORM REVIEW (Muncul jika selesai) --}}
         @if ($trx->status === 'selesai')
         <div class="mt-6 border-t pt-4">
             <h4 class="text-lg font-semibold text-gray-800 mb-3">Berikan Review Produk</h4>
@@ -52,8 +65,7 @@
             @else
                 @foreach ($trx->items as $item)
                     @php
-                        // Check if user already reviewed this product.
-                        // If the reviews table has a transaction_id column, include it for stricter matching.
+                        // Cek apakah user sudah review produk
                         $reviewQuery = \App\Models\Review::where('produk_id', $item->produk_id)
                             ->where('user_id', auth()->id());
 
@@ -70,7 +82,9 @@
 
                             @if (!$alreadyReviewed)
                                 <button onclick="openReviewModal({{ $item->produk_id }}, {{ $trx->id }})"
-                                    class="text-blue-700 font-semibold hover:underline text-sm">Beri Review ⭐</button>
+                                    class="text-blue-700 font-semibold hover:underline text-sm">
+                                    Beri Review ⭐
+                                </button>
                             @else
                                 <p class="text-sm text-green-600">✅ Sudah direview</p>
                             @endif
@@ -81,30 +95,37 @@
         </div>
         @endif
     </div>
+
     @empty
-        <p class="text-gray-500 text-center">Belum ada transaksi yang tercatat.</p>
+    <p class="text-gray-500 text-center">Belum ada transaksi yang tercatat.</p>
     @endforelse
 </div>
 
-{{-- MODAL POPUP --}}
+{{-- ✅ REVIEW MODAL --}}
 <div id="reviewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 relative">
         <button onclick="closeReviewModal()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800">✖</button>
 
         <h3 class="text-xl font-semibold mb-4">Beri Penilaian Produk</h3>
+
         <form id="reviewForm" action="{{ route('user.review.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
+
             <input type="hidden" name="produk_id" id="produk_id">
 
-            {{-- include transaction_id only if DB column exists to avoid insert errors --}}
             @if(\Illuminate\Support\Facades\Schema::hasColumn('reviews', 'transaction_id'))
                 <input type="hidden" name="transaction_id" id="transaction_id">
             @endif
 
             <div class="flex items-center mb-3 space-x-2 justify-center">
                 @for ($i = 1; $i <= 5; $i++)
-                    <svg onclick="setRating({{ $i }})" id="star-{{ $i }}" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    <svg onclick="setRating({{ $i }})"
+                        id="star-{{ $i }}"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
                         class="w-10 h-10 text-gray-400 cursor-pointer hover:text-yellow-400 transition">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M11.48 3.5a.75.75 0 011.04 0l2.27 2.18a.75.75 0 00.56.25h3.18a.75.75 0 01.44 1.36l-2.57 2.11a.75.75 0 00-.25.68l.86 3.45a.75.75 0 01-1.1.82l-2.92-1.73a.75.75 0 00-.78 0l-2.92 1.73a.75.75 0 01-1.1-.82l.86-3.45a.75.75 0 00-.25-.68L6.03 7.29A.75.75 0 016.47 6h3.18a.75.75 0 00.56-.25l2.27-2.18z" />
@@ -119,10 +140,13 @@
                 class="border rounded-lg w-full px-3 py-2 mb-3 focus:ring-2 focus:ring-blue-400 focus:outline-none"></textarea>
 
             <label class="block text-sm font-medium text-gray-700 mb-1">Gambar (opsional)</label>
-            <input type="file" name="gambar" accept="image/*" class="border rounded-lg px-3 py-2 w-full mb-4">
+            <input type="file" name="gambar" accept="image/*"
+                class="border rounded-lg px-3 py-2 w-full mb-4">
 
             <button type="submit"
-                class="w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-800 transition">Kirim Review</button>
+                class="w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-800 transition">
+                Kirim Review
+            </button>
         </form>
     </div>
 </div>
@@ -132,7 +156,9 @@ let currentRating = 0;
 
 function openReviewModal(produkId, trxId) {
     document.getElementById('produk_id').value = produkId;
-    document.getElementById('transaction_id').value = trxId;
+    if (document.getElementById('transaction_id'))
+        document.getElementById('transaction_id').value = trxId;
+
     document.getElementById('reviewModal').classList.remove('hidden');
 }
 
@@ -144,6 +170,7 @@ function closeReviewModal() {
 function setRating(rating) {
     currentRating = rating;
     document.getElementById('rating').value = rating;
+
     for (let i = 1; i <= 5; i++) {
         const star = document.getElementById(`star-${i}`);
         star.classList.toggle('text-yellow-400', i <= rating);
@@ -151,4 +178,5 @@ function setRating(rating) {
     }
 }
 </script>
+
 @endsection

@@ -68,8 +68,8 @@ Route::prefix('admin')->middleware(['auth', RoleMiddleware::class . ':admin'])->
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
-    
-    Route::post('/admin/transactions/update/{id}', [AdminTransactionController::class, 'updateStatus'])
+
+    Route::post('/transactions/update/{id}', [AdminTransactionController::class, 'updateStatus'])
     ->name('admin.transactions.update');
 
     // CRUD Kategori & Produk
@@ -108,8 +108,12 @@ Route::prefix('user')->middleware(['auth', RoleMiddleware::class . ':user'])->na
     Route::get('/language/{lang}', [LanguageController::class, 'switch'])->name('language.switch');
     // Wishlist
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
-    Route::post('/wishlist/add/{produk_id}', [WishlistController::class, 'store'])->name('wishlist.add');
-    Route::delete('/wishlist/remove/{id}', [WishlistController::class, 'destroy'])->name('wishlist.remove');
+    Route::post('/wishlist/toggle/{produk_id}', [WishlistController::class, 'store'])
+    ->name('wishlist.toggle');
+
+Route::delete('/wishlist/toggle/{produk_id}', [WishlistController::class, 'destroy'])
+    ->name('wishlist.remove');
+
 
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart');

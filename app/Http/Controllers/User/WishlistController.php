@@ -4,13 +4,11 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Wishlist;
-use App\Models\Produk;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class WishlistController extends Controller
 {
-    // Tampilkan wishlist user
+    // Tampilkan wishlist
     public function index()
     {
         $wishlist = Wishlist::where('user_id', Auth::id())
@@ -20,15 +18,16 @@ class WishlistController extends Controller
         return view('user.wishlist', compact('wishlist'));
     }
 
-    // Tambah produk ke wishlist
+    // Tambah ke wishlist
     public function store($produk_id)
     {
+        // jika sudah ada → return
         $exists = Wishlist::where('user_id', Auth::id())
             ->where('produk_id', $produk_id)
-            ->exists();
+            ->first();
 
         if ($exists) {
-            return redirect()->back()->with('info', 'Produk sudah ada di wishlist kamu!');
+            return response()->json(['status' => 'exists']);
         }
 
         Wishlist::create([
@@ -36,18 +35,16 @@ class WishlistController extends Controller
             'produk_id' => $produk_id,
         ]);
 
-        return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke wishlist!');
+        return response()->json(['status' => 'added']);
     }
 
-    // Hapus dari wishlist
-    public function destroy($id)
+    // Hapus wishlist
+    public function destroy($produk_id)
     {
-        $wishlist = Wishlist::where('id', $id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        Wishlist::where('user_id', Auth::id())
+            ->where('produk_id', $produk_id)
+            ->delete();
 
-        $wishlist->delete();
-
-        return redirect()->back()->with('success', 'Produk dihapus dari wishlist.');
+        return response()->json(['status' => 'removed']);
     }
 }

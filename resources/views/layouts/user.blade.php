@@ -420,79 +420,106 @@
                         </div>
                     </div>
 
-                    <!-- Search Bar (Desktop) -->
-                    <form action="{{ route('user.dashboard') }}" method="GET" class="hidden lg:flex items-center gap-3">
-                        <select name="kategori" class="search-input px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-all">
-                            <option value="">All Categories</option>
-                            @foreach ($kategori as $k)
-                                <option value="{{ $k->id }}" {{ request('kategori') == $k->id ? 'selected' : '' }}>{{ $k->nama }}</option>
-                            @endforeach
-                        </select>
 
-                        <div class="relative">
-                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products..."
-                                class="ajax-search search-input pl-10 pr-4 py-2 w-80 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-all"
-                                autocomplete="off"
-                                data-suggest-url="{{ route('api.products.suggest') }}">
-                            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                            <div class="suggestions-container hidden absolute mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden z-50" id="desktop-suggestions"></div>
-                        </div>
 
-                        <!-- Price Sort Dropdown -->
-                        <div class="relative">
-                            <button type="button" id="priceSortBtn"
+                       <div class="hidden lg:flex items-center gap-8">
+        <form method="GET" action="{{ route('user.dashboard') }}" class="hidden lg:flex items-center gap-8">
+    <!-- Search input desktop -->
+    <div class="relative">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products..."
+            class="ajax-search search-input pl-10 pr-4 py-2 w-80 border border-gray-200 rounded-xl"
+            autocomplete="off"
+            data-suggest-url="{{ route('api.products.suggest') }}">
+        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" ...></svg>
+        <div id="desktop-suggestions" class="suggestions-container hidden absolute mt-2 w-full"></div>
+    </div>
+
+    <!-- ✅ FILTER PANEL & APPLY (HARUS DI DALAM FORM) -->
+    <div class="flex items-center gap-3">
+
+        <!-- Dropdown button -->
+        <div class="relative">
+           <button type="button" id="priceSortBtn"
                                     class="flex items-center gap-2 border border-gray-200 rounded-xl px-4 py-2 bg-white hover:bg-gray-50 transition-all">
                                 <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"/>
                                 </svg>
-                                <span class="text-gray-700 font-medium">Price</span>
+                                <span class="text-gray-700 font-medium">Filter</span>
                                 <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </button>
 
-                            <div id="priceSortPanel" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-2xl p-4 z-50 dropdown-enter">
-                                <div class="mb-3 text-sm text-gray-700 font-semibold">Sort By:</div>
+            <!-- Dropdown panel -->
+            <div id="priceSortPanel" class="hidden absolute right-0 mt-2 w-72 bg-white border rounded-xl shadow-xl p-4">
 
-                                <div class="flex gap-3 mb-4">
-                                    <label class="flex items-center cursor-pointer">
-                                        <input type="radio" name="sort_harga" value="asc" class="form-radio text-blue-600"
-                                            {{ request('sort_harga') == 'asc' ? 'checked' : '' }}>
-                                        <span class="ml-2 text-gray-800">Lowest Price</span>
-                                    </label>
-                                    <label class="flex items-center cursor-pointer">
-                                        <input type="radio" name="sort_harga" value="desc" class="form-radio text-blue-600"
-                                            {{ request('sort_harga') == 'desc' ? 'checked' : '' }}>
-                                        <span class="ml-2 text-gray-800">Highest Price</span>
-                                    </label>
-                                    <label class="flex items-center cursor-pointer">
-        <input type="radio" name="sort" value="best" class="form-radio text-blue-600"
-               {{ request('sort') == 'best' ? 'checked' : '' }}>
-        <span class="ml-2 text-gray-800">Best Seller</span>
-    </label>
-                                </div>
+                <!-- Sort By -->
+                <div class="mb-4">
+                    <div class="text-sm font-semibold mb-2">Sort By</div>
+                    <label><input type="radio" name="sort" value="latest" {{ request('sort')=='latest'?'checked':'' }}> Newest</label><br>
+                    <label><input type="radio" name="sort" value="best" {{ request('sort')=='best'?'checked':'' }}> Best Seller</label><br>
+                    <label><input type="radio" name="sort_harga" value="asc" {{ request('sort_harga')=='asc'?'checked':'' }}> Lowest</label><br>
+                    <label><input type="radio" name="sort_harga" value="desc" {{ request('sort_harga')=='desc'?'checked':'' }}> Highest</label>
+                </div>
 
-                                <div class="mb-2 text-sm text-gray-600">Price Range</div>
-                                <div class="flex gap-2 mb-4">
-                                    <input type="number" name="price_min" value="{{ request('price_min') }}" min="0" step="1000"
-                                           placeholder="Min" class="w-1/2 border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500 transition-all">
-                                    <input type="number" name="price_max" value="{{ request('price_max') }}" min="0" step="1000"
-                                           placeholder="Max" class="w-1/2 border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500 transition-all">
-                                </div>
+                <!-- Price Range -->
+                <div class="mb-4">
+                    <div class="text-sm font-semibold mb-2">Price Range</div>
+                    <div class="flex gap-2">
+                        <input type="number" name="price_min" value="{{ request('price_min') }}" placeholder="Min" class="w-1/2 border rounded-lg px-3 py-2">
+                        <input type="number" name="price_max" value="{{ request('price_max') }}" placeholder="Max" class="w-1/2 border rounded-lg px-3 py-2">
+                    </div>
+                </div>
 
-                                <div class="flex justify-between">
-                                    <button type="button" id="priceReset" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">Reset</button>
-                                    <button type="submit" class="btn-primary bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all">Apply</button>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Rating + Category -->
+                <div class="grid grid-cols-2 gap-3 mb-4">
 
-                        <button type="submit" class="btn-primary bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all transform hover:scale-105">
-                            Search
-                        </button>
-                    </form>
+                    <!-- Rating -->
+                    <div>
+                        <div class="text-sm font-semibold mb-1">Rating</div>
+                        <select name="rating" class="w-full border rounded-lg px-2 py-2">
+                            <option value="">All</option>
+                            <option value="5" {{ request('rating')==5?'selected':'' }}>5+</option>
+                            <option value="4" {{ request('rating')==4?'selected':'' }}>4+</option>
+                            <option value="3" {{ request('rating')==3?'selected':'' }}>3+</option>
+                            <option value="2" {{ request('rating')==2?'selected':'' }}>2+</option>
+                            <option value="1" {{ request('rating')==1?'selected':'' }}>1+</option>
+                        </select>
+                    </div>
+
+                    <!-- ✅ CATEGORY FIX -->
+                    <div>
+                        <div class="text-sm font-semibold mb-1">Category</div>
+                        <select name="kategori" class="w-full border rounded-lg px-2 py-2">
+                            <option value="">All</option>
+                            @foreach($kategori as $k)
+                                <option value="{{ $k->id }}" {{ request('kategori')==$k->id?'selected':'' }}>
+                                    {{ $k->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- Reset -->
+                <button type="button" id="priceReset" class="text-sm text-gray-600 hover:text-gray-900">Reset</button>
+            </div>
+        </div>
+
+        <!-- ✅ APPLY BUTTON HARUS DI DALAM FORM -->
+
+        <button type="submit"
+            class="bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700">
+            Apply
+        </button>
+
+    </div>
+</form>
+
+
+</div>
+
 
                     <!-- Right Side -->
                     <div class="hidden lg:flex items-center gap-4">
@@ -579,14 +606,7 @@
                             </a>
                         @endauth
 
-                        <!-- Mobile Search -->
-                        <form action="{{ route('user.dashboard') }}" method="GET" class="space-y-3 pt-4 border-t">
-                            <select name="kategori" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
-                                <option value="">All Categories</option>
-                                @foreach ($kategori as $k)
-                                    <option value="{{ $k->id }}" {{ request('kategori') == $k->id ? 'selected' : '' }}>{{ $k->nama }}</option>
-                                @endforeach
-                            </select>
+
 
                             <div class="relative">
                                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products..."

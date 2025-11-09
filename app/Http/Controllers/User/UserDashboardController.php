@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\Kategori;
+use App\Models\Review;
 use App\Models\Transaction;
 
 class UserDashboardController extends Controller
@@ -42,33 +43,53 @@ class UserDashboardController extends Controller
         }
 
         /* ------------------------------
-         ✅ SORTING EXCLUSIVE
-         - best seller TIDAK boleh digabung dengan sort_harga
+         ✅ FILTER RATING (BARU)
+        ------------------------------ */
+        if ($request->filled('rating')) {
+            $rating = (int) $request->rating;
+
+            $query->whereHas('reviews', function ($q) use ($rating) {
+                $q->selectRaw('produk_id, AVG(rating) as avg_rating')
+                  ->groupBy('produk_id')
+                  ->havingRaw('AVG(rating) >= ?', [$rating]);
+            });
+        }
+
+        /* ------------------------------
+         ✅ SORTING VARIABLES
+        ------------------------------ */
+        $sortHarga = $request->sort_harga;   // asc / desc
+        $sortType  = $request->sort;         // latest / best
+
+        /* ------------------------------
+         ✅ EXCLUSIVE SORTING RULES
         ------------------------------ */
 
-        $sortHarga = $request->sort_harga;        // asc / desc
-        $sortBest  = $request->sort;              // best
-
-        // ✅ Kalau BEST SELLER aktif → NONAKTIFKAN sorting harga
-        if ($sortBest === 'best') {
+        // Jika BEST SELLER aktif → Harga & Latest dimatikan
+        if ($sortType === 'best') {
             $sortHarga = null;
         }
 
-        // ✅ Kalau sorting harga aktif → NONAKTIFKAN BEST SELLER
+        // Jika sorting harga aktif → Nonaktifkan BEST & LATEST
         if ($sortHarga === 'asc' || $sortHarga === 'desc') {
-            $sortBest = null;
+            $sortType = null;
         }
 
         /* ------------------------------
          ✅ APPLY SORTING
         ------------------------------ */
 
-        // ✅ Best Seller (Transaction Count)
-        if ($sortBest === 'best') {
+        // ✅ Best Seller
+        if ($sortType === 'best') {
             $query->orderBy('transaction_count', 'desc');
         }
 
-        // ✅ Lowest / Highest Price
+        // ✅ Produk Terbaru (BARU DITAMBAH)
+        if ($sortType === 'latest') {
+            $query->latest('id');
+        }
+
+        // ✅ Termurah / Termahal
         if ($sortHarga === 'asc') {
             $query->orderBy('harga', 'asc');
         }
@@ -76,19 +97,20 @@ class UserDashboardController extends Controller
             $query->orderBy('harga', 'desc');
         }
 
-        // ✅ Default Sorting (if no sorting at all)
-        if (!$sortHarga && !$sortBest) {
+        // ✅ Default Sorting (Jika tidak memilih apa pun)
+        if (!$sortHarga && !$sortType) {
             $query->latest('id');
         }
 
         /* ------------------------------
-         ✅ PAGINATION (KEEP QUERY PARAM)
+         ✅ PAGINATION (KEEP QUERY PARAMS)
         ------------------------------ */
-        $produk = $query->paginate(12)->appends($request->query());
+        $produk = $query->paginate(8)->appends($request->query());
 
         $kategori = Kategori::all();
+        $reviews  = Review::all();
 
-        return view('user.dashboard', compact('produk', 'kategori'));
+        return view('user.dashboard', compact('produk', 'kategori', 'reviews'));
     }
 
     /**
