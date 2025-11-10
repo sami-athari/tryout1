@@ -1,107 +1,72 @@
 @extends('layouts.admin')
 
-@section('styles')
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #dbeafe, #bfdbfe, #93c5fd);
-            min-height: 100vh;
-        }
-        .glass {
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(10px);
-        }
-    </style>
-@endsection
-
 @section('content')
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+<div class="container mx-auto px-6 py-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Edit Category</h1>
 
-            <div class="card shadow-lg rounded-lg border-0">
-                {{-- Header dengan gradient biru --}}
-                <div class="card-header text-white" style="background: linear-gradient(135deg, #2563eb, #1e40af);">
-                    <h4 class="mb-0"> Edit Kategori Buku</h4>
-                </div>
+        <form action="{{ route('admin.kategori.update', $kategori->id) }}" method="POST" enctype="multipart/form-data" class="bg-white border rounded-lg p-6">
+            @csrf
+            @method('PUT')
 
-                {{-- Body --}}
-                <div class="card-body" style="background-color: #f8fafc;">
-                    <form action="{{ route('admin.kategori.update', $kategori->id) }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-
-                        {{-- Nama Kategori --}}
-                        <div class="mb-3">
-                            <label for="nama" class="form-label fw-semibold text-primary">Nama Kategori</label>
-                            <input type="text" name="nama" id="nama"
-                                   class="form-control shadow-sm border-primary @error('nama') is-invalid @enderror"
-                                   value="{{ old('nama', $kategori->nama) }}"
-                                   placeholder="Masukkan nama kategori" required>
-                            @error('nama')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        {{-- Deskripsi --}}
-                        <div class="mb-3">
-                            <label for="deskripsi" class="form-label fw-semibold text-primary">Deskripsi</label>
-                            <textarea name="deskripsi" id="deskripsi" rows="4"
-                                      class="form-control shadow-sm border-primary @error('deskripsi') is-invalid @enderror"
-                                      placeholder="Deskripsi kategori...">{{ old('deskripsi', $kategori->deskripsi) }}</textarea>
-                            @error('deskripsi')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        {{-- Ganti Foto --}}
-                        <div class="mb-4">
-                            <label for="foto" class="form-label fw-semibold text-primary">Ganti Gambar (Opsional)</label>
-                            <input type="file" name="foto" id="foto"
-                                   class="form-control shadow-sm border-primary @error('foto') is-invalid @enderror"
-                                   accept="image/*">
-                            @error('foto')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        {{-- Foto Saat Ini --}}
-                        @if($kategori->foto)
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold text-primary">Gambar Saat Ini:</label><br>
-                                <img src="{{ asset('storage/' . $kategori->foto) }}" width="150" alt="Gambar Kategori"
-                                     class="rounded shadow border border-2 border-white">
-                            </div>
-                        @endif
-
-                        {{-- Tombol Simpan --}}
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('admin.kategori.index') }}"
-                               class="btn fw-semibold px-4"
-                               style="background-color: #94a3b8; color:white;">
-                                ← Kembali
-                            </a>
-                            <button type="submit"
-                                    class="btn fw-semibold px-4"
-                                    style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color:white;">
-                                💾 Simpan Perubahan
-                            </button>
-                        </div>
-                    </form>
-                </div>
+            <div class="mb-4">
+                <label for="nama" class="block font-medium text-gray-700 mb-1">Category Name</label>
+                <input type="text" name="nama" id="nama"
+                       class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-200 @error('nama') border-red-500 @enderror"
+                       value="{{ old('nama', $kategori->nama) }}"
+                       placeholder="Enter category name" required>
+                @error('nama')
+                    <small class="text-red-500">{{ $message }}</small>
+                @enderror
             </div>
 
-        </div>
+            <div class="mb-4">
+                <label for="deskripsi" class="block font-medium text-gray-700 mb-1">Description</label>
+                <textarea name="deskripsi" id="deskripsi" rows="4"
+                          class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-200 @error('deskripsi') border-red-500 @enderror"
+                          placeholder="Category description...">{{ old('deskripsi', $kategori->deskripsi) }}</textarea>
+                @error('deskripsi')
+                    <small class="text-red-500">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <div class="mb-4">
+                <label for="foto" class="block font-medium text-gray-700 mb-1">Change Image (Optional)</label>
+                <input type="file" name="foto" id="foto"
+                       class="w-full border rounded-lg px-4 py-2 @error('foto') border-red-500 @enderror"
+                       accept="image/*">
+                @error('foto')
+                    <small class="text-red-500">{{ $message }}</small>
+                @enderror
+            </div>
+
+            @if($kategori->foto)
+                <div class="mb-4">
+                    <label class="block font-medium text-gray-700 mb-1">Current Image:</label>
+                    <img src="{{ asset('storage/' . $kategori->foto) }}" width="150" alt="Category Image"
+                         class="rounded border">
+                </div>
+            @endif
+
+            <div class="flex justify-between">
+                <a href="{{ route('admin.kategori.index') }}"
+                   class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                    Cancel
+                </a>
+                <button type="submit"
+                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    Save Changes
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
-{{-- SweetAlert Success --}}
 @if(session('success'))
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         Swal.fire({
             icon: 'success',
-            title: 'Berhasil!',
+            title: 'Success!',
             text: '{{ session('success') }}',
             timer: 3000,
             showConfirmButton: false
@@ -109,3 +74,4 @@
     </script>
 @endif
 @endsection
+

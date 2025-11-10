@@ -1,102 +1,83 @@
 @extends('layouts.admin')
 
-@section('styles')
-    <script src="https://cdn.tailwindcss.com"></script>
-    {{-- SweetAlert2 --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #dbeafe, #bfdbfe, #93c5fd);
-            min-height: 100vh;
-        }
-        .glass {
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(10px);
-        }
-    </style>
-@endsection
-
 @section('content')
-<div class="container d-flex justify-content-center mt-5">
-    <div class="card shadow-lg" style="width: 550px; border-radius: 16px; background: linear-gradient(135deg, #1d4ed8, #2563eb); color: white;">
-        <div class="card-header text-white text-center" style="border-radius: 16px 16px 0 0; background: linear-gradient(135deg, #1e40af, #1d4ed8);">
-            <h5 class="mb-0 fw-bold">Tambah Produk</h5>
-        </div>
-        <div class="card-body p-4" style="background-color: #fafafb; border-radius: 0 0 16px 16px; color: #f7f7f8;">
-            <form action="{{ route('admin.produk.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+<div class="container mx-auto px-6 py-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Add New Product</h1>
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold text-dark">Kategori</label>
-                    <select name="kategori_id" class="form-select border border-gray-300 shadow-sm" required>
-                        <option value="">-- Pilih Kategori --</option>
-                        @foreach($kategoris as $item)
-                            <option value="{{ $item->id }}">{{ $item->nama }}</option>
-                        @endforeach
-                    </select>
-                </div>
+        <form action="{{ route('admin.produk.store') }}" method="POST" enctype="multipart/form-data" class="bg-white border rounded-lg p-6">
+            @csrf
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold text-dark">Nama Produk</label>
-                    <input type="text" name="nama" class="form-control border border-gray-300 shadow-sm" required>
-                </div>
+            <div class="mb-4">
+                <label class="block font-medium text-gray-700 mb-1">Category</label>
+                <select name="kategori_id" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-200" required>
+                    <option value="">-- Select Category --</option>
+                    @foreach($kategoris as $item)
+                        <option value="{{ $item->id }}">{{ $item->nama }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold text-dark">Deskripsi</label>
-                    <textarea name="deskripsi" rows="3" class="form-control border border-gray-300 shadow-sm" required></textarea>
-                </div>
+            <div class="mb-4">
+                <label class="block font-medium text-gray-700 mb-1">Product Name</label>
+                <input type="text" name="nama" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-200" required>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold text-dark">Harga</label>
-                    <input type="number" name="harga" class="form-control border border-gray-300 shadow-sm" required>
-                </div>
+            <div class="mb-4">
+                <label class="block font-medium text-gray-700 mb-1">Description</label>
+                <textarea name="deskripsi" rows="3" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-200" required></textarea>
+            </div>
 
-                <div class="mb-3">
-                    <label for="stok" class="form-label fw-semibold text-dark">Stok</label>
-                    <input type="number" name="stok" id="stok" class="form-control border border-gray-300 shadow-sm" value="{{ old('stok') }}" required>
-                </div>
+            <div class="mb-4">
+                <label class="block font-medium text-gray-700 mb-1">Price</label>
+                <input type="number" name="harga" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-200" required>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold text-dark">Foto Produk</label>
-                    <input type="file" name="foto" class="form-control border border-gray-300 shadow-sm" required>
-                </div>
+            <div class="mb-4">
+                <label for="stok" class="block font-medium text-gray-700 mb-1">Stock</label>
+                <input type="number" name="stok" id="stok" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-200" value="{{ old('stok') }}" required>
+            </div>
 
-                <div class="d-flex justify-content-between mt-4">
-                    <a href="{{ route('admin.produk.index') }}" class="btn btn-outline-primary btn-sm px-4 py-2">Kembali</a>
-                    <button type="submit" class="btn btn-primary btn-sm px-4 py-2" style="background: linear-gradient(135deg, #1e40af, #2563eb); border: none;">Simpan</button>
-                </div>
-            </form>
-        </div>
+            <div class="mb-4">
+                <label class="block font-medium text-gray-700 mb-1">Product Photo</label>
+                <input type="file" name="foto" class="w-full border rounded-lg px-4 py-2" required>
+            </div>
+
+            <div class="flex justify-between">
+                <a href="{{ route('admin.produk.index') }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</a>
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save</button>
+            </div>
+        </form>
     </div>
 </div>
 
-{{-- SweetAlert2 Notifikasi --}}
 <script>
     @if ($errors->any())
         Swal.fire({
             icon: 'error',
-            title: 'Terjadi Kesalahan',
+            title: 'Errors Found',
             html: `{!! implode('<br>', $errors->all()) !!}`,
-            confirmButtonColor: '#1d4ed8'
+            confirmButtonColor: '#2563eb'
         })
     @endif
 
     @if(session('success'))
         Swal.fire({
             icon: 'success',
-            title: 'Berhasil',
+            title: 'Success',
             text: "{{ session('success') }}",
-            confirmButtonColor: '#1d4ed8'
+            confirmButtonColor: '#2563eb'
         })
     @endif
 
     @if(session('error'))
         Swal.fire({
             icon: 'error',
-            title: 'Gagal',
+            title: 'Failed',
             text: "{{ session('error') }}",
-            confirmButtonColor: '#1d4ed8'
+            confirmButtonColor: '#2563eb'
         })
     @endif
 </script>
 @endsection
+

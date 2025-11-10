@@ -1,108 +1,70 @@
 @extends('layouts.user')
 
 @section('content')
-<div class="min-h-screen bg-white dark:bg-[#0f172a] py-12 px-6 transition-all">
-    <div class="container mx-auto">
-        <h2 class="text-2xl font-bold text-blue-900 dark:text-blue-200 mb-6">💖 Wishlist Kamu</h2>
+<div class="container mx-auto px-6 py-8">
+    <h2 class="text-2xl font-bold mb-6 dark:text-white">💖 Wishlist</h2>
 
-        {{-- Notifikasi --}}
-        @if(session('success'))
-            <div class="bg-green-100 dark:bg-green-800 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-200 px-4 py-3 rounded mb-4">
-                {{ session('success') }}
-            </div>
-        @elseif(session('info'))
-            <div class="bg-blue-100 dark:bg-blue-800 border border-blue-400 dark:border-blue-700 text-blue-700 dark:text-blue-200 px-4 py-3 rounded mb-4">
-                {{ session('info') }}
-            </div>
-        @endif
+    @if(session('success'))
+        <div class="bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-200 px-4 py-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
 
-        {{-- Cek apakah wishlist kosong --}}
-        @if($wishlist->isEmpty())
-            <p class="text-gray-600 dark:text-gray-300 text-center mt-10">
-                Kamu belum menambahkan produk ke wishlist 💭
-            </p>
-        @else
+    @if(session('info'))
+        <div class="bg-blue-100 dark:bg-blue-900 border border-blue-400 dark:border-blue-700 text-blue-700 dark:text-blue-200 px-4 py-3 rounded mb-4">
+            {{ session('info') }}
+        </div>
+    @endif
 
-            {{-- Grid produk --}}
-            <div class="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                @foreach($wishlist as $item)
-                    @php
-                        $produk = $item->produk;
-                        $deskripsiRoute = route('user.produk.show', $produk->id);
-                        $imageSrc = $produk->foto ? asset('storage/' . $produk->foto) : asset('images/placeholder.png');
-                    @endphp
+    @if($wishlist->isEmpty())
+        <p class="text-center text-gray-500 dark:text-gray-400 py-10">Kamu belum menambahkan produk ke wishlist 💭</p>
+    @else
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            @foreach($wishlist as $item)
+                @php
+                    $produk = $item->produk;
+                    $imageSrc = $produk->foto ? asset('storage/' . $produk->foto) : asset('images/placeholder.png');
+                @endphp
 
-                    {{-- Kartu Produk Wishlist --}}
-                    <div class="relative bg-white dark:bg-[#1e293b] rounded-2xl shadow-md overflow-hidden
-                                transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 border border-transparent dark:border-[#334155]">
-
-                        <a href="{{ $deskripsiRoute }}">
-                            <div class="relative overflow-hidden">
-                                <img src="{{ $imageSrc }}"
-                                     alt="{{ $produk->nama }}"
-                                     class="w-full aspect-[4/3] object-cover rounded-t-xl transition-transform duration-300 hover:scale-105">
-                            </div>
-
-                            <div class="p-4">
-                                <h4 class="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 line-clamp-2">
-                                    {{ $produk->nama }}
-                                </h4>
-                            </div>
-                        </a>
-
-                        <div class="px-4 pb-4">
-                            <p class="text-lg sm:text-xl font-bold text-blue-900 dark:text-blue-300 mt-2">
-                                Rp {{ number_format($produk->harga,0,',','.') }}
-                            </p>
-
-                            <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">
-                                Kategori: {{ $produk->kategori ? $produk->kategori->nama : '-' }}
-                            </p>
-
-                            <div class="flex justify-between items-center">
-                                {{-- Tombol ke keranjang --}}
-                                <form action="{{ route('user.cart.add', $produk->id) }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="jumlah" value="1">
-                                    <button type="submit"
-                                            class="bg-blue-900 dark:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-800 dark:hover:bg-blue-600 transition">
-                                        + Keranjang
-                                    </button>
-                                </form>
-
-                                {{-- Hapus Wishlist --}}
-                                <form action="{{ route('user.wishlist.remove', $item->id) }}" method="POST"
-                                      onsubmit="return confirm('Hapus produk ini dari wishlist?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 font-semibold text-sm">
-                                        Hapus
-                                    </button>
-                                </form>
-                            </div>
+                <div class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition">
+                    <a href="{{ route('user.produk.show', $produk->id) }}">
+                        <img src="{{ $imageSrc }}" alt="{{ $produk->nama }}" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h4 class="font-semibold mb-2 line-clamp-2 dark:text-white">{{ $produk->nama }}</h4>
+                            <p class="text-lg font-bold text-blue-600 dark:text-blue-400">Rp {{ number_format($produk->harga,0,',','.') }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $produk->kategori ? $produk->kategori->nama : '-' }}</p>
                         </div>
+                    </a>
+
+                    <div class="p-4 pt-0 flex justify-between items-center">
+                        <form action="{{ route('user.cart.add', $produk->id) }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="jumlah" value="1">
+                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                + Cart
+                            </button>
+                        </form>
+
+                        <form action="{{ route('user.wishlist.remove', $item->id) }}" method="POST" onsubmit="return confirm('Remove this item?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 font-semibold">
+                                Remove
+                            </button>
+                        </form>
                     </div>
-
-                @endforeach
-            </div>
-
-        @endif
-    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
 </div>
 
-{{-- Style tambahan untuk nama produk --}}
 <style>
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-}
-
-/* Dark Mode Transition Smooth */
-.dark\:bg-transition {
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 </style>
 @endsection

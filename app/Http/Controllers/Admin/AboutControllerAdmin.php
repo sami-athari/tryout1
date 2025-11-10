@@ -7,18 +7,24 @@ use App\Models\About;
 use App\Models\User;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Kategori;
 
 class AboutControllerAdmin extends \App\Http\Controllers\Controller
 {
     public function index()
     {
-         $produk = Produk::paginate(4);
+         $totalSold = Produk::sum('transaction_count');
+        $about = About::first(); // ambil data pertama dari tabel abouts
+        $kategori = Kategori::all();
+        // contoh statistik (hiasan)
         $totalProduk = Produk::count();
-        $userCount = User::where('role', 'user')->count();
+        $userCount = User::count();
         $transactionCount = Transaction::count();
+        // Ambil data produk terbaru beserta relasi kategori
+        $produk = Produk::paginate(4);
 
-        $about = About::first();
-        return view('admin.about.index', compact('about','produk', 'totalProduk', 'userCount', 'transactionCount'));
+
+        return view('admin.about.index', compact('about', 'totalProduk', 'produk', 'userCount', 'transactionCount','kategori','totalSold'));
     }
 
     public function edit()

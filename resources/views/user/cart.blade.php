@@ -1,11 +1,8 @@
 @extends('layouts.user')
 
 @section('content')
-<div class="container mx-auto px-6 py-12">
-
-    <h1 class="text-3xl font-extrabold text-blue-900 mb-8 text-center">
-        🛒 Keranjang Belanja
-    </h1>
+<div class="container mx-auto px-6 py-8">
+    <h1 class="text-2xl font-bold mb-6 dark:text-white">🛒 Keranjang Belanja</h1>
 
     @if (session('success'))
         <script>
@@ -20,10 +17,9 @@
     @endif
 
     @if ($items->count())
-
-        <div class="overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200">
+        <div class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg overflow-x-auto">
             <table class="min-w-full">
-                <thead class="bg-blue-900 text-white">
+                <thead class="bg-blue-600 text-white">
                     <tr>
                         <th class="px-4 py-3 text-left">Produk</th>
                         <th class="px-4 py-3 text-center">Foto</th>
@@ -35,42 +31,43 @@
                     </tr>
                 </thead>
 
-                <tbody class="divide-y divide-gray-200">
+                <tbody class="divide-y dark:divide-gray-700">
                     @foreach ($items as $item)
                         <tr data-item-id="{{ $item->id }}"
                             data-stok="{{ $item->produk->stok }}"
-                            data-harga="{{ $item->produk->harga }}">
+                            data-harga="{{ $item->produk->harga }}"
+                            class="dark:text-gray-300">
 
-                            <td class="px-4 py-3 font-medium text-gray-900">
+                            <td class="px-4 py-3 font-medium">
                                 {{ $item->produk->nama }}
                             </td>
 
                             <td class="px-4 py-3 text-center">
                                 <img src="{{ asset('storage/' . $item->produk->foto) }}"
-                                     class="w-16 h-16 object-cover rounded-md mx-auto">
+                                     class="w-16 h-16 object-cover rounded mx-auto">
                             </td>
 
-                            <td class="px-4 py-3 text-gray-700">
+                            <td class="px-4 py-3 text-gray-700 dark:text-gray-400">
                                 {{ $item->produk->kategori->nama ?? '-' }}
                             </td>
 
-                            <td class="px-4 py-3 text-right font-semibold text-blue-700">
+                            <td class="px-4 py-3 text-right font-semibold text-blue-600 dark:text-blue-400">
                                 Rp {{ number_format($item->produk->harga, 0, ',', '.') }}
                             </td>
 
                             <td class="px-4 py-3 text-center">
                                 <div class="flex items-center justify-center gap-2">
                                     <button type="button"
-                                            class="minus-btn px-3 py-1 bg-gray-100 rounded hover:bg-gray-200">
+                                            class="minus-btn px-3 py-1 bg-gray-100 dark:bg-gray-700 dark:text-white rounded hover:bg-gray-200 dark:hover:bg-gray-600">
                                         −
                                     </button>
 
-                                    <span class="qty-text px-3 py-1 border rounded bg-gray-50">
+                                    <span class="qty-text px-3 py-1 border dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-700 dark:text-white">
                                         {{ $item->jumlah }}
                                     </span>
 
                                     <button type="button"
-                                            class="plus-btn px-3 py-1 bg-gray-100 rounded hover:bg-gray-200">
+                                            class="plus-btn px-3 py-1 bg-gray-100 dark:bg-gray-700 dark:text-white rounded hover:bg-gray-200 dark:hover:bg-gray-600">
                                         +
                                     </button>
                                 </div>
@@ -92,40 +89,35 @@
                                     </button>
                                 </form>
                             </td>
-
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
 
-        {{-- Total --}}
-        <div id="total" class="text-xl font-bold text-right mt-6 text-blue-900">
+        <div id="total" class="text-xl font-bold text-right mt-6 dark:text-white">
             Total:
             Rp {{ number_format($items->sum(fn($i) => $i->produk->harga * $i->jumlah), 0, ',', '.') }}
         </div>
 
-        {{-- Checkout --}}
         <div class="mt-6 text-right">
             <a href="{{ route('user.checkout.form') }}"
-               class="inline-block px-6 py-3 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition">
+               class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 Checkout Sekarang
             </a>
         </div>
 
     @else
         <div class="text-center py-16">
-            <p class="text-gray-600 text-lg">Keranjangmu masih kosong 😊</p>
+            <p class="text-gray-600 dark:text-gray-400 text-lg">Keranjangmu masih kosong 😊</p>
             <a href="{{ route('user.dashboard') }}"
-               class="mt-4 inline-block px-6 py-3 bg-blue-900 text-white rounded-lg hover:bg-blue-800">
+               class="mt-4 inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 Belanja Sekarang
             </a>
         </div>
     @endif
-
 </div>
 
-{{-- SCRIPT (TIDAK DIUBAH) --}}
 <script>
     document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', function () {

@@ -16,52 +16,51 @@
             margin: auto;
             background: #ffffff;
             padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
         }
         .header {
             text-align: center;
-            border-bottom: 3px solid #3b82f6;
-            padding-bottom: 18px;
-            margin-bottom: 25px;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
         .header h2 {
             margin: 0;
             color: #1e40af;
-            font-size: 28px;
+            font-size: 24px;
         }
         .header small {
             color: #64748b;
-            font-size: 14px;
+            font-size: 13px;
         }
         .info {
-            margin-bottom: 15px;
-            padding: 10px 15px;
+            margin-bottom: 12px;
+            padding: 8px 12px;
             background: #f8fafc;
-            border-left: 4px solid #3b82f6;
-            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+            border-radius: 4px;
         }
         .info p {
-            margin: 5px 0;
-            font-size: 14px;
+            margin: 4px 0;
+            font-size: 13px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            margin-bottom: 15px;
-            font-size: 14px;
+            margin-top: 15px;
+            margin-bottom: 12px;
+            font-size: 13px;
         }
         table thead {
             background: #1e40af;
             color: #fff;
         }
         table th, table td {
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #e2e8f0;
             text-align: center;
-            vertical-align: middle;
         }
         table tbody tr:nth-child(even) {
             background: #f9fafb;
@@ -69,7 +68,7 @@
         .product-img {
             width: 50px;
             height: 50px;
-            border-radius: 8px;
+            border-radius: 6px;
             object-fit: cover;
             border: 1px solid #cbd5e1;
         }
@@ -80,16 +79,15 @@
         }
         .footer {
             text-align: center;
-            font-size: 13px;
+            font-size: 12px;
             color: #475569;
-            margin-top: 25px;
-            padding-top: 15px;
+            margin-top: 20px;
+            padding-top: 12px;
             border-top: 1px dashed #94a3b8;
         }
     </style>
 </head>
 <body>
-
     <div class="receipt">
         <div class="header">
             <h2>📚 Seilmu Bookstore</h2>
@@ -141,6 +139,5 @@
             <p>✨ Terima kasih telah berbelanja di <strong>Seilmu</strong>. Sampai jumpa lagi! ✨</p>
         </div>
     </div>
-
 </body>
 </html>

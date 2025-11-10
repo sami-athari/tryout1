@@ -1,63 +1,44 @@
 @extends('layouts.admin')
 
-@section('styles')
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #e0f2fe, #bae6fd, #7dd3fc);
-            min-height: 100vh;
-            font-family: 'Inter', sans-serif;
-        }
-        .glass {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            border-radius: 1rem;
-        }
-    </style>
-@endsection
-
 @section('content')
-<div class="container mx-auto mt-12 px-6">
-    {{-- Judul --}}
-    <h1 class="text-4xl font-extrabold mb-8 text-center text-gray-900 tracking-wide">
-        📋 Daftar Akun User
+<div class="container mx-auto px-6 py-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center">
+        User Accounts
     </h1>
 
-    {{-- Total Akun --}}
     <div class="mb-6 text-center">
-        <span class="text-lg text-gray-800">
-            Total akun terdaftar:
-            <strong class="text-blue-700">{{ $total }}</strong>
+        <span class="text-lg text-gray-700">
+            Total registered accounts:
+            <strong class="text-blue-600">{{ $total }}</strong>
         </span>
     </div>
 
-    {{-- Tabel User --}}
-    <div class="overflow-hidden shadow-2xl glass">
-        <table class="min-w-full text-sm">
-            <thead class="bg-gradient-to-r from-blue-600 to-blue-800 text-white uppercase text-xs tracking-wider">
+    <div class="bg-white border rounded-lg overflow-hidden">
+        <table class="min-w-full">
+            <thead class="bg-gray-50 border-b">
                 <tr>
-                    <th class="py-4 px-6 text-left">#</th>
-                    <th class="py-4 px-6 text-left">Nama</th>
-                    <th class="py-4 px-6 text-left">Email</th>
-                    <th class="py-4 px-6 text-left">Tanggal Dibuat</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">#</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Name</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Email</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Date Created</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
+            <tbody class="divide-y">
                 @forelse ($users as $user)
-                <tr class="hover:bg-blue-50 transition duration-200">
-                    <td class="py-4 px-6 font-semibold text-gray-700">
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 text-gray-900">
                         {{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}
                     </td>
-                    <td class="py-4 px-6 text-gray-900">{{ $user->name }}</td>
-                    <td class="py-4 px-6 text-gray-700">{{ $user->email }}</td>
-                    <td class="py-4 px-6 text-gray-600">
+                    <td class="px-6 py-4 font-medium text-gray-900">{{ $user->name }}</td>
+                    <td class="px-6 py-4 text-gray-700">{{ $user->email }}</td>
+                    <td class="px-6 py-4 text-gray-600">
                         {{ $user->created_at->format('d M Y') }}
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="text-center py-6 text-red-500 font-medium">
-                        Belum ada user terdaftar.
+                    <td colspan="4" class="text-center py-8 text-red-500">
+                        No users found.
                     </td>
                 </tr>
                 @endforelse
@@ -65,17 +46,16 @@
         </table>
     </div>
 
-    {{-- Pagination --}}
     <div class="mt-8 flex justify-center">
         {{ $users->links('pagination::tailwind') }}
     </div>
 
-    {{-- Tombol Kembali --}}
     <div class="mt-10 text-center">
         <a href="{{ route('admin.dashboard') }}"
-           class="inline-block px-6 py-3 rounded-xl font-semibold shadow-md bg-yellow-400 text-gray-900 hover:bg-yellow-500 transition">
-            ← Kembali ke Dashboard
+           class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 inline-block">
+            ← Back to Dashboard
         </a>
     </div>
 </div>
 @endsection
+

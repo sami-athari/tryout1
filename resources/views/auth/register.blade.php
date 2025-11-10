@@ -1,18 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="flex items-center justify-center min-h-[85vh]">
-    <div class="bg-white shadow-xl rounded-2xl w-full max-w-md p-8">
-        <!-- Judul -->
-        <h2 class="text-2xl font-bold text-center text-blue-900 mb-6">
-            Daftar Akun {{ config('app.name', 'Seilmu') }}
+<div class="flex items-center justify-center min-h-[85vh] py-12 px-4">
+    <div class="bg-white border rounded-lg w-full max-w-md p-8">
+        <h2 class="text-2xl font-bold text-center text-gray-900 mb-6">
+            Register Account
         </h2>
 
-        <!-- Form -->
         <form method="POST" action="{{ route('register') }}" class="space-y-5">
             @csrf
 
-            <!-- Email -->
             <div>
                 <input type="email" name="email" value="{{ old('email') }}" required autofocus
                        placeholder="Email"
@@ -22,57 +19,50 @@
                 @enderror
             </div>
 
-            <!-- Nama -->
             <div>
                 <input type="text" name="name" value="{{ old('name') }}" required
-                       placeholder="Nama Lengkap"
+                       placeholder="Full Name"
                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 @error('name')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
-            <!-- Password -->
             <div>
-                <input type="password" name="password" required placeholder="Kata Sandi"
+                <input type="password" name="password" required placeholder="Password"
                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 @error('password')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
-            <!-- Konfirmasi Password -->
             <div>
-                <input type="password" name="password_confirmation" required placeholder="Konfirmasi Kata Sandi"
+                <input type="password" name="password_confirmation" required placeholder="Confirm Password"
                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
             </div>
 
-            <!-- Tips Password -->
             <ul class="text-sm text-gray-600 list-disc pl-5 space-y-1">
-                <li>Minimum 8 karakter</li>
-                <li>Sertakan angka & simbol</li>
+                <li>Minimum 8 characters</li>
+                <li>Include numbers & symbols</li>
             </ul>
 
-            <!-- Checkbox -->
             <div class="flex items-start space-x-2 text-sm">
                 <input type="checkbox" id="privacy-check" required
                        class="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                 <label for="privacy-check" class="text-gray-600">
-                    Dengan mendaftar, kamu menyetujui
-                    <a href="#" class="text-blue-700 hover:underline">Kebijakan Privasi Seilmu.com</a>
+                    By registering, you agree to
+                    <a href="#" class="text-blue-600 hover:underline">Privacy Policy</a>
                 </label>
             </div>
 
-            <!-- Tombol Daftar -->
             <button type="submit"
-                    class="w-full bg-blue-900 text-white py-3 rounded-lg font-semibold hover:bg-blue-800 transition">
-                Daftar
+                    class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                Register
             </button>
 
-            <!-- Link Login -->
             <p class="text-center text-gray-600 text-sm">
-                Sudah punya akun?
-                <a href="{{ route('login') }}" class="text-blue-700 hover:underline font-medium">Masuk</a>
+                Already have an account?
+                <a href="{{ route('login') }}" class="text-blue-600 hover:underline font-medium">Login</a>
             </p>
         </form>
     </div>

@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         $kategori = Kategori::create([
             'nama' => 'Buku Bacaan',
             'deskripsi' => 'Kategori berisi berbagai jenis buku bacaan populer, edukatif, dan inspiratif.',
-            'foto' => 'kategori_buku.jpg',
+            'foto' => 'images/book.jpg.jpg',
         ]);
 
         // Daftar produk yang akan dimasukkan
